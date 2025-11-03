@@ -5,17 +5,35 @@
 		"build": {
 			"dependsOn": ["^build"],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],
-			"outputs": ["dist/**"]
-		},
-		"lint": {
-			"dependsOn": ["^lint"]
-		},
-		"check-types": {
-			"dependsOn": ["^check-types"]
+			"outputs": ["dist/**", ".next/**", "!.next/cache/**"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true
+		},
+		"typecheck": {
+			"dependsOn": [],
+			"outputs": [],
+			"cache": true
+		},
+		"lint": {
+			"outputs": [],
+			"cache": true
+		},
+		"fix": {
+			"outputs": [],
+			"cache": false
+		},
+		"fix:unsafe": {
+			"outputs": [],
+			"cache": true
+		},
+		"format": {
+			"outputs": [],
+			"cache": false
+		},
+		"check": {
+			"dependsOn": ["lint", "typecheck"]
 		},
 		"db:push": {
 			"cache": false,

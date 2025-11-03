@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port=3001",
+    "typecheck": "tsc --noEmit",
+    "lint": "bun ultracite check",
+    "fix": "bun ultracite fix",
+    "fix:unsafe": "bun ultracite fix --unsafe",
+    "dev": "next dev --port=3001 --experimental-https",
     "build": "next build",
     "start": "next start"
   },
@@ -12,8 +16,8 @@
     "@tanstack/react-form": "^1.12.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^0.546.0",
-    "next": "16.0.0",
+    "lucide-react": "^0.552.0",
+    "next": "16.0.1",
     "next-themes": "^0.4.6",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -26,13 +30,14 @@
     "@orpc/client": "catalog:",
     "@orpc/server": "catalog:",
     "@tanstack/react-query": "^5.85.5",
-    "better-auth": "catalog:",
-    "@osopit/api": "workspace:*",
-    "@osopit/auth": "workspace:*"
+    "wagmi": "^2.19.2",
+    "viem": "2.38.6",
+    "porto": "^0.2.35",
+    "@t3-oss/env-nextjs": "^0.13.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.10",
-    "@types/node": "^20",
+    "@types/node": "^24.10.0",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "tailwindcss": "^4.1.10",
