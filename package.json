@@ -4,8 +4,7 @@
   "type": "module",
   "workspaces": {
     "packages": [
-      "apps/*",
-      "packages/*"
+      "apps/*"
     ],
     "catalog": {
       "hono": "^4.8.2",

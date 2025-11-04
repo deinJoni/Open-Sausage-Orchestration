@@ -1,0 +1,8 @@
+type NameRegistered @entity(immutable: true) {
+  id: Bytes!
+  label: String! # string
+  owner: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
