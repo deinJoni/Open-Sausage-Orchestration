@@ -1,23 +1,30 @@
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
+"use client";
 
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
+import { useAccount } from "wagmi";
+import { Dashboard } from "@/components/dashboard";
+import { FeatureCards } from "@/components/feature-cards";
+import { Hero } from "@/components/hero";
+import { WelcomeCard } from "@/components/welcome-card";
 
 export default function Home() {
-  return (
-    <div className="container mx-auto max-w-3xl px-4 py-2">
-      <pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-    </div>
-  );
+  const { isConnected } = useAccount();
+
+  // TODO: Check if user has a profile via API
+  // For now, we'll simulate this - set to true to test Dashboard view
+  const hasProfile = false;
+
+  if (!isConnected) {
+    return (
+      <div className="space-y-16 pb-16">
+        <Hero />
+        <FeatureCards />
+      </div>
+    );
+  }
+
+  if (!hasProfile) {
+    return <WelcomeCard />;
+  }
+
+  return <Dashboard />;
 }
