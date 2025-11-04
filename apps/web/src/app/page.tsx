@@ -1,30 +1,43 @@
 "use client";
 
-import { useAccount } from "wagmi";
-import { Dashboard } from "@/components/dashboard";
-import { FeatureCards } from "@/components/feature-cards";
-import { Hero } from "@/components/hero";
-import { WelcomeCard } from "@/components/welcome-card";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { LivestreamCarousel } from "@/components/livestream-carousel";
+import { useActiveStreamers } from "@/hooks/useActiveStreamers";
 
 export default function Home() {
-  const { isConnected } = useAccount();
+	const { data: activeStreamers, isLoading } = useActiveStreamers();
 
-  // TODO: Check if user has a profile via API
-  // For now, we'll simulate this - set to true to test Dashboard view
-  const hasProfile = false;
+	if (isLoading) {
+		return (
+			<div className="flex h-screen items-center justify-center">
+				<p className="text-zinc-400">Loading streams...</p>
+			</div>
+		);
+	}
 
-  if (!isConnected) {
-    return (
-      <div className="space-y-16 pb-16">
-        <Hero />
-        <FeatureCards />
-      </div>
-    );
-  }
+	if (!activeStreamers || activeStreamers.length === 0) {
+		return (
+			<div className="flex h-screen flex-col items-center justify-center gap-6 px-4">
+				<div className="text-7xl">😴</div>
+				<h1 className="font-bold text-white text-3xl">No one's live right now</h1>
+				<p className="text-zinc-400">Check back later to watch live streams!</p>
+				<Button asChild className="mt-4" variant="outline">
+					<Link href="/artists">Browse All Artists</Link>
+				</Button>
+			</div>
+		);
+	}
 
-  if (!hasProfile) {
-    return <WelcomeCard />;
-  }
+	return (
+		<div className="mx-auto max-w-7xl px-4 py-8">
+			<LivestreamCarousel streamers={activeStreamers} />
 
-  return <Dashboard />;
+			<div className="mt-8 text-center">
+				<Button asChild variant="outline">
+					<Link href="/artists">Browse All Artists →</Link>
+				</Button>
+			</div>
+		</div>
+	);
 }
