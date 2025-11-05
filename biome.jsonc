@@ -1,8 +1,15 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
-	"extends": ["ultracite/core", "ultracite/next"],
-	"files": {
-		"ignoreUnknown": false,
-		"includes": ["**/src/**", "!**/.next", "!**/dist", "!**/.turbo"]
-	}
+  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+  "extends": ["ultracite/core", "ultracite/next"],
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**/src/**",
+      "!**/.next",
+      "!**/dist",
+      "!**/.turbo",
+      "!apps/web/src/lib/schema.generated.ts",
+      "!apps/web/src/lib/subgraph.ts"
+    ]
+  }
 }
