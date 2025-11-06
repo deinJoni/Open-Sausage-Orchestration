@@ -27,22 +27,22 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
   if (subdomain == null) {
     subdomain = new Subdomain(nodeHash);
     subdomain.node = nodeBytes;
-    subdomain.name = label; // Store readable label
+    subdomain.name = label.toString(); // Store readable label
     subdomain.owner = userId;
     subdomain.registeredAt = event.block.timestamp;
     subdomain.updatedAt = event.block.timestamp;
     subdomain.registrationTxHash = event.transaction.hash;
     subdomain.save();
     
-    log.info("Created  Subdomain: {} for user {}", [label, userId]);
+    log.info("Created  Subdomain: {} for user {}", [label.toString(), userId]);
   } else {
     // Update if ownership changed
     subdomain.owner = userId;
-    subdomain.name = label;
+    subdomain.name = label.toString();
     subdomain.updatedAt = event.block.timestamp;
     subdomain.save();
     
-    log.info("Updated Subdomain ownership: {} -> {}", [label, userId]);
+    log.info("Updated Subdomain ownership: {} -> {}", [label.toString(), userId]);
   }
 
   // Update user's updatedAt
