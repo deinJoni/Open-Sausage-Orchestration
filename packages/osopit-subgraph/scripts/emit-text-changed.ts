@@ -62,7 +62,7 @@ async function emitTextChanged() {
 
   // Get parameters
   const ensName = process.env.ENS_NAME || "bads4.buenaas.eth"; 
-  const key = process.env.KEY || 'avatar5';
+  const key = process.env.KEY || 'avatar6';
   const value = process.env.VALUE || 'https://example.com/avatar.png';
 
   // Calculate ENS node (namehash)

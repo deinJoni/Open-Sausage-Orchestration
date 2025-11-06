@@ -8,9 +8,9 @@ dataSources:
     name: OsopitRegistry
     network: base
     source:
-      address: "0x92f90070Ff34f8Bb9500bE301Ea373217673FDE4"
+      address: "0xa05914349B2E251Ed45dC29Ae9aEF59028Be6f8f"
       abi: OsopitRegistry
-      startBlock: 37830287
+      startBlock: 37818889
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -28,9 +28,9 @@ dataSources:
     name: L2Resolver
     network: base
     source:
-      address: "0x788aBE2ff46d97508fCf88B4Db83B306AEAcb4C9"
+      address: "0xa609955257eacbbd566a1fa654e6c5f4b1fdc9e2"
       abi: ITextResolver
-      startBlock: 37830287
+      startBlock: 37818889
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9

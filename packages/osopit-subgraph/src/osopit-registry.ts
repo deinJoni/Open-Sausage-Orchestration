@@ -34,7 +34,7 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
     subdomain.registrationTxHash = event.transaction.hash;
     subdomain.save();
     
-    log.info("Created Subdomain: {} for user {}", [label, userId]);
+    log.info("Created  Subdomain: {} for user {}", [label, userId]);
   } else {
     // Update if ownership changed
     subdomain.owner = userId;
