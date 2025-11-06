@@ -21,7 +21,7 @@ dataSources:
         - name: OsopitRegistry
           file: ./abis/OsopitRegistry.json
       eventHandlers:
-        - event: NameRegistered(string,indexed address)
+        - event: NameRegistered(indexed string,indexed address)
           handler: handleNameRegistered
       file: ./src/osopit-registry.ts
   - kind: ethereum
