@@ -1,18 +1,29 @@
-type User @entity(immutable: true) {
-  id: Bytes!
-  subdomain: String! # string
-  address: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type User @entity(immutable: false) {
+  id: ID! # wallet address (lowercase hex)
+  address: Bytes! # wallet address
+  subdomains: [Subdomain!]! @derivedFrom(field: "owner")
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type Subdomain @entity(immutable: false) {
+  id: ID! # node hash (bytes32 as hex string)
+  node: Bytes! # ENS node (bytes32)
+  name: String! # readable subdomain name (e.g., "alice" or full "alice.osopit.eth")
+  owner: User! # wallet that owns this subdomain
+  nameLabels: [NameLabel!]! @derivedFrom(field: "subdomain")
+  registeredAt: BigInt!
+  updatedAt: BigInt!
+  registrationTxHash: Bytes!
 }
 
 type NameLabel @entity(immutable: true) {
-  id: Bytes!
-  key: String! # string "avatar" "description" "email" "url" "header" "com.twitter" "com.github" "com.discord" "com.telegram" "social.farcaster" "social.lens" "livestream.url" "livestream.active" "art1" "art2" "art3" "art4" "art5" "art6" "art7" "art8"
-  value: String! # string # url, text, boolean, etc.
-  user: User! # address
+  id: ID! # unique id: txHash.toHex() + "-" + logIndex
+  key: String! # "avatar" "description" "email" "url" "header" "com.twitter" "com.github" "com.discord" "com.telegram" "social.farcaster" "social.lens" "livestream.url" "livestream.active" "art1" through "art8"
+  value: String! # url, text, boolean, etc.
+  subdomain: Subdomain! # relation to Subdomain
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+  logIndex: BigInt!
 }

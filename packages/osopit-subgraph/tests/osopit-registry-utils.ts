@@ -1,6 +1,6 @@
-import { type Address, ethereum } from "@graphprotocol/graph-ts";
-import { newMockEvent } from "matchstick-as";
-import type { NameRegistered } from "../generated/OsopitRegistry/OsopitRegistry";
+import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { newMockEvent } from "matchstick-as/assembly/index";
+import { NameRegistered } from "../generated/OsopitRegistry/OsopitRegistry";
 
 export function createNameRegisteredEvent(
   label: string,

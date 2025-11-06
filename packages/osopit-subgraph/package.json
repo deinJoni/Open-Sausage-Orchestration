@@ -8,11 +8,20 @@
     "create-local": "graph create --node http://localhost:8020/ osopit-subgraph",
     "remove-local": "graph remove --node http://localhost:8020/ osopit-subgraph",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 osopit-subgraph",
-    "test": "graph test"
+    "test": "graph test",
+    "check-events": "bun run scripts/check-events.ts",
+    "check-ownership": "bun run scripts/check-ownership.ts",
+    "calculate-namehash": "bun run scripts/calculate-namehash.ts",
+    "register-name": "bun run scripts/register-name.ts",
+    "emit-test-event": "bun run scripts/emit-text-changed.ts"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.98.1",
     "@graphprotocol/graph-ts": "0.37.0"
   },
-  "devDependencies": { "matchstick-as": "0.6.0" }
+  "devDependencies": {
+    "assemblyscript": "0.19.23",
+    "matchstick-as": "0.6.0",
+    "viem": "^2.38.6"
+  }
 }

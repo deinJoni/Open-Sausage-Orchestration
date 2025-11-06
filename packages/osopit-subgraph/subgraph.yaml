@@ -10,7 +10,7 @@ dataSources:
     source:
       address: "0x92f90070Ff34f8Bb9500bE301Ea373217673FDE4"
       abi: OsopitRegistry
-      startBlock: 37748560
+      startBlock: 37830287
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -24,3 +24,24 @@ dataSources:
         - event: NameRegistered(string,indexed address)
           handler: handleNameRegistered
       file: ./src/osopit-registry.ts
+  - kind: ethereum
+    name: L2Resolver
+    network: base
+    source:
+      address: "0x788aBE2ff46d97508fCf88B4Db83B306AEAcb4C9"
+      abi: ITextResolver
+      startBlock: 37830287
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - NameLabel
+      abis:
+        - name: ITextResolver
+          file: ./abis/ITextResolver.json
+      eventHandlers:
+        - event: TextChanged(indexed bytes32,indexed string,string,string)
+          handler: handleTextChanged
+      file: ./src/l2-resolver.ts

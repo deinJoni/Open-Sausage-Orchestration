@@ -1,29 +1,51 @@
-import type { NameRegistered as NameRegisteredEvent } from "../generated/OsopitRegistry/OsopitRegistry";
-import { NameLabel, User } from "../generated/schema";
+import { NameRegistered as NameRegisteredEvent } from "../generated/OsopitRegistry/OsopitRegistry";
+import { User, Subdomain } from "../generated/schema";
+import { Bytes, log } from "@graphprotocol/graph-ts";
+import { namehash } from "./utils";
 
 export function handleNameRegistered(event: NameRegisteredEvent): void {
-  const entity = new User(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
+  let ownerAddress = event.params.owner;
+  let label = event.params.label;
+  
+  // Create or load User (by wallet address)
+  let userId = ownerAddress.toHexString();
+  let user = User.load(userId);
+  if (user == null) {
+    user = new User(userId);
+    user.address = ownerAddress;
+    user.createdAt = event.block.timestamp;
+    user.updatedAt = event.block.timestamp;
+    user.save();
+    log.info("Created new User: {}", [userId]);
+  }
 
-  // Since label is not indexed, we can directly access the readable string
-  entity.subdomain = event.params.label;
-  entity.address = event.params.owner;
+  // Calculate node hash for the subdomain
+  let nodeBytes = namehash(`${label}.buenaas.eth`);
+  let nodeHash = nodeBytes.toHexString();
+  
+  let subdomain = Subdomain.load(nodeHash);
+  if (subdomain == null) {
+    subdomain = new Subdomain(nodeHash);
+    subdomain.node = nodeBytes;
+    subdomain.name = label; // Store readable label
+    subdomain.owner = userId;
+    subdomain.registeredAt = event.block.timestamp;
+    subdomain.updatedAt = event.block.timestamp;
+    subdomain.registrationTxHash = event.transaction.hash;
+    subdomain.save();
+    
+    log.info("Created Subdomain: {} for user {}", [label, userId]);
+  } else {
+    // Update if ownership changed
+    subdomain.owner = userId;
+    subdomain.name = label;
+    subdomain.updatedAt = event.block.timestamp;
+    subdomain.save();
+    
+    log.info("Updated Subdomain ownership: {} -> {}", [label, userId]);
+  }
 
-  entity.blockNumber = event.block.number;
-  entity.blockTimestamp = event.block.timestamp;
-  entity.transactionHash = event.transaction.hash;
-
-  entity.save();
-}
-
-
-export function handleNameLabelSet(event: NameLabelSetEvent): void {
-  const entity = new NameLabel(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  );
-
-  entity.key = event.params.key;
-  entity.value = event.params.value;
-  entity.user = event.params.user;
+  // Update user's updatedAt
+  user.updatedAt = event.block.timestamp;
+  user.save();
 }
