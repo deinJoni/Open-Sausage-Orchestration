@@ -1,18 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateProfile } from "@/hooks/useCreateProfile";
 import type { SocialLink } from "@/types/artist";
+import { toast } from "sonner";
 
 type Step = "basic" | "avatar" | "socials";
 
+interface InviteData {
+	label: string;
+	recipient: string;
+	expiration: number;
+	inviter: string;
+	signature: string;
+}
+
 export default function OnboardingPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
 	const [step, setStep] = useState<Step>("basic");
 	const { mutate, isPending } = useCreateProfile();
 
@@ -21,6 +31,50 @@ export default function OnboardingPage() {
 	const [bio, setBio] = useState("");
 	const [avatar, setAvatar] = useState<File | string>("");
 	const [socials, setSocials] = useState<SocialLink[]>([]);
+	const [inviteData, setInviteData] = useState<InviteData | null>(null);
+
+	// Check for invite code in URL params
+	useEffect(() => {
+		const inviteCode = searchParams?.get("invite");
+		if (!inviteCode) return;
+
+		try {
+			const decoded = JSON.parse(atob(inviteCode)) as InviteData;
+
+			// Validate expiration
+			const now = Math.floor(Date.now() / 1000);
+			if (decoded.expiration < now) {
+				toast.error("This invite has expired");
+				return;
+			}
+
+			// Check if invite is for specific recipient
+			const isZeroAddress = decoded.recipient === '0x0000000000000000000000000000000000000000';
+
+			if (!isZeroAddress && address) {
+				// Invite is for specific address - verify it matches
+				if (decoded.recipient.toLowerCase() !== address.toLowerCase()) {
+					toast.error('This invite is for a different wallet address');
+					return;
+				}
+			}
+
+			// Show warning if no wallet connected and invite is recipient-specific
+			if (!isZeroAddress && !address) {
+				toast.warning('This invite is for a specific address. Please connect your wallet first.');
+			}
+
+			// Pre-fill subdomain
+			setEnsName(decoded.label);
+			setInviteData(decoded);
+
+			const daysRemaining = Math.ceil((decoded.expiration - now) / (24 * 60 * 60));
+			toast.success(`Invite loaded! ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} remaining`);
+		} catch (error) {
+			console.error("Failed to decode invite:", error);
+			toast.error("Invalid invite code");
+		}
+	}, [searchParams, address]);
 
 	const handleSubmit = async () => {
 		await mutate({
@@ -28,6 +82,7 @@ export default function OnboardingPage() {
 			bio,
 			avatar,
 			socials,
+			inviteData,
 		});
 
 		router.push("/");
@@ -58,6 +113,18 @@ export default function OnboardingPage() {
 			</div>
 
 			<Card className="border-zinc-800 bg-zinc-900/50 p-8 backdrop-blur">
+				{inviteData && (
+					<div className="mb-6 rounded-lg border border-purple-500/20 bg-purple-500/10 p-4">
+						<p className="mb-1 font-medium text-purple-400 text-sm">
+							✨ Invited by {inviteData.inviter.slice(0, 6)}...
+							{inviteData.inviter.slice(-4)}
+						</p>
+						<p className="text-xs text-zinc-400">
+							You're invited to claim: <span className="font-mono text-purple-300">{ensName}.osopit.eth</span>
+						</p>
+					</div>
+				)}
+
 				{step === "basic" && (
 					<div className="space-y-6">
 						<div>
@@ -69,10 +136,17 @@ export default function OnboardingPage() {
 								type="text"
 								value={ensName}
 								onChange={(e) => setEnsName(e.target.value)}
+								disabled={!!inviteData}
 							/>
-							<p className="mt-1 text-xs text-zinc-500">
-								Your unique identifier on the platform
-							</p>
+							{inviteData ? (
+								<p className="mt-1 text-xs text-yellow-500">
+									This name is reserved for you via invite
+								</p>
+							) : (
+								<p className="mt-1 text-xs text-zinc-500">
+									Your unique identifier on the platform
+								</p>
+							)}
 						</div>
 
 						<div>
