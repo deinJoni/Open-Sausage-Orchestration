@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllArtists } from "@/hooks/useAllArtists";
 import { useSubgraphQueryTest } from "@/hooks/useSubgraphQueryTest";
+import type { NameLabel } from "@/lib/schema.generated";
 
 type FilterType = "all" | "live" | "offline";
 
@@ -17,8 +18,8 @@ export default function ArtistsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
 
-  const nameRegisteredsQuery = useSubgraphQueryTest();
-  console.log(nameRegisteredsQuery.nameRegistereds);
+  const nameLabelsQuery = useSubgraphQueryTest();
+  console.log("NameLabels:", nameLabelsQuery);
 
   const filteredArtists =
     allArtists?.filter((artist) => {
@@ -49,10 +50,26 @@ export default function ArtistsPage() {
         <p className="text-zinc-400">Discover and support talented artists</p>
       </div>
 
-      {nameRegisteredsQuery?.map((nameRegistered) => (
-        <div key={nameRegistered.id}>
-          <h2>{nameRegistered.label}</h2>
-          <p>{nameRegistered.owner}</p>
+      {nameLabelsQuery?.map((nameLabel: NameLabel, idx: number) => (
+        <div key={idx} className="mb-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
+          <div className="mb-2">
+            <span className="text-zinc-400 text-sm">Key:</span>
+            <span className="ml-2 text-white">{nameLabel.key}</span>
+          </div>
+          <div className="mb-2">
+            <span className="text-zinc-400 text-sm">Value:</span>
+            <span className="ml-2 text-white">{nameLabel.value}</span>
+          </div>
+          <div className="mb-2">
+            <span className="text-zinc-400 text-sm">Subdomain:</span>
+            <span className="ml-2 text-white">{nameLabel.subdomain?.name}</span>
+          </div>
+          <div>
+            <span className="text-zinc-400 text-sm">Owner:</span>
+            <span className="ml-2 font-mono text-xs text-white">
+              {nameLabel.subdomain?.owner?.address}
+            </span>
+          </div>
         </div>
       ))}
 

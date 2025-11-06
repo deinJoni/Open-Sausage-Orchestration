@@ -1,15 +1,17 @@
+import { useQuery as useGqtyQuery } from "@/lib/subgraph";
 import {
-  NameRegistered_orderBy,
+  NameLabel_orderBy,
   OrderDirection,
-  useQuery as useGqtyQuery,
-} from "@/lib/subgraph";
+  _SubgraphErrorPolicy_,
+} from "@/lib/schema.generated";
 
 export const useSubgraphQueryTest = () => {
-  const { nameRegistereds } = useGqtyQuery();
-  const result = nameRegistereds({
+  const { nameLabels } = useGqtyQuery();
+  const result = nameLabels({
     first: 100,
-    orderBy: NameRegistered_orderBy.blockTimestamp,
+    orderBy: NameLabel_orderBy.blockTimestamp,
     orderDirection: OrderDirection.desc,
+    subgraphError: _SubgraphErrorPolicy_.deny,
   });
   return result;
 };

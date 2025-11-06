@@ -13,12 +13,12 @@ import {
   generatedSchema,
   scalarsEnumsHash,
   type GeneratedSchema,
-} from "./schema.generated";
+} from "@/gqty/schema.generated";
 
-const queryFetcher: QueryFetcher = async function (
+const queryFetcher: QueryFetcher = async (
   { query, variables, operationName },
   fetchOptions
-) {
+) => {
   // Modify "https://api.studio.thegraph.com/query/1714097/osopit-subgraphv-1/version/latest" if needed
   const response = await fetch(
     "https://api.studio.thegraph.com/query/1714097/osopit-subgraphv-1/version/latest",
@@ -95,4 +95,4 @@ export const {
   },
 });
 
-export * from "./schema.generated";
+export * from "@/gqty/schema.generated";
