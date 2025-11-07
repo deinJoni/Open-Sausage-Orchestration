@@ -2,7 +2,10 @@ import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
-  server: {},
+  server: {
+    MERCHANT_ADDRESS: z.string().min(1),
+    MERCHANT_PRIVATE_KEY: z.string().min(1),
+  },
   client: {
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1),
   },
