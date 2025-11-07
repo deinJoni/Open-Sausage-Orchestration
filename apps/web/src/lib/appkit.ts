@@ -20,10 +20,18 @@ export const wagmiAdapter = new WagmiAdapter({
   }),
   connectors: [
     porto({
-      merchantUrl: "/api/porto/merchant",
+      merchantUrl: "/porto/merchant",
     }),
   ],
+  multiInjectedProviderDiscovery: false,
   ssr: true,
   projectId,
   networks,
 });
+
+declare module "wagmi" {
+  // biome-ignore lint/style/useConsistentTypeDefinitions: <TODO>
+  interface Register {
+    config: typeof wagmiAdapter.wagmiConfig;
+  }
+}
