@@ -68,14 +68,14 @@ export function useCreateProfile() {
         }
 
         // Step 3: Update text records (bio, avatar, socials)
-        await updateTextRecords.mutateAsync({
-          ensName: input.ensName,
-          textRecords: {
-            description: input.bio || undefined,
-            avatar: avatarUrl || undefined,
-            socials: input.socials.length > 0 ? input.socials : undefined,
-          },
-        });
+        //await updateTextRecords.mutateAsync({
+        //  ensName: input.ensName,
+        //  textRecords: {
+        //    description: input.bio || undefined,
+        //    avatar: avatarUrl || undefined,
+        //    socials: input.socials.length > 0 ? input.socials : undefined,
+        //  },
+        //});
 
         toast.success("Profile created successfully! 🎉");
       } catch (error) {

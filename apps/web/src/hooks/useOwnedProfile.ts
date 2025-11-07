@@ -1,6 +1,6 @@
-import { useQuery as useGqtyQuery } from "@/gqty";
-import { _SubgraphErrorPolicy_, type User } from "@/gqty/schema.generated";
 import { useAccount } from "wagmi";
+import { useQuery as useGqtyQuery } from "@/gqty";
+import type { User } from "@/gqty/schema.generated";
 
 /**
  * Hook to detect which profile the connected wallet owns
@@ -23,17 +23,19 @@ export function useOwnedProfile() {
   const data: User | null =
     user({
       id: address.toLowerCase(),
-      subgraphError: _SubgraphErrorPolicy_.deny,
     }) ?? null;
 
   const ensName = data?.subdomain?.name
-    ? `${data.subdomain.name}.catmisha.eth`
+    ? `${data.subdomain.name}.osopit.eth`
     : null;
+
+  // If we have an address but data is still undefined (not null), query is loading
+  const isLoading = data === undefined;
 
   return {
     data,
     ensName,
-    isLoading: false,
+    isLoading,
     hasProfile: !!data,
     error: null,
   };

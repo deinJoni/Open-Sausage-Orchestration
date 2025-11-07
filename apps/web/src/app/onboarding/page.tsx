@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateProfile } from "@/hooks/useCreateProfile";
+import { useOwnedProfile } from "@/hooks/useOwnedProfile";
 import { ADDRESS_PREFIX_LENGTH, ADDRESS_SUFFIX_LENGTH } from "@/lib/constants";
 import type { SocialLink } from "@/types/artist";
 
@@ -39,6 +40,9 @@ export default function OnboardingPage() {
 
   const { address, connector } = useAccount();
   const isPorto = connector?.name === "Porto";
+
+  const { hasProfile, ensName: ownedEnsName, isLoading: isCheckingOwnership } =
+    useOwnedProfile();
 
   const [step, setStep] = useState<Step>("basic");
   const createProfile = useCreateProfile();
@@ -72,6 +76,53 @@ export default function OnboardingPage() {
             Connect with Porto Wallet
           </h1>
         </div>
+      </div>
+    );
+  }
+
+  if (isCheckingOwnership) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
+        <p className="text-zinc-400">Checking profile...</p>
+      </div>
+    );
+  }
+
+  if (hasProfile) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
+        <Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+          <h1 className="mb-4 font-bold text-2xl text-white">
+            Profile Already Exists
+          </h1>
+          <div className="mb-6 space-y-4">
+            <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
+              <p className="mb-2 text-sm text-blue-400">
+                You already own a subdomain
+              </p>
+              <p className="font-mono text-xs text-zinc-300">
+                {ownedEnsName}
+              </p>
+            </div>
+            <p className="text-sm text-zinc-400">
+              Each wallet can only register one subdomain. You can view or edit
+              your existing profile.
+            </p>
+            <p className="text-xs text-zinc-500">
+              Connected: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
+              {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
+            </p>
+          </div>
+          <div className="space-y-3">
+            <Button
+              className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+              onClick={() => router.push("/")}
+              size="lg"
+            >
+              Go to Home
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }

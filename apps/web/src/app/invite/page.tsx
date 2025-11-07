@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useCheckSubdomainAvailability } from "@/hooks/useCheckSubdomainAvailability";
 import { useGenerateInvite } from "@/hooks/useGenerateInvite";
 import { L2RegistrarABI } from "@/lib/abi/L2Registrar";
 import {
@@ -33,6 +34,10 @@ export default function InvitePage() {
 
   const generateInvite = useGenerateInvite();
 
+  // Check if subdomain is available
+  const { isAvailable, isChecking, error: availabilityError } =
+    useCheckSubdomainAvailability(label);
+
   // Check if connected wallet is a whitelisted inviter
   const { data: isInviter, isLoading: isCheckingInviter } = useReadContract({
     address: L2_REGISTRAR_ADDRESS,
@@ -45,14 +50,25 @@ export default function InvitePage() {
   });
 
   const validateLabel = (value: string): string | null => {
-    switch (value.length) {
-      case SUBDOMAIN_VALIDATION.MIN_LENGTH:
-        return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.TOO_SHORT;
-      case SUBDOMAIN_VALIDATION.MAX_LENGTH:
-        return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.TOO_LONG;
-      default:
-        return null;
+    // Check length
+    if (value.length < SUBDOMAIN_VALIDATION.MIN_LENGTH) {
+      return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.TOO_SHORT;
     }
+    if (value.length > SUBDOMAIN_VALIDATION.MAX_LENGTH) {
+      return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.TOO_LONG;
+    }
+
+    // Check character pattern (only lowercase letters, numbers, hyphens)
+    if (!SUBDOMAIN_VALIDATION.PATTERN.test(value)) {
+      return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.INVALID_CHARS;
+    }
+
+    // Check edge cases (cannot start or end with hyphen)
+    if (value.startsWith("-") || value.endsWith("-")) {
+      return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.INVALID_EDGES;
+    }
+
+    return null;
   };
 
   const handleLabelChange = (value: string) => {
@@ -60,6 +76,50 @@ export default function InvitePage() {
     setLabel(lowercased);
     const error = validateLabel(lowercased);
     setValidationError(error);
+  };
+
+  const getAvailabilityMessage = () => {
+    if (validationError) {
+      return <p className="mt-1 text-red-400 text-xs">{validationError}</p>;
+    }
+
+    if (!label || label.length === 0) {
+      return (
+        <p className="mt-1 text-xs text-zinc-500">
+          The subname to invite someone to register
+        </p>
+      );
+    }
+
+    if (availabilityError) {
+      return (
+        <p className="mt-1 text-yellow-400 text-xs">
+          ⚠️ Unable to check availability - subgraph error
+        </p>
+      );
+    }
+
+    if (isChecking) {
+      return <p className="mt-1 text-zinc-400 text-xs">Checking availability...</p>;
+    }
+
+    if (isAvailable === false) {
+      return (
+        <p className="mt-1 text-red-400 text-xs">
+          ✗ This subdomain is already taken
+        </p>
+      );
+    }
+
+    if (isAvailable === true) {
+      return (
+        <p className="mt-1 text-green-400 text-xs">
+          ✓ This subdomain is available
+        </p>
+      );
+    }
+
+    return null;
   };
 
   const handleGenerateInvite = () => {
@@ -260,13 +320,7 @@ export default function InvitePage() {
                   .osopit.eth
                 </span>
               </div>
-              {validationError ? (
-                <p className="mt-1 text-red-400 text-xs">{validationError}</p>
-              ) : (
-                <p className="mt-1 text-xs text-zinc-500">
-                  The subname to invite someone to register
-                </p>
-              )}
+              {getAvailabilityMessage()}
             </div>
 
             <div>
@@ -289,7 +343,12 @@ export default function InvitePage() {
 
             <Button
               className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
-              disabled={!label || generateInvite.isPending || !!validationError}
+              disabled={
+                !label ||
+                generateInvite.isPending ||
+                !!validationError ||
+                isAvailable === false
+              }
               onClick={handleGenerateInvite}
             >
               {generateInvite.isPending ? "Generating..." : "Generate Invite"}
