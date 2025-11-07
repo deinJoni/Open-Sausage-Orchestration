@@ -236,7 +236,7 @@
         {
           "name": "inviter",
           "type": "address",
-          "indexed": true,
+          "indexed": false,
           "internalType": "address"
         }
       ],
@@ -249,7 +249,7 @@
         {
           "name": "inviter",
           "type": "address",
-          "indexed": true,
+          "indexed": false,
           "internalType": "address"
         }
       ],
@@ -262,13 +262,13 @@
         {
           "name": "label",
           "type": "string",
-          "indexed": true,
+          "indexed": false,
           "internalType": "string"
         },
         {
           "name": "owner",
           "type": "address",
-          "indexed": true,
+          "indexed": false,
           "internalType": "address"
         }
       ],
@@ -281,13 +281,13 @@
         {
           "name": "previousOwner",
           "type": "address",
-          "indexed": true,
+          "indexed": false,
           "internalType": "address"
         },
         {
           "name": "newOwner",
           "type": "address",
-          "indexed": true,
+          "indexed": false,
           "internalType": "address"
         }
       ],
