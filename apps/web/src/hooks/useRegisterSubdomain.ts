@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useAccount, usePublicClient, useWriteContract } from "wagmi";
+import { useAccount, useSendCalls } from "wagmi";
 import { L2RegistrarABI } from "@/lib/abi/L2Registrar";
 import { L2_REGISTRAR_ADDRESS } from "@/lib/contracts";
 import { parseContractError } from "@/lib/parseContractError";
@@ -37,8 +37,7 @@ type RegisterSubdomainInput = {
  */
 export function useRegisterSubdomain() {
 	const { address } = useAccount();
-	const { writeContractAsync } = useWriteContract();
-	const publicClient = usePublicClient();
+	const { sendCalls } = useSendCalls();
 
 	const mutation = useMutation({
 		mutationFn: async (input: RegisterSubdomainInput) => {
@@ -50,35 +49,26 @@ export function useRegisterSubdomain() {
 			try {
 				toast.info("Registering with invite...");
 
-				const txHash = await writeContractAsync({
-					address: L2_REGISTRAR_ADDRESS,
-					abi: L2RegistrarABI,
-					functionName: "registerWithInvite",
-					args: [
-						input.label,
-						input.inviteData.recipient as `0x${string}`,
-						BigInt(input.inviteData.expiration),
-						input.inviteData.inviter as `0x${string}`,
-						input.inviteData.signature as `0x${string}`,
+				const result = await sendCalls({
+					calls: [
+						{
+							abi: L2RegistrarABI,
+							args: [
+								input.label,
+								input.inviteData.recipient as `0x${string}`,
+								BigInt(input.inviteData.expiration),
+								input.inviteData.inviter as `0x${string}`,
+								input.inviteData.signature as `0x${string}`,
+							],
+							functionName: "registerWithInvite",
+							to: L2_REGISTRAR_ADDRESS,
+						},
 					],
 				});
 
-				toast.info("Waiting for registration confirmation...");
-
-				const receipt = await publicClient?.waitForTransactionReceipt({
-					hash: txHash,
-				});
-
-				if (receipt?.status === "reverted") {
-					throw new Error("Registration transaction failed");
-				}
-
 				toast.success("Registration successful!");
 
-				return {
-					txHash,
-					receipt,
-				};
+				return result;
 			} catch (error) {
 				const errorMessage = parseContractError(error);
 				toast.error(errorMessage);
