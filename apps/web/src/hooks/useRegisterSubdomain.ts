@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useAccount, useSendCalls } from "wagmi";
+import { useAccount } from "wagmi";
+import { useSendCalls, useCapabilities } from "wagmi/experimental";
 import { L2RegistrarABI } from "@/lib/abi/L2Registrar";
 import { L2_REGISTRAR_ADDRESS } from "@/lib/contracts";
 import { parseContractError } from "@/lib/parseContractError";
@@ -36,8 +37,9 @@ type RegisterSubdomainInput = {
  * });
  */
 export function useRegisterSubdomain() {
-	const { address } = useAccount();
+	const { address, chainId } = useAccount();
 	const { sendCalls } = useSendCalls();
+	const { data: capabilities } = useCapabilities();
 
 	const mutation = useMutation({
 		mutationFn: async (input: RegisterSubdomainInput) => {
@@ -46,13 +48,23 @@ export function useRegisterSubdomain() {
 				throw new Error("Wallet not connected");
 			}
 
+			if (!chainId) {
+				toast.error("Please connect to a network");
+				throw new Error("No chain ID");
+			}
+
 			try {
 				toast.info("Registering with invite...");
+
+				// Check if atomic batch is supported
+				const atomicBatchSupported = capabilities?.[chainId]?.atomicBatch?.supported;
 
 				const result = await sendCalls({
 					calls: [
 						{
 							abi: L2RegistrarABI,
+							functionName: "registerWithInvite",
+							to: L2_REGISTRAR_ADDRESS,
 							args: [
 								input.label,
 								input.inviteData.recipient as `0x${string}`,
@@ -60,13 +72,18 @@ export function useRegisterSubdomain() {
 								input.inviteData.inviter as `0x${string}`,
 								input.inviteData.signature as `0x${string}`,
 							],
-							functionName: "registerWithInvite",
-							to: L2_REGISTRAR_ADDRESS,
 						},
 					],
+					...(atomicBatchSupported && {
+						capabilities: {
+							atomicBatch: {
+								supported: true,
+							},
+						},
+					}),
 				});
 
-				toast.success("Registration successful!");
+				toast.success("Registration initiated!");
 
 				return result;
 			} catch (error) {
