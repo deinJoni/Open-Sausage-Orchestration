@@ -1,5 +1,5 @@
 import { log } from "@graphprotocol/graph-ts";
-import type { TextChanged } from "../generated/L2Resolver/ITextResolver";
+import { TextChanged } from "../generated/L2Resolver/ITextResolver";
 import { Broadcast, Subdomain, TextRecord, User } from "../generated/schema";
 
 /**
@@ -53,7 +53,8 @@ export function handleTextChanged(event: TextChanged): void {
 
     // Get guest user IDs (from index 2 onwards)
     const guestIds: string[] = [];
-    for (const part of parts.slice(2)) {
+    for (let i = 2; i < parts.length; i++) {
+      const part = parts[i];
       if (part.length > 0) {
         guestIds.push(part);
       }
@@ -83,13 +84,14 @@ export function handleTextChanged(event: TextChanged): void {
     }
     // Ending the broadcast
     else if (user.activeBroadcast != null) {
-      const broadcast = Broadcast.load(user.activeBroadcast);
+      const activeBroadcastId = user.activeBroadcast as string;
+      const broadcast = Broadcast.load(activeBroadcastId);
       if (broadcast != null) {
         broadcast.isLive = false;
         broadcast.endedAt = blockTimestamp;
         broadcast.save();
 
-        log.info("Ended broadcast: {}", [user.activeBroadcast]);
+        log.info("Ended broadcast: {}", [activeBroadcastId]);
       }
 
       // Clear active broadcast

@@ -1,5 +1,5 @@
 import { log } from "@graphprotocol/graph-ts";
-import type { NameRegistered as NameRegisteredEvent } from "../generated/OsopitRegistry/OsopitRegistry";
+import { NameRegistered as NameRegisteredEvent } from "../generated/OsopitRegistry/OsopitRegistry";
 import { Subdomain, User } from "../generated/schema";
 import { namehash } from "./utils";
 
