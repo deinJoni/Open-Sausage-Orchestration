@@ -8,12 +8,15 @@ const COPIED_TIMEOUT_MS = 2000;
 const ADDRESS_PREFIX_LENGTH = 6;
 const ADDRESS_SUFFIX_LENGTH = 4;
 
-type ConnectButtonProps = {
+type PortoConnectButtonProps = {
   size?: ComponentProps<typeof Button>["size"];
   className?: string;
 };
 
-export function ConnectButton({ size = "sm", className }: ConnectButtonProps) {
+export function PortoConnectButton({
+  size = "sm",
+  className,
+}: PortoConnectButtonProps) {
   const { address, isConnected } = useAccount();
   const { connect, isPending } = useConnect();
   const { disconnect } = useDisconnect();

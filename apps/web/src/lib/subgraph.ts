@@ -14,6 +14,7 @@ import {
   scalarsEnumsHash,
   type GeneratedSchema,
 } from "@/gqty/schema.generated";
+import { CACHE } from "@/lib/constants";
 
 const queryFetcher: QueryFetcher = async (
   { query, variables, operationName },
@@ -47,8 +48,8 @@ const cache = new Cache(
    * allowing soft refetches in background.
    */
   {
-    maxAge: 5000,
-    staleWhileRevalidate: 30 * 60 * 1000,
+    maxAge: CACHE.MAX_AGE_MS,
+    staleWhileRevalidate: CACHE.STALE_REVALIDATE_MS,
     normalization: true,
   }
 );

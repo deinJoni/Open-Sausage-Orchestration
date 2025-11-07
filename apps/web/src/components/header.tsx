@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import { ConnectButton } from "./connect-button";
 import { ModeToggle } from "./mode-toggle";
 
 export default function Header() {
@@ -11,7 +10,7 @@ export default function Header() {
           <Link href="/">Home</Link>
         </nav>
         <div className="flex items-center gap-2">
-          <ConnectButton />
+          <appkit-button />
           <ModeToggle />
         </div>
       </div>

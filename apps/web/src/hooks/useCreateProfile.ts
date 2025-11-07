@@ -3,68 +3,9 @@ import { toast } from "sonner";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
 import { encodeFunctionData, keccak256, encodePacked } from "viem";
 import type { SocialLink } from "@/types/artist";
-
-// L2Registry contract address on Base
-const L2_REGISTRY_ADDRESS = "0x92f90070Ff34f8Bb9500bE301Ea373217673FDE4" as `0x${string}`;
-
-// L2Registrar contract address on Base (TODO: Update with actual deployed address)
-const L2_REGISTRAR_ADDRESS = "0x..." as `0x${string}`;
-
-// L2Registrar ABI
-const L2_REGISTRAR_ABI = [
-	{
-		inputs: [
-			{ name: "label", type: "string" },
-			{ name: "recipient", type: "address" },
-			{ name: "expiration", type: "uint256" },
-			{ name: "inviter", type: "address" },
-			{ name: "signature", type: "bytes" },
-		],
-		name: "registerWithInvite",
-		outputs: [],
-		stateMutability: "nonpayable",
-		type: "function",
-	},
-] as const;
-
-// L2Registry ABI for setting text records (multicall)
-const L2_REGISTRY_ABI = [
-	{
-		inputs: [
-			{ name: "node", type: "bytes32" },
-			{ name: "key", type: "string" },
-			{ name: "value", type: "string" },
-		],
-		name: "setText",
-		outputs: [],
-		stateMutability: "nonpayable",
-		type: "function",
-	},
-	{
-		inputs: [{ name: "data", type: "bytes[]" }],
-		name: "multicall",
-		outputs: [{ name: "results", type: "bytes[]" }],
-		stateMutability: "nonpayable",
-		type: "function",
-	},
-	{
-		inputs: [
-			{ name: "parentNode", type: "bytes32" },
-			{ name: "label", type: "string" },
-		],
-		name: "makeNode",
-		outputs: [{ name: "", type: "bytes32" }],
-		stateMutability: "pure",
-		type: "function",
-	},
-	{
-		inputs: [],
-		name: "baseNode",
-		outputs: [{ name: "", type: "bytes32" }],
-		stateMutability: "view",
-		type: "function",
-	},
-] as const;
+import { L2_REGISTRY_ADDRESS, L2_REGISTRAR_ADDRESS, L2RegistrarABI, L2RegistryABI } from "@/lib/contracts";
+import { ENS_TEXT_KEYS, DEFAULTS } from "@/lib/constants";
+import { parseContractError } from "@/lib/parseContractError";
 
 interface InviteData {
 	label: string;
@@ -114,7 +55,7 @@ export function useCreateProfile() {
 				try {
 					const registrarTxHash = await writeContractAsync({
 						address: L2_REGISTRAR_ADDRESS,
-						abi: L2_REGISTRAR_ABI,
+						abi: L2RegistrarABI,
 						functionName: "registerWithInvite",
 						args: [
 							input.ensName,
@@ -137,22 +78,9 @@ export function useCreateProfile() {
 
 					toast.success("Registration successful!");
 				} catch (error: any) {
-					// Parse contract revert reasons
-					const errorMessage = error?.message || '';
-
-					if (errorMessage.includes('InviteAlreadyUsed')) {
-						throw new Error('This invite has already been used');
-					} else if (errorMessage.includes('SignatureExpired')) {
-						throw new Error('This invite has expired. Request a new one.');
-					} else if (errorMessage.includes('InvalidInviter')) {
-						throw new Error('Invalid invite or inviter not authorized');
-					} else if (errorMessage.includes('NotAvailable')) {
-						throw new Error('This name is already registered');
-					} else if (errorMessage.includes('Unauthorized')) {
-						throw new Error('You are not authorized to use this invite');
-					}
-
-					throw error; // Re-throw for generic handling
+					// Parse contract errors into user-friendly messages
+					const errorMessage = parseContractError(error);
+					throw new Error(errorMessage);
 				}
 			}
 
@@ -200,9 +128,9 @@ export function useCreateProfile() {
 			if (input.bio) {
 				multicallData.push(
 					encodeFunctionData({
-						abi: L2_REGISTRY_ABI,
+						abi: L2RegistryABI,
 						functionName: "setText",
-						args: [nodeHash, "description", input.bio],
+						args: [nodeHash, ENS_TEXT_KEYS.DESCRIPTION, input.bio],
 					})
 				);
 			}
@@ -210,9 +138,9 @@ export function useCreateProfile() {
 			if (avatarUrl) {
 				multicallData.push(
 					encodeFunctionData({
-						abi: L2_REGISTRY_ABI,
+						abi: L2RegistryABI,
 						functionName: "setText",
-						args: [nodeHash, "avatar", avatarUrl],
+						args: [nodeHash, ENS_TEXT_KEYS.AVATAR, avatarUrl],
 					})
 				);
 			}
@@ -220,9 +148,9 @@ export function useCreateProfile() {
 			if (input.socials.length > 0) {
 				multicallData.push(
 					encodeFunctionData({
-						abi: L2_REGISTRY_ABI,
+						abi: L2RegistryABI,
 						functionName: "setText",
-						args: [nodeHash, "app.osopit.socials", JSON.stringify(input.socials)],
+						args: [nodeHash, ENS_TEXT_KEYS.SOCIALS, JSON.stringify(input.socials)],
 					})
 				);
 			}
@@ -230,9 +158,9 @@ export function useCreateProfile() {
 			// Set streaming to false by default
 			multicallData.push(
 				encodeFunctionData({
-					abi: L2_REGISTRY_ABI,
+					abi: L2RegistryABI,
 					functionName: "setText",
-					args: [nodeHash, "app.osopit.streaming", "false"],
+					args: [nodeHash, ENS_TEXT_KEYS.STREAMING, DEFAULTS.STREAMING_STATUS],
 				})
 			);
 
@@ -241,7 +169,7 @@ export function useCreateProfile() {
 				try {
 					const registryTxHash = await writeContractAsync({
 						address: L2_REGISTRY_ADDRESS,
-						abi: L2_REGISTRY_ABI,
+						abi: L2RegistryABI,
 						functionName: "multicall",
 						args: [multicallData],
 					});
@@ -266,7 +194,7 @@ export function useCreateProfile() {
 			toast.success("Profile created successfully! 🎉");
 		} catch (error: any) {
 			console.error("Error creating profile:", error);
-			const errorMsg = error?.message || "Failed to create profile. Please try again.";
+			const errorMsg = error?.message || parseContractError(error);
 			toast.error(errorMsg);
 			throw error;
 		} finally {

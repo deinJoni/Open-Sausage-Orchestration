@@ -1,36 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount, useReadContract, useSignMessage } from "wagmi";
+import { useAccount, useReadContract, useSignMessage, useDisconnect } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ConnectButton } from "@/components/connect-button";
 import { toast } from "sonner";
 import { encodePacked, keccak256, toHex } from "viem";
-
-// L2Registrar contract address on Base
-const L2_REGISTRAR_ADDRESS = "0x..." as `0x${string}`; // TODO: Replace with actual deployed address
-
-// ABI for checking if address is inviter
-const L2_REGISTRAR_ABI = [
-	{
-		inputs: [{ name: "inviter", type: "address" }],
-		name: "inviters",
-		outputs: [{ name: "", type: "bool" }],
-		stateMutability: "view",
-		type: "function",
-	},
-] as const;
+import { L2_REGISTRAR_ADDRESS, L2RegistrarABI } from "@/lib/contracts";
+import { ADDRESSES, SUBDOMAIN_VALIDATION, TIME } from "@/lib/constants";
+import { useSmartWalletManagement } from "@/hooks/useSmartWalletManagement";
 
 export default function InvitePage() {
-	const { address, isConnected } = useAccount();
+	const { address, isConnected, connector } = useAccount();
 	const { signMessageAsync } = useSignMessage();
+	const { disconnect } = useDisconnect();
+	const { isPortoConnected } = useSmartWalletManagement();
 
 	const [label, setLabel] = useState("");
 	const [recipientAddress, setRecipientAddress] = useState("");
-	const [expirationDays, setExpirationDays] = useState("7");
+	const [expirationDays, setExpirationDays] = useState(String(TIME.DEFAULT_INVITE_EXPIRATION_DAYS));
 	const [generatedInvite, setGeneratedInvite] = useState<string | null>(null);
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [validationError, setValidationError] = useState<string | null>(null);
@@ -38,7 +28,7 @@ export default function InvitePage() {
 	// Check if connected wallet is a whitelisted inviter
 	const { data: isInviter, isLoading: isCheckingInviter } = useReadContract({
 		address: L2_REGISTRAR_ADDRESS,
-		abi: L2_REGISTRAR_ABI,
+		abi: L2RegistrarABI,
 		functionName: "inviters",
 		args: address ? [address] : undefined,
 		query: {
@@ -47,10 +37,10 @@ export default function InvitePage() {
 	});
 
 	const validateLabel = (value: string): string | null => {
-		if (value.length < 3) return 'Minimum 3 characters';
-		if (value.length > 32) return 'Maximum 32 characters';
-		if (!/^[a-z0-9-]+$/.test(value)) return 'Only lowercase letters, numbers, and hyphens';
-		if (value.startsWith('-') || value.endsWith('-')) return 'Cannot start or end with hyphen';
+		if (value.length < SUBDOMAIN_VALIDATION.MIN_LENGTH) return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.TOO_SHORT;
+		if (value.length > SUBDOMAIN_VALIDATION.MAX_LENGTH) return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.TOO_LONG;
+		if (!SUBDOMAIN_VALIDATION.PATTERN.test(value)) return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.INVALID_CHARS;
+		if (value.startsWith('-') || value.endsWith('-')) return SUBDOMAIN_VALIDATION.ERROR_MESSAGES.INVALID_EDGES;
 		return null;
 	};
 
@@ -75,12 +65,12 @@ export default function InvitePage() {
 		try {
 			// Calculate expiration timestamp
 			const expirationTimestamp = Math.floor(
-				Date.now() / 1000 + Number.parseInt(expirationDays) * 24 * 60 * 60
+				Date.now() / 1000 + Number.parseInt(expirationDays) * TIME.SECONDS_PER_DAY
 			);
 
 			// Prepare message to sign
 			// Message format: keccak256(abi.encodePacked(address(this), label, recipient, expiration))
-			const recipient = recipientAddress || "0x0000000000000000000000000000000000000000";
+			const recipient = recipientAddress || ADDRESSES.ZERO;
 
 			const messageHash = keccak256(
 				encodePacked(
@@ -129,6 +119,43 @@ export default function InvitePage() {
 		setRecipientAddress("");
 	};
 
+	// Show switch wallet message if connected with Porto
+	if (isPortoConnected) {
+		return (
+			<div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
+				<Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+					<h1 className="mb-4 font-bold text-2xl text-white">
+						Switch Wallet Required
+					</h1>
+					<div className="mb-6 space-y-4">
+						<div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-4">
+							<p className="mb-2 text-sm text-yellow-400">
+								⚠️ You're connected with Porto wallet
+							</p>
+							<p className="text-xs text-zinc-400">
+								Porto is for artists only. To generate invites, please disconnect and connect with your authorized inviter wallet (MetaMask, WalletConnect, etc.)
+							</p>
+						</div>
+						<p className="text-sm text-zinc-500">
+							Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
+						</p>
+					</div>
+					<div className="space-y-3">
+						<Button
+							onClick={() => disconnect()}
+							size="lg"
+							variant="outline"
+							className="w-full"
+						>
+							Disconnect Porto
+						</Button>
+						<appkit-button size="md" />
+					</div>
+				</Card>
+			</div>
+		);
+	}
+
 	if (!isConnected) {
 		return (
 			<div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
@@ -139,7 +166,7 @@ export default function InvitePage() {
 					<p className="mb-6 text-zinc-400">
 						Connect your wallet to generate invite codes
 					</p>
-					<ConnectButton size="lg" className="w-full" />
+					<appkit-button size="md" />
 				</Card>
 			</div>
 		);

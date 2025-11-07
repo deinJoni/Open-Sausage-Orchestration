@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useAccount } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { useCreateProfile } from "@/hooks/useCreateProfile";
 import type { SocialLink } from "@/types/artist";
 import { toast } from "sonner";
+import { ADDRESSES, TIME } from "@/lib/constants";
+import { useConnectors } from "wagmi";
 
 type Step = "basic" | "avatar" | "socials";
 
@@ -23,6 +26,7 @@ interface InviteData {
 export default function OnboardingPage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const { address } = useAccount();
 	const [step, setStep] = useState<Step>("basic");
 	const { mutate, isPending } = useCreateProfile();
 
@@ -49,7 +53,7 @@ export default function OnboardingPage() {
 			}
 
 			// Check if invite is for specific recipient
-			const isZeroAddress = decoded.recipient === '0x0000000000000000000000000000000000000000';
+			const isZeroAddress = decoded.recipient === ADDRESSES.ZERO;
 
 			if (!isZeroAddress && address) {
 				// Invite is for specific address - verify it matches
@@ -68,7 +72,7 @@ export default function OnboardingPage() {
 			setEnsName(decoded.label);
 			setInviteData(decoded);
 
-			const daysRemaining = Math.ceil((decoded.expiration - now) / (24 * 60 * 60));
+			const daysRemaining = Math.ceil((decoded.expiration - now) / TIME.SECONDS_PER_DAY);
 			toast.success(`Invite loaded! ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} remaining`);
 		} catch (error) {
 			console.error("Failed to decode invite:", error);
@@ -113,6 +117,19 @@ export default function OnboardingPage() {
 			</div>
 
 			<Card className="border-zinc-800 bg-zinc-900/50 p-8 backdrop-blur">
+				{!address && (
+					<div className="mb-6 space-y-3 rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
+						<p className="text-center font-medium text-sm text-blue-400">
+							⚡ Connect with Porto Wallet
+						</p>
+						<p className="text-center text-xs text-blue-300/80">
+							Artists use Porto for a simple, secure onboarding experience.
+							Select Porto from the wallet options below.
+						</p>
+						<appkit-button size="md" />
+					</div>
+				)}
+
 				{inviteData && (
 					<div className="mb-6 rounded-lg border border-purple-500/20 bg-purple-500/10 p-4">
 						<p className="mb-1 font-medium text-purple-400 text-sm">

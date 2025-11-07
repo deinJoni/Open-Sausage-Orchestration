@@ -2,11 +2,17 @@
 
 import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "./ui/sonner";
-import { Web3Provider } from "./web3-provider";
+import { AppKitProvider } from "./appkit-provider";
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({
+  children,
+  cookies,
+}: {
+  children: React.ReactNode;
+  cookies: string | null;
+}) {
   return (
-    <Web3Provider>
+    <AppKitProvider cookies={cookies}>
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
@@ -16,6 +22,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         {children}
         <Toaster richColors />
       </ThemeProvider>
-    </Web3Provider>
+    </AppKitProvider>
   );
 }

@@ -4,11 +4,12 @@ import {
   OrderDirection,
   _SubgraphErrorPolicy_,
 } from "@/lib/schema.generated";
+import { QUERY } from "@/lib/constants";
 
 export const useSubgraphQueryTest = () => {
   const { nameLabels } = useGqtyQuery();
   const result = nameLabels({
-    first: 100,
+    first: QUERY.SUBGRAPH_DEFAULT_LIMIT,
     orderBy: NameLabel_orderBy.blockTimestamp,
     orderDirection: OrderDirection.desc,
     subgraphError: _SubgraphErrorPolicy_.deny,
