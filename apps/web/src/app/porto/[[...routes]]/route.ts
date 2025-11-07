@@ -8,7 +8,6 @@ export const route = Router({ basePath: "/porto" }).route(
     address: env.MERCHANT_ADDRESS as Address,
     key: env.MERCHANT_PRIVATE_KEY as Address,
     sponsor(_request) {
-      console.log("sponsor called with request:", _request);
       return true;
     },
   })

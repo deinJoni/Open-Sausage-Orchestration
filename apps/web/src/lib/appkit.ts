@@ -23,7 +23,6 @@ export const wagmiAdapter = new WagmiAdapter({
       merchantUrl: "/porto/merchant",
     }),
   ],
-  multiInjectedProviderDiscovery: false,
   ssr: true,
   projectId,
   networks,
