@@ -74,7 +74,7 @@ export const ERROR_MESSAGES = {
   SIGNATURE_EXPIRED: "This invite has expired. Please request a new one",
   INVALID_INVITER:
     "Invalid inviter. This wallet is not authorized to create invites",
-  NAME_TAKEN: "This name is already taken. Please choose another",
+  NAME_TAKEN: "This name is already taken or you already have a subdomain registered (only one per wallet is allowed)",
   UNAUTHORIZED: "You are not authorized to perform this action",
 
   // Transaction errors
