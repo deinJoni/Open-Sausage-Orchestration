@@ -8,9 +8,9 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
 
   // Extract the actual label string from transaction input
   // Note: event.params.label is the keccak256 hash because it's indexed
-  let labelStringOrNull = event.transaction.input;
+  let labelStringOrNull = event.params.label;
 
-  log.info("NameRegistered event: label={}, owner={}", [labelStringOrNull.toString(), ownerAddress.toHexString()]);
+  log.info("NameRegistered event: label={}, owner={}", [   labelStringOrNull.toString(), labelStringOrNull.toString()]);
 
   let labelString = labelStringOrNull.toString();
   
