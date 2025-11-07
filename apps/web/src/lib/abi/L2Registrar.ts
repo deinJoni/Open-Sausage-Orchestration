@@ -126,7 +126,7 @@ export const L2RegistrarABI = [
       {
         name: "inviter",
         type: "address",
-        indexed: true,
+        indexed: false,
         internalType: "address",
       },
     ],
@@ -139,7 +139,7 @@ export const L2RegistrarABI = [
       {
         name: "inviter",
         type: "address",
-        indexed: true,
+        indexed: false,
         internalType: "address",
       },
     ],
@@ -149,11 +149,11 @@ export const L2RegistrarABI = [
     type: "event",
     name: "NameRegistered",
     inputs: [
-      { name: "label", type: "string", indexed: true, internalType: "string" },
+      { name: "label", type: "string", indexed: false, internalType: "string" },
       {
         name: "owner",
         type: "address",
-        indexed: true,
+        indexed: false,
         internalType: "address",
       },
     ],
@@ -178,6 +178,7 @@ export const L2RegistrarABI = [
     ],
     anonymous: false,
   },
+  { type: "error", name: "AlreadyHasSubdomain", inputs: [] },
   { type: "error", name: "InvalidInviter", inputs: [] },
   { type: "error", name: "InviteAlreadyUsed", inputs: [] },
   {
