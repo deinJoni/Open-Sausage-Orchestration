@@ -10,14 +10,15 @@ import { privateKeyToAccount } from 'viem/accounts';
 import { namehash } from 'viem/ens';
 
 // Contract addresses
-const REGISTRY_ADDRESS = '0x92f90070Ff34f8Bb9500bE301Ea373217673FDE4'; // OsopitRegistry (for register)
-const RESOLVER_ADDRESS = '0x788aBE2ff46d97508fCf88B4Db83B306AEAcb4C9'; // ITextResolver (for setText)
+
+const RESOLVER_ADDRESS = '0xa609955257eacbbd566a1fa654e6c5f4b1fdc9e2'; // ITextResolver (for setText)
 
 // ABI for setText function (which emits TextChanged)
 const resolverAbi = parseAbi([
   'function setText(bytes32 node, string calldata key, string calldata value) external',
   'event TextChanged(bytes32 indexed node, string indexed indexedKey, string key, string value)'
 ]);
+ 
 
 async function emitTextChanged() {
   // Check for private key in environment
@@ -61,9 +62,9 @@ async function emitTextChanged() {
   console.log(`Contract: ${RESOLVER_ADDRESS}`);
 
   // Get parameters
-  const ensName = process.env.ENS_NAME || "bads4.buenaas.eth"; 
-  const key = process.env.KEY || 'avatar6';
-  const value = process.env.VALUE || 'https://example.com/avatar.png';
+  const ensName = process.env.ENS_NAME || "corot.catmisha.eth"; 
+  const key = process.env.KEY || 'avatar1';
+  const value = process.env.VALUE || 'avatar1';
 
   // Calculate ENS node (namehash)
   let node: `0x${string}`;

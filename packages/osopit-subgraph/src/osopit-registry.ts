@@ -31,7 +31,7 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
   }
 
   // Calculate node hash for the subdomain
-  let fullName = labelString + ".buenaas.eth";
+  let fullName = labelString + ".catmisha.eth";
   let nodeBytes = namehash(fullName);
   let nodeHash = nodeBytes.toHexString();
   

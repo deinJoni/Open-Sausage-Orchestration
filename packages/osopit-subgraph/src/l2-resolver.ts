@@ -30,8 +30,10 @@ export function handleTextChanged(event: TextChanged): void {
   if (subdomain == null) {
     // Subdomain must exist before TextChanged event
     // It should be created by NameRegistered event first
+    log.warning("Subdomain not found for node: {}. NameRegistered must be processed first.", [node.toHexString()]);
     log.error("Subdomain not found for node: {}. NameRegistered must be processed first.", [nodeHex]);
-    throw new Error("Subdomain not found for node: " + nodeHex + ". NameRegistered event must be processed before TextChanged.");
+    return; // Exit early if subdomain doesn't exist
+    // throw new Error("Subdomain not found for node: " + nodeHex + ". NameRegistered event must be processed before TextChanged.");
   }
 
   // Update subdomain's updatedAt
@@ -45,20 +47,15 @@ export function handleTextChanged(event: TextChanged): void {
     owner.save();
   }
 
-  // Create NameLabel
-  let nameLabelId = txHash.toHexString() + "-" + logIndex.toString();
+  // Create or update NameLabel (mutable - only keeps latest value)
+  // ID format: key-nodeHex to allow updates for the same key
+  let nameLabelId = key + "-" + nodeHex;
   let nameLabel = NameLabel.load(nameLabelId);
   
   if (nameLabel == null) {
     nameLabel = new NameLabel(nameLabelId);
     nameLabel.key = key;
-    nameLabel.value = value;
     nameLabel.subdomain = nodeHex; // link to Subdomain
-    nameLabel.blockNumber = blockNumber;
-    nameLabel.blockTimestamp = blockTimestamp;
-    nameLabel.transactionHash = txHash;
-    nameLabel.logIndex = logIndex;
-    nameLabel.save();
     
     log.info("Created NameLabel: {} -> {}={} for subdomain {}", [
       nameLabelId,
@@ -67,6 +64,20 @@ export function handleTextChanged(event: TextChanged): void {
       nodeHex
     ]);
   } else {
-    log.warning("NameLabel already exists: {}", [nameLabelId]);
+    log.info("Updated NameLabel: {} -> {}={} (was: {}) for subdomain {}", [
+      nameLabelId,
+      key,
+      value,
+      nameLabel.value,
+      nodeHex
+    ]);
   }
+  
+  // Update fields (works for both new and existing)
+  nameLabel.value = value;
+  nameLabel.blockNumber = blockNumber;
+  nameLabel.blockTimestamp = blockTimestamp;
+  nameLabel.transactionHash = txHash;
+  nameLabel.logIndex = logIndex;
+  nameLabel.save();
 }

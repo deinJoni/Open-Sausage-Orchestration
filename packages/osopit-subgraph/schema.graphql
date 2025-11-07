@@ -17,8 +17,8 @@ type Subdomain @entity(immutable: false) {
   registrationTxHash: Bytes!
 }
 
-type NameLabel @entity(immutable: true) {
-  id: ID! # unique id: txHash.toHex() + "-" + logIndex
+type NameLabel @entity(immutable: false) {
+  id: ID! #key-nodeHex to allow updates for the same key
   key: String! # "avatar" "description" "email" "url" "header" "com.twitter" "com.github" "com.discord" "com.telegram" "social.farcaster" "social.lens" "livestream.url" "livestream.active" "art1" through "art8"
   value: String! # url, text, boolean, etc.
   subdomain: Subdomain! # relation to Subdomain

@@ -10,7 +10,7 @@ dataSources:
     source:
       address: "0xa05914349B2E251Ed45dC29Ae9aEF59028Be6f8f"
       abi: OsopitRegistry
-      startBlock: 37818793
+      startBlock: 37844974
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -30,7 +30,7 @@ dataSources:
     source:
       address: "0xa609955257eacbbd566a1fa654e6c5f4b1fdc9e2"
       abi: ITextResolver
-      startBlock: 37818793
+      startBlock: 37844974
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
