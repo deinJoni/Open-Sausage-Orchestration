@@ -13,7 +13,6 @@ if (!projectId) {
 
 export const networks = [base];
 
-
 // Set up the Wagmi Adapter (Config)
 export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
@@ -21,7 +20,7 @@ export const wagmiAdapter = new WagmiAdapter({
   }),
   connectors: [
     porto({
-        merchantUrl: '/porto/merchant'
+      merchantUrl: "/api/porto/merchant",
     }),
   ],
   ssr: true,
