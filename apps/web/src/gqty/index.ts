@@ -9,17 +9,16 @@ import {
   defaultResponseHandler,
   type QueryFetcher,
 } from "gqty";
-import { CACHE } from "@/lib/constants";
 import {
-  type GeneratedSchema,
   generatedSchema,
   scalarsEnumsHash,
+  type GeneratedSchema,
 } from "./schema.generated";
 
-const queryFetcher: QueryFetcher = async (
-  { query: queryString, variables, operationName },
+const queryFetcher: QueryFetcher = async function (
+  { query, variables, operationName },
   fetchOptions
-) => {
+) {
   // Modify "https://api.studio.thegraph.com/query/1714097/osopit-subgraphv-1/version/latest" if needed
   const response = await fetch(
     "https://api.studio.thegraph.com/query/1714097/osopit-subgraphv-1/version/latest",
@@ -29,7 +28,7 @@ const queryFetcher: QueryFetcher = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        query: queryString,
+        query,
         variables,
         operationName,
       }),
@@ -48,8 +47,8 @@ const cache = new Cache(
    * allowing soft refetches in background.
    */
   {
-    maxAge: CACHE.MAX_AGE_MS,
-    staleWhileRevalidate: CACHE.STALE_REVALIDATE_MS,
+    maxAge: 5000,
+    staleWhileRevalidate: 30 * 60 * 1000,
     normalization: true,
   }
 );
@@ -89,10 +88,11 @@ export const {
   prepareReactRender,
   useHydrateCache,
   prepareQuery,
-  // @ts-expect-error - TODO: fix this type
 } = createReactClient<GeneratedSchema>(client, {
   defaults: {
     // Enable Suspense, you can override this option for each hook.
     suspense: true,
   },
 });
+
+export * from "./schema.generated";

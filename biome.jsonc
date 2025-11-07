@@ -8,8 +8,7 @@
       "!**/.next",
       "!**/dist",
       "!**/.turbo",
-      "!apps/web/src/gqty/schema.generated.ts",
-      "!apps/web/src/lib/subgraph.ts"
+      "!apps/web/src/gqty"
     ]
   }
 }

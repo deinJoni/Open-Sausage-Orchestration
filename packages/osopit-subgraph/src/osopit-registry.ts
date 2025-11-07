@@ -16,8 +16,7 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
     user.address = ownerAddress;
     user.createdAt = event.block.timestamp;
     user.updatedAt = event.block.timestamp;
-    user.save();
-    log.info("Created new User: {}", [userId]);
+    log.info("Creating new User: {}", [userId]);
   }
 
   // Calculate node hash for the subdomain
