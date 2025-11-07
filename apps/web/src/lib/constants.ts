@@ -23,6 +23,9 @@ export const TIME = {
   MS_PER_MINUTE: 60_000,
   MS_PER_HOUR: 3_600_000,
   MS_PER_DAY: 86_400_000,
+  MS_PER_2_DAYS: 172_800_000,
+  MS_PER_WEEK: 604_800_000,
+  MS_PER_2_WEEKS: 1_209_600_000,
 } as const;
 
 // ENS text record keys

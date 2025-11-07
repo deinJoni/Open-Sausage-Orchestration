@@ -55,10 +55,10 @@ export interface Block_height {
   number_gte?: InputMaybe<Scalars["Int"]["input"]>;
 }
 
-export interface NameLabel_filter {
+export interface Broadcast_filter {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<NameLabel_filter>>>;
+  and?: InputMaybe<Array<InputMaybe<Broadcast_filter>>>;
   blockNumber?: InputMaybe<Scalars["BigInt"]["input"]>;
   blockNumber_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
   blockNumber_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
@@ -75,6 +75,43 @@ export interface NameLabel_filter {
   blockTimestamp_lte?: InputMaybe<Scalars["BigInt"]["input"]>;
   blockTimestamp_not?: InputMaybe<Scalars["BigInt"]["input"]>;
   blockTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  broadcastUrl?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_contains?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_gt?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_gte?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  broadcastUrl_lt?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_lte?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_not?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_not_contains?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  broadcastUrl_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastUrl_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  broadcastWith?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  broadcastWith_?: InputMaybe<User_filter>;
+  broadcastWith_contains?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  broadcastWith_contains_nocase?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  broadcastWith_not?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  broadcastWith_not_contains?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  broadcastWith_not_contains_nocase?: InputMaybe<
+    Array<Scalars["String"]["input"]>
+  >;
+  endedAt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  endedAt_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  endedAt_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  endedAt_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  endedAt_lt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  endedAt_lte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  endedAt_not?: InputMaybe<Scalars["BigInt"]["input"]>;
+  endedAt_not_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
   id?: InputMaybe<Scalars["ID"]["input"]>;
   id_gt?: InputMaybe<Scalars["ID"]["input"]>;
   id_gte?: InputMaybe<Scalars["ID"]["input"]>;
@@ -83,26 +120,10 @@ export interface NameLabel_filter {
   id_lte?: InputMaybe<Scalars["ID"]["input"]>;
   id_not?: InputMaybe<Scalars["ID"]["input"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
-  key?: InputMaybe<Scalars["String"]["input"]>;
-  key_contains?: InputMaybe<Scalars["String"]["input"]>;
-  key_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  key_ends_with?: InputMaybe<Scalars["String"]["input"]>;
-  key_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  key_gt?: InputMaybe<Scalars["String"]["input"]>;
-  key_gte?: InputMaybe<Scalars["String"]["input"]>;
-  key_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  key_lt?: InputMaybe<Scalars["String"]["input"]>;
-  key_lte?: InputMaybe<Scalars["String"]["input"]>;
-  key_not?: InputMaybe<Scalars["String"]["input"]>;
-  key_not_contains?: InputMaybe<Scalars["String"]["input"]>;
-  key_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  key_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
-  key_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  key_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  key_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
-  key_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  key_starts_with?: InputMaybe<Scalars["String"]["input"]>;
-  key_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  isLive?: InputMaybe<Scalars["Boolean"]["input"]>;
+  isLive_in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
+  isLive_not?: InputMaybe<Scalars["Boolean"]["input"]>;
+  isLive_not_in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
   logIndex?: InputMaybe<Scalars["BigInt"]["input"]>;
   logIndex_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
   logIndex_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
@@ -111,28 +132,15 @@ export interface NameLabel_filter {
   logIndex_lte?: InputMaybe<Scalars["BigInt"]["input"]>;
   logIndex_not?: InputMaybe<Scalars["BigInt"]["input"]>;
   logIndex_not_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
-  or?: InputMaybe<Array<InputMaybe<NameLabel_filter>>>;
-  subdomain?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_?: InputMaybe<Subdomain_filter>;
-  subdomain_contains?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_ends_with?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_gt?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_gte?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  subdomain_lt?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_lte?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_not?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_not_contains?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  subdomain_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_starts_with?: InputMaybe<Scalars["String"]["input"]>;
-  subdomain_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  or?: InputMaybe<Array<InputMaybe<Broadcast_filter>>>;
+  startedAt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  startedAt_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  startedAt_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  startedAt_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  startedAt_lt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  startedAt_lte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  startedAt_not?: InputMaybe<Scalars["BigInt"]["input"]>;
+  startedAt_not_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
   transactionHash?: InputMaybe<Scalars["Bytes"]["input"]>;
   transactionHash_contains?: InputMaybe<Scalars["Bytes"]["input"]>;
   transactionHash_gt?: InputMaybe<Scalars["Bytes"]["input"]>;
@@ -143,43 +151,45 @@ export interface NameLabel_filter {
   transactionHash_not?: InputMaybe<Scalars["Bytes"]["input"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["Bytes"]["input"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["Bytes"]["input"]>>;
-  value?: InputMaybe<Scalars["String"]["input"]>;
-  value_contains?: InputMaybe<Scalars["String"]["input"]>;
-  value_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  value_ends_with?: InputMaybe<Scalars["String"]["input"]>;
-  value_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  value_gt?: InputMaybe<Scalars["String"]["input"]>;
-  value_gte?: InputMaybe<Scalars["String"]["input"]>;
-  value_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  value_lt?: InputMaybe<Scalars["String"]["input"]>;
-  value_lte?: InputMaybe<Scalars["String"]["input"]>;
-  value_not?: InputMaybe<Scalars["String"]["input"]>;
-  value_not_contains?: InputMaybe<Scalars["String"]["input"]>;
-  value_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  value_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
-  value_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  value_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  value_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
-  value_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  value_starts_with?: InputMaybe<Scalars["String"]["input"]>;
-  value_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  user?: InputMaybe<Scalars["String"]["input"]>;
+  user_?: InputMaybe<User_filter>;
+  user_contains?: InputMaybe<Scalars["String"]["input"]>;
+  user_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  user_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  user_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  user_gt?: InputMaybe<Scalars["String"]["input"]>;
+  user_gte?: InputMaybe<Scalars["String"]["input"]>;
+  user_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  user_lt?: InputMaybe<Scalars["String"]["input"]>;
+  user_lte?: InputMaybe<Scalars["String"]["input"]>;
+  user_not?: InputMaybe<Scalars["String"]["input"]>;
+  user_not_contains?: InputMaybe<Scalars["String"]["input"]>;
+  user_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  user_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  user_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  user_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  user_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  user_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
 }
 
-export enum NameLabel_orderBy {
+export enum Broadcast_orderBy {
   blockNumber = "blockNumber",
   blockTimestamp = "blockTimestamp",
+  broadcastUrl = "broadcastUrl",
+  broadcastWith = "broadcastWith",
+  endedAt = "endedAt",
   id = "id",
-  key = "key",
+  isLive = "isLive",
   logIndex = "logIndex",
-  subdomain = "subdomain",
-  subdomain__id = "subdomain__id",
-  subdomain__name = "subdomain__name",
-  subdomain__node = "subdomain__node",
-  subdomain__registeredAt = "subdomain__registeredAt",
-  subdomain__registrationTxHash = "subdomain__registrationTxHash",
-  subdomain__updatedAt = "subdomain__updatedAt",
+  startedAt = "startedAt",
   transactionHash = "transactionHash",
-  value = "value",
+  user = "user",
+  user__address = "user__address",
+  user__createdAt = "user__createdAt",
+  user__id = "user__id",
+  user__updatedAt = "user__updatedAt",
 }
 
 /** Defines the order direction, either ascending or descending */
@@ -201,7 +211,6 @@ export interface Subdomain_filter {
   id_not?: InputMaybe<Scalars["ID"]["input"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
   name?: InputMaybe<Scalars["String"]["input"]>;
-  nameLabels_?: InputMaybe<NameLabel_filter>;
   name_contains?: InputMaybe<Scalars["String"]["input"]>;
   name_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
   name_ends_with?: InputMaybe<Scalars["String"]["input"]>;
@@ -271,6 +280,7 @@ export interface Subdomain_filter {
   registrationTxHash_not?: InputMaybe<Scalars["Bytes"]["input"]>;
   registrationTxHash_not_contains?: InputMaybe<Scalars["Bytes"]["input"]>;
   registrationTxHash_not_in?: InputMaybe<Array<Scalars["Bytes"]["input"]>>;
+  textRecords_?: InputMaybe<TextRecord_filter>;
   updatedAt?: InputMaybe<Scalars["BigInt"]["input"]>;
   updatedAt_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
   updatedAt_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
@@ -284,34 +294,38 @@ export interface Subdomain_filter {
 export enum Subdomain_orderBy {
   id = "id",
   name = "name",
-  nameLabels = "nameLabels",
   node = "node",
   owner = "owner",
   owner__address = "owner__address",
   owner__createdAt = "owner__createdAt",
   owner__id = "owner__id",
-  owner__isStreaming = "owner__isStreaming",
-  owner__streamingUrl = "owner__streamingUrl",
   owner__updatedAt = "owner__updatedAt",
   registeredAt = "registeredAt",
   registrationTxHash = "registrationTxHash",
+  textRecords = "textRecords",
   updatedAt = "updatedAt",
 }
 
-export interface User_filter {
+export interface TextRecord_filter {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  address?: InputMaybe<Scalars["Bytes"]["input"]>;
-  address_contains?: InputMaybe<Scalars["Bytes"]["input"]>;
-  address_gt?: InputMaybe<Scalars["Bytes"]["input"]>;
-  address_gte?: InputMaybe<Scalars["Bytes"]["input"]>;
-  address_in?: InputMaybe<Array<Scalars["Bytes"]["input"]>>;
-  address_lt?: InputMaybe<Scalars["Bytes"]["input"]>;
-  address_lte?: InputMaybe<Scalars["Bytes"]["input"]>;
-  address_not?: InputMaybe<Scalars["Bytes"]["input"]>;
-  address_not_contains?: InputMaybe<Scalars["Bytes"]["input"]>;
-  address_not_in?: InputMaybe<Array<Scalars["Bytes"]["input"]>>;
-  and?: InputMaybe<Array<InputMaybe<User_filter>>>;
+  and?: InputMaybe<Array<InputMaybe<TextRecord_filter>>>;
+  blockNumber?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockNumber_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockNumber_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockNumber_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  blockNumber_lt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockNumber_lte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockNumber_not?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  blockTimestamp?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockTimestamp_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockTimestamp_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockTimestamp_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  blockTimestamp_lt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockTimestamp_lte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockTimestamp_not?: InputMaybe<Scalars["BigInt"]["input"]>;
+  blockTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
   createdAt?: InputMaybe<Scalars["BigInt"]["input"]>;
   createdAt_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
   createdAt_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
@@ -328,40 +342,192 @@ export interface User_filter {
   id_lte?: InputMaybe<Scalars["ID"]["input"]>;
   id_not?: InputMaybe<Scalars["ID"]["input"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
-  isStreaming?: InputMaybe<Scalars["Boolean"]["input"]>;
-  isStreaming_in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
-  isStreaming_not?: InputMaybe<Scalars["Boolean"]["input"]>;
-  isStreaming_not_in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
-  or?: InputMaybe<Array<InputMaybe<User_filter>>>;
-  streamingUrl?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_contains?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_ends_with?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_gt?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_gte?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  streamingUrl_lt?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_lte?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_not?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_not_contains?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  streamingUrl_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_starts_with?: InputMaybe<Scalars["String"]["input"]>;
-  streamingUrl_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
-  streamingWith?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  streamingWith_contains?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  streamingWith_contains_nocase?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  streamingWith_not?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  streamingWith_not_contains?: InputMaybe<Array<Scalars["String"]["input"]>>;
-  streamingWith_not_contains_nocase?: InputMaybe<
-    Array<Scalars["String"]["input"]>
+  key?: InputMaybe<Scalars["String"]["input"]>;
+  key_contains?: InputMaybe<Scalars["String"]["input"]>;
+  key_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  key_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  key_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  key_gt?: InputMaybe<Scalars["String"]["input"]>;
+  key_gte?: InputMaybe<Scalars["String"]["input"]>;
+  key_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  key_lt?: InputMaybe<Scalars["String"]["input"]>;
+  key_lte?: InputMaybe<Scalars["String"]["input"]>;
+  key_not?: InputMaybe<Scalars["String"]["input"]>;
+  key_not_contains?: InputMaybe<Scalars["String"]["input"]>;
+  key_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  key_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  key_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  key_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  key_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  key_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  key_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  key_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  logIndex?: InputMaybe<Scalars["BigInt"]["input"]>;
+  logIndex_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  logIndex_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  logIndex_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  logIndex_lt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  logIndex_lte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  logIndex_not?: InputMaybe<Scalars["BigInt"]["input"]>;
+  logIndex_not_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  or?: InputMaybe<Array<InputMaybe<TextRecord_filter>>>;
+  subdomain?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_?: InputMaybe<Subdomain_filter>;
+  subdomain_contains?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_gt?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_gte?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  subdomain_lt?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_lte?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_contains?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  subdomain_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  transactionHash?: InputMaybe<Scalars["Bytes"]["input"]>;
+  transactionHash_contains?: InputMaybe<Scalars["Bytes"]["input"]>;
+  transactionHash_gt?: InputMaybe<Scalars["Bytes"]["input"]>;
+  transactionHash_gte?: InputMaybe<Scalars["Bytes"]["input"]>;
+  transactionHash_in?: InputMaybe<Array<Scalars["Bytes"]["input"]>>;
+  transactionHash_lt?: InputMaybe<Scalars["Bytes"]["input"]>;
+  transactionHash_lte?: InputMaybe<Scalars["Bytes"]["input"]>;
+  transactionHash_not?: InputMaybe<Scalars["Bytes"]["input"]>;
+  transactionHash_not_contains?: InputMaybe<Scalars["Bytes"]["input"]>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars["Bytes"]["input"]>>;
+  updatedAt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  updatedAt_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  updatedAt_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  updatedAt_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  updatedAt_lt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  updatedAt_lte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  updatedAt_not?: InputMaybe<Scalars["BigInt"]["input"]>;
+  updatedAt_not_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  value?: InputMaybe<Scalars["String"]["input"]>;
+  value_contains?: InputMaybe<Scalars["String"]["input"]>;
+  value_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  value_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  value_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  value_gt?: InputMaybe<Scalars["String"]["input"]>;
+  value_gte?: InputMaybe<Scalars["String"]["input"]>;
+  value_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  value_lt?: InputMaybe<Scalars["String"]["input"]>;
+  value_lte?: InputMaybe<Scalars["String"]["input"]>;
+  value_not?: InputMaybe<Scalars["String"]["input"]>;
+  value_not_contains?: InputMaybe<Scalars["String"]["input"]>;
+  value_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  value_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  value_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  value_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  value_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  value_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  value_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  value_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+}
+
+export enum TextRecord_orderBy {
+  blockNumber = "blockNumber",
+  blockTimestamp = "blockTimestamp",
+  createdAt = "createdAt",
+  id = "id",
+  key = "key",
+  logIndex = "logIndex",
+  subdomain = "subdomain",
+  subdomain__id = "subdomain__id",
+  subdomain__name = "subdomain__name",
+  subdomain__node = "subdomain__node",
+  subdomain__registeredAt = "subdomain__registeredAt",
+  subdomain__registrationTxHash = "subdomain__registrationTxHash",
+  subdomain__updatedAt = "subdomain__updatedAt",
+  transactionHash = "transactionHash",
+  updatedAt = "updatedAt",
+  value = "value",
+}
+
+export interface User_filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  activeBroadcast?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_?: InputMaybe<Broadcast_filter>;
+  activeBroadcast_contains?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_gt?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_gte?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  activeBroadcast_lt?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_lte?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_not?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_not_contains?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  activeBroadcast_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_not_starts_with_nocase?: InputMaybe<
+    Scalars["String"]["input"]
   >;
-  subdomains_?: InputMaybe<Subdomain_filter>;
+  activeBroadcast_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  activeBroadcast_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  address?: InputMaybe<Scalars["Bytes"]["input"]>;
+  address_contains?: InputMaybe<Scalars["Bytes"]["input"]>;
+  address_gt?: InputMaybe<Scalars["Bytes"]["input"]>;
+  address_gte?: InputMaybe<Scalars["Bytes"]["input"]>;
+  address_in?: InputMaybe<Array<Scalars["Bytes"]["input"]>>;
+  address_lt?: InputMaybe<Scalars["Bytes"]["input"]>;
+  address_lte?: InputMaybe<Scalars["Bytes"]["input"]>;
+  address_not?: InputMaybe<Scalars["Bytes"]["input"]>;
+  address_not_contains?: InputMaybe<Scalars["Bytes"]["input"]>;
+  address_not_in?: InputMaybe<Array<Scalars["Bytes"]["input"]>>;
+  and?: InputMaybe<Array<InputMaybe<User_filter>>>;
+  broadcasts_?: InputMaybe<Broadcast_filter>;
+  createdAt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  createdAt_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  createdAt_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  createdAt_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  createdAt_lt?: InputMaybe<Scalars["BigInt"]["input"]>;
+  createdAt_lte?: InputMaybe<Scalars["BigInt"]["input"]>;
+  createdAt_not?: InputMaybe<Scalars["BigInt"]["input"]>;
+  createdAt_not_in?: InputMaybe<Array<Scalars["BigInt"]["input"]>>;
+  id?: InputMaybe<Scalars["ID"]["input"]>;
+  id_gt?: InputMaybe<Scalars["ID"]["input"]>;
+  id_gte?: InputMaybe<Scalars["ID"]["input"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]["input"]>;
+  id_lte?: InputMaybe<Scalars["ID"]["input"]>;
+  id_not?: InputMaybe<Scalars["ID"]["input"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  or?: InputMaybe<Array<InputMaybe<User_filter>>>;
+  participatedIn_?: InputMaybe<Broadcast_filter>;
+  subdomain?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_?: InputMaybe<Subdomain_filter>;
+  subdomain_contains?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_gt?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_gte?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  subdomain_lt?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_lte?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_contains?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  subdomain_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  subdomain_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
   updatedAt?: InputMaybe<Scalars["BigInt"]["input"]>;
   updatedAt_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
   updatedAt_gte?: InputMaybe<Scalars["BigInt"]["input"]>;
@@ -373,13 +539,28 @@ export interface User_filter {
 }
 
 export enum User_orderBy {
+  activeBroadcast = "activeBroadcast",
+  activeBroadcast__blockNumber = "activeBroadcast__blockNumber",
+  activeBroadcast__blockTimestamp = "activeBroadcast__blockTimestamp",
+  activeBroadcast__broadcastUrl = "activeBroadcast__broadcastUrl",
+  activeBroadcast__endedAt = "activeBroadcast__endedAt",
+  activeBroadcast__id = "activeBroadcast__id",
+  activeBroadcast__isLive = "activeBroadcast__isLive",
+  activeBroadcast__logIndex = "activeBroadcast__logIndex",
+  activeBroadcast__startedAt = "activeBroadcast__startedAt",
+  activeBroadcast__transactionHash = "activeBroadcast__transactionHash",
   address = "address",
+  broadcasts = "broadcasts",
   createdAt = "createdAt",
   id = "id",
-  isStreaming = "isStreaming",
-  streamingUrl = "streamingUrl",
-  streamingWith = "streamingWith",
-  subdomains = "subdomains",
+  participatedIn = "participatedIn",
+  subdomain = "subdomain",
+  subdomain__id = "subdomain__id",
+  subdomain__name = "subdomain__name",
+  subdomain__node = "subdomain__node",
+  subdomain__registeredAt = "subdomain__registeredAt",
+  subdomain__registrationTxHash = "subdomain__registrationTxHash",
+  subdomain__updatedAt = "subdomain__updatedAt",
   updatedAt = "updatedAt",
 }
 
@@ -395,14 +576,15 @@ export const scalarsEnumsHash: ScalarsEnumsHash = {
   BigDecimal: true,
   BigInt: true,
   Boolean: true,
+  Broadcast_orderBy: true,
   Bytes: true,
   ID: true,
   Int: true,
   Int8: true,
-  NameLabel_orderBy: true,
   OrderDirection: true,
   String: true,
   Subdomain_orderBy: true,
+  TextRecord_orderBy: true,
   Timestamp: true,
   User_orderBy: true,
   _SubgraphErrorPolicy_: true,
@@ -414,20 +596,32 @@ export const generatedSchema = {
     number: { __type: "Int" },
     number_gte: { __type: "Int" },
   },
-  NameLabel: {
+  Broadcast: {
     __typename: { __type: "String!" },
     blockNumber: { __type: "BigInt!" },
     blockTimestamp: { __type: "BigInt!" },
+    broadcastUrl: { __type: "String!" },
+    broadcastWith: {
+      __type: "[User!]!",
+      __args: {
+        first: "Int",
+        orderBy: "User_orderBy",
+        orderDirection: "OrderDirection",
+        skip: "Int",
+        where: "User_filter",
+      },
+    },
+    endedAt: { __type: "BigInt" },
     id: { __type: "ID!" },
-    key: { __type: "String!" },
+    isLive: { __type: "Boolean!" },
     logIndex: { __type: "BigInt!" },
-    subdomain: { __type: "Subdomain!" },
+    startedAt: { __type: "BigInt!" },
     transactionHash: { __type: "Bytes!" },
-    value: { __type: "String!" },
+    user: { __type: "User!" },
   },
-  NameLabel_filter: {
+  Broadcast_filter: {
     _change_block: { __type: "BlockChangedFilter" },
-    and: { __type: "[NameLabel_filter]" },
+    and: { __type: "[Broadcast_filter]" },
     blockNumber: { __type: "BigInt" },
     blockNumber_gt: { __type: "BigInt" },
     blockNumber_gte: { __type: "BigInt" },
@@ -444,6 +638,41 @@ export const generatedSchema = {
     blockTimestamp_lte: { __type: "BigInt" },
     blockTimestamp_not: { __type: "BigInt" },
     blockTimestamp_not_in: { __type: "[BigInt!]" },
+    broadcastUrl: { __type: "String" },
+    broadcastUrl_contains: { __type: "String" },
+    broadcastUrl_contains_nocase: { __type: "String" },
+    broadcastUrl_ends_with: { __type: "String" },
+    broadcastUrl_ends_with_nocase: { __type: "String" },
+    broadcastUrl_gt: { __type: "String" },
+    broadcastUrl_gte: { __type: "String" },
+    broadcastUrl_in: { __type: "[String!]" },
+    broadcastUrl_lt: { __type: "String" },
+    broadcastUrl_lte: { __type: "String" },
+    broadcastUrl_not: { __type: "String" },
+    broadcastUrl_not_contains: { __type: "String" },
+    broadcastUrl_not_contains_nocase: { __type: "String" },
+    broadcastUrl_not_ends_with: { __type: "String" },
+    broadcastUrl_not_ends_with_nocase: { __type: "String" },
+    broadcastUrl_not_in: { __type: "[String!]" },
+    broadcastUrl_not_starts_with: { __type: "String" },
+    broadcastUrl_not_starts_with_nocase: { __type: "String" },
+    broadcastUrl_starts_with: { __type: "String" },
+    broadcastUrl_starts_with_nocase: { __type: "String" },
+    broadcastWith: { __type: "[String!]" },
+    broadcastWith_: { __type: "User_filter" },
+    broadcastWith_contains: { __type: "[String!]" },
+    broadcastWith_contains_nocase: { __type: "[String!]" },
+    broadcastWith_not: { __type: "[String!]" },
+    broadcastWith_not_contains: { __type: "[String!]" },
+    broadcastWith_not_contains_nocase: { __type: "[String!]" },
+    endedAt: { __type: "BigInt" },
+    endedAt_gt: { __type: "BigInt" },
+    endedAt_gte: { __type: "BigInt" },
+    endedAt_in: { __type: "[BigInt!]" },
+    endedAt_lt: { __type: "BigInt" },
+    endedAt_lte: { __type: "BigInt" },
+    endedAt_not: { __type: "BigInt" },
+    endedAt_not_in: { __type: "[BigInt!]" },
     id: { __type: "ID" },
     id_gt: { __type: "ID" },
     id_gte: { __type: "ID" },
@@ -452,26 +681,10 @@ export const generatedSchema = {
     id_lte: { __type: "ID" },
     id_not: { __type: "ID" },
     id_not_in: { __type: "[ID!]" },
-    key: { __type: "String" },
-    key_contains: { __type: "String" },
-    key_contains_nocase: { __type: "String" },
-    key_ends_with: { __type: "String" },
-    key_ends_with_nocase: { __type: "String" },
-    key_gt: { __type: "String" },
-    key_gte: { __type: "String" },
-    key_in: { __type: "[String!]" },
-    key_lt: { __type: "String" },
-    key_lte: { __type: "String" },
-    key_not: { __type: "String" },
-    key_not_contains: { __type: "String" },
-    key_not_contains_nocase: { __type: "String" },
-    key_not_ends_with: { __type: "String" },
-    key_not_ends_with_nocase: { __type: "String" },
-    key_not_in: { __type: "[String!]" },
-    key_not_starts_with: { __type: "String" },
-    key_not_starts_with_nocase: { __type: "String" },
-    key_starts_with: { __type: "String" },
-    key_starts_with_nocase: { __type: "String" },
+    isLive: { __type: "Boolean" },
+    isLive_in: { __type: "[Boolean!]" },
+    isLive_not: { __type: "Boolean" },
+    isLive_not_in: { __type: "[Boolean!]" },
     logIndex: { __type: "BigInt" },
     logIndex_gt: { __type: "BigInt" },
     logIndex_gte: { __type: "BigInt" },
@@ -480,28 +693,15 @@ export const generatedSchema = {
     logIndex_lte: { __type: "BigInt" },
     logIndex_not: { __type: "BigInt" },
     logIndex_not_in: { __type: "[BigInt!]" },
-    or: { __type: "[NameLabel_filter]" },
-    subdomain: { __type: "String" },
-    subdomain_: { __type: "Subdomain_filter" },
-    subdomain_contains: { __type: "String" },
-    subdomain_contains_nocase: { __type: "String" },
-    subdomain_ends_with: { __type: "String" },
-    subdomain_ends_with_nocase: { __type: "String" },
-    subdomain_gt: { __type: "String" },
-    subdomain_gte: { __type: "String" },
-    subdomain_in: { __type: "[String!]" },
-    subdomain_lt: { __type: "String" },
-    subdomain_lte: { __type: "String" },
-    subdomain_not: { __type: "String" },
-    subdomain_not_contains: { __type: "String" },
-    subdomain_not_contains_nocase: { __type: "String" },
-    subdomain_not_ends_with: { __type: "String" },
-    subdomain_not_ends_with_nocase: { __type: "String" },
-    subdomain_not_in: { __type: "[String!]" },
-    subdomain_not_starts_with: { __type: "String" },
-    subdomain_not_starts_with_nocase: { __type: "String" },
-    subdomain_starts_with: { __type: "String" },
-    subdomain_starts_with_nocase: { __type: "String" },
+    or: { __type: "[Broadcast_filter]" },
+    startedAt: { __type: "BigInt" },
+    startedAt_gt: { __type: "BigInt" },
+    startedAt_gte: { __type: "BigInt" },
+    startedAt_in: { __type: "[BigInt!]" },
+    startedAt_lt: { __type: "BigInt" },
+    startedAt_lte: { __type: "BigInt" },
+    startedAt_not: { __type: "BigInt" },
+    startedAt_not_in: { __type: "[BigInt!]" },
     transactionHash: { __type: "Bytes" },
     transactionHash_contains: { __type: "Bytes" },
     transactionHash_gt: { __type: "Bytes" },
@@ -512,45 +712,46 @@ export const generatedSchema = {
     transactionHash_not: { __type: "Bytes" },
     transactionHash_not_contains: { __type: "Bytes" },
     transactionHash_not_in: { __type: "[Bytes!]" },
-    value: { __type: "String" },
-    value_contains: { __type: "String" },
-    value_contains_nocase: { __type: "String" },
-    value_ends_with: { __type: "String" },
-    value_ends_with_nocase: { __type: "String" },
-    value_gt: { __type: "String" },
-    value_gte: { __type: "String" },
-    value_in: { __type: "[String!]" },
-    value_lt: { __type: "String" },
-    value_lte: { __type: "String" },
-    value_not: { __type: "String" },
-    value_not_contains: { __type: "String" },
-    value_not_contains_nocase: { __type: "String" },
-    value_not_ends_with: { __type: "String" },
-    value_not_ends_with_nocase: { __type: "String" },
-    value_not_in: { __type: "[String!]" },
-    value_not_starts_with: { __type: "String" },
-    value_not_starts_with_nocase: { __type: "String" },
-    value_starts_with: { __type: "String" },
-    value_starts_with_nocase: { __type: "String" },
+    user: { __type: "String" },
+    user_: { __type: "User_filter" },
+    user_contains: { __type: "String" },
+    user_contains_nocase: { __type: "String" },
+    user_ends_with: { __type: "String" },
+    user_ends_with_nocase: { __type: "String" },
+    user_gt: { __type: "String" },
+    user_gte: { __type: "String" },
+    user_in: { __type: "[String!]" },
+    user_lt: { __type: "String" },
+    user_lte: { __type: "String" },
+    user_not: { __type: "String" },
+    user_not_contains: { __type: "String" },
+    user_not_contains_nocase: { __type: "String" },
+    user_not_ends_with: { __type: "String" },
+    user_not_ends_with_nocase: { __type: "String" },
+    user_not_in: { __type: "[String!]" },
+    user_not_starts_with: { __type: "String" },
+    user_not_starts_with_nocase: { __type: "String" },
+    user_starts_with: { __type: "String" },
+    user_starts_with_nocase: { __type: "String" },
   },
   Subdomain: {
     __typename: { __type: "String!" },
     id: { __type: "ID!" },
     name: { __type: "String!" },
-    nameLabels: {
-      __type: "[NameLabel!]!",
-      __args: {
-        first: "Int",
-        orderBy: "NameLabel_orderBy",
-        orderDirection: "OrderDirection",
-        skip: "Int",
-        where: "NameLabel_filter",
-      },
-    },
     node: { __type: "Bytes!" },
     owner: { __type: "User!" },
     registeredAt: { __type: "BigInt!" },
     registrationTxHash: { __type: "Bytes!" },
+    textRecords: {
+      __type: "[TextRecord!]!",
+      __args: {
+        first: "Int",
+        orderBy: "TextRecord_orderBy",
+        orderDirection: "OrderDirection",
+        skip: "Int",
+        where: "TextRecord_filter",
+      },
+    },
     updatedAt: { __type: "BigInt!" },
   },
   Subdomain_filter: {
@@ -565,7 +766,6 @@ export const generatedSchema = {
     id_not: { __type: "ID" },
     id_not_in: { __type: "[ID!]" },
     name: { __type: "String" },
-    nameLabels_: { __type: "NameLabel_filter" },
     name_contains: { __type: "String" },
     name_contains_nocase: { __type: "String" },
     name_ends_with: { __type: "String" },
@@ -635,6 +835,7 @@ export const generatedSchema = {
     registrationTxHash_not: { __type: "Bytes" },
     registrationTxHash_not_contains: { __type: "Bytes" },
     registrationTxHash_not_in: { __type: "[Bytes!]" },
+    textRecords_: { __type: "TextRecord_filter" },
     updatedAt: { __type: "BigInt" },
     updatedAt_gt: { __type: "BigInt" },
     updatedAt_gte: { __type: "BigInt" },
@@ -644,39 +845,38 @@ export const generatedSchema = {
     updatedAt_not: { __type: "BigInt" },
     updatedAt_not_in: { __type: "[BigInt!]" },
   },
-  User: {
+  TextRecord: {
     __typename: { __type: "String!" },
-    address: { __type: "Bytes!" },
+    blockNumber: { __type: "BigInt!" },
+    blockTimestamp: { __type: "BigInt!" },
     createdAt: { __type: "BigInt!" },
     id: { __type: "ID!" },
-    isStreaming: { __type: "Boolean!" },
-    streamingUrl: { __type: "String!" },
-    streamingWith: { __type: "[String!]!" },
-    subdomains: {
-      __type: "[Subdomain!]!",
-      __args: {
-        first: "Int",
-        orderBy: "Subdomain_orderBy",
-        orderDirection: "OrderDirection",
-        skip: "Int",
-        where: "Subdomain_filter",
-      },
-    },
+    key: { __type: "String!" },
+    logIndex: { __type: "BigInt!" },
+    subdomain: { __type: "Subdomain!" },
+    transactionHash: { __type: "Bytes!" },
     updatedAt: { __type: "BigInt!" },
+    value: { __type: "String!" },
   },
-  User_filter: {
+  TextRecord_filter: {
     _change_block: { __type: "BlockChangedFilter" },
-    address: { __type: "Bytes" },
-    address_contains: { __type: "Bytes" },
-    address_gt: { __type: "Bytes" },
-    address_gte: { __type: "Bytes" },
-    address_in: { __type: "[Bytes!]" },
-    address_lt: { __type: "Bytes" },
-    address_lte: { __type: "Bytes" },
-    address_not: { __type: "Bytes" },
-    address_not_contains: { __type: "Bytes" },
-    address_not_in: { __type: "[Bytes!]" },
-    and: { __type: "[User_filter]" },
+    and: { __type: "[TextRecord_filter]" },
+    blockNumber: { __type: "BigInt" },
+    blockNumber_gt: { __type: "BigInt" },
+    blockNumber_gte: { __type: "BigInt" },
+    blockNumber_in: { __type: "[BigInt!]" },
+    blockNumber_lt: { __type: "BigInt" },
+    blockNumber_lte: { __type: "BigInt" },
+    blockNumber_not: { __type: "BigInt" },
+    blockNumber_not_in: { __type: "[BigInt!]" },
+    blockTimestamp: { __type: "BigInt" },
+    blockTimestamp_gt: { __type: "BigInt" },
+    blockTimestamp_gte: { __type: "BigInt" },
+    blockTimestamp_in: { __type: "[BigInt!]" },
+    blockTimestamp_lt: { __type: "BigInt" },
+    blockTimestamp_lte: { __type: "BigInt" },
+    blockTimestamp_not: { __type: "BigInt" },
+    blockTimestamp_not_in: { __type: "[BigInt!]" },
     createdAt: { __type: "BigInt" },
     createdAt_gt: { __type: "BigInt" },
     createdAt_gte: { __type: "BigInt" },
@@ -693,38 +893,198 @@ export const generatedSchema = {
     id_lte: { __type: "ID" },
     id_not: { __type: "ID" },
     id_not_in: { __type: "[ID!]" },
-    isStreaming: { __type: "Boolean" },
-    isStreaming_in: { __type: "[Boolean!]" },
-    isStreaming_not: { __type: "Boolean" },
-    isStreaming_not_in: { __type: "[Boolean!]" },
+    key: { __type: "String" },
+    key_contains: { __type: "String" },
+    key_contains_nocase: { __type: "String" },
+    key_ends_with: { __type: "String" },
+    key_ends_with_nocase: { __type: "String" },
+    key_gt: { __type: "String" },
+    key_gte: { __type: "String" },
+    key_in: { __type: "[String!]" },
+    key_lt: { __type: "String" },
+    key_lte: { __type: "String" },
+    key_not: { __type: "String" },
+    key_not_contains: { __type: "String" },
+    key_not_contains_nocase: { __type: "String" },
+    key_not_ends_with: { __type: "String" },
+    key_not_ends_with_nocase: { __type: "String" },
+    key_not_in: { __type: "[String!]" },
+    key_not_starts_with: { __type: "String" },
+    key_not_starts_with_nocase: { __type: "String" },
+    key_starts_with: { __type: "String" },
+    key_starts_with_nocase: { __type: "String" },
+    logIndex: { __type: "BigInt" },
+    logIndex_gt: { __type: "BigInt" },
+    logIndex_gte: { __type: "BigInt" },
+    logIndex_in: { __type: "[BigInt!]" },
+    logIndex_lt: { __type: "BigInt" },
+    logIndex_lte: { __type: "BigInt" },
+    logIndex_not: { __type: "BigInt" },
+    logIndex_not_in: { __type: "[BigInt!]" },
+    or: { __type: "[TextRecord_filter]" },
+    subdomain: { __type: "String" },
+    subdomain_: { __type: "Subdomain_filter" },
+    subdomain_contains: { __type: "String" },
+    subdomain_contains_nocase: { __type: "String" },
+    subdomain_ends_with: { __type: "String" },
+    subdomain_ends_with_nocase: { __type: "String" },
+    subdomain_gt: { __type: "String" },
+    subdomain_gte: { __type: "String" },
+    subdomain_in: { __type: "[String!]" },
+    subdomain_lt: { __type: "String" },
+    subdomain_lte: { __type: "String" },
+    subdomain_not: { __type: "String" },
+    subdomain_not_contains: { __type: "String" },
+    subdomain_not_contains_nocase: { __type: "String" },
+    subdomain_not_ends_with: { __type: "String" },
+    subdomain_not_ends_with_nocase: { __type: "String" },
+    subdomain_not_in: { __type: "[String!]" },
+    subdomain_not_starts_with: { __type: "String" },
+    subdomain_not_starts_with_nocase: { __type: "String" },
+    subdomain_starts_with: { __type: "String" },
+    subdomain_starts_with_nocase: { __type: "String" },
+    transactionHash: { __type: "Bytes" },
+    transactionHash_contains: { __type: "Bytes" },
+    transactionHash_gt: { __type: "Bytes" },
+    transactionHash_gte: { __type: "Bytes" },
+    transactionHash_in: { __type: "[Bytes!]" },
+    transactionHash_lt: { __type: "Bytes" },
+    transactionHash_lte: { __type: "Bytes" },
+    transactionHash_not: { __type: "Bytes" },
+    transactionHash_not_contains: { __type: "Bytes" },
+    transactionHash_not_in: { __type: "[Bytes!]" },
+    updatedAt: { __type: "BigInt" },
+    updatedAt_gt: { __type: "BigInt" },
+    updatedAt_gte: { __type: "BigInt" },
+    updatedAt_in: { __type: "[BigInt!]" },
+    updatedAt_lt: { __type: "BigInt" },
+    updatedAt_lte: { __type: "BigInt" },
+    updatedAt_not: { __type: "BigInt" },
+    updatedAt_not_in: { __type: "[BigInt!]" },
+    value: { __type: "String" },
+    value_contains: { __type: "String" },
+    value_contains_nocase: { __type: "String" },
+    value_ends_with: { __type: "String" },
+    value_ends_with_nocase: { __type: "String" },
+    value_gt: { __type: "String" },
+    value_gte: { __type: "String" },
+    value_in: { __type: "[String!]" },
+    value_lt: { __type: "String" },
+    value_lte: { __type: "String" },
+    value_not: { __type: "String" },
+    value_not_contains: { __type: "String" },
+    value_not_contains_nocase: { __type: "String" },
+    value_not_ends_with: { __type: "String" },
+    value_not_ends_with_nocase: { __type: "String" },
+    value_not_in: { __type: "[String!]" },
+    value_not_starts_with: { __type: "String" },
+    value_not_starts_with_nocase: { __type: "String" },
+    value_starts_with: { __type: "String" },
+    value_starts_with_nocase: { __type: "String" },
+  },
+  User: {
+    __typename: { __type: "String!" },
+    activeBroadcast: { __type: "Broadcast" },
+    address: { __type: "Bytes!" },
+    broadcasts: {
+      __type: "[Broadcast!]!",
+      __args: {
+        first: "Int",
+        orderBy: "Broadcast_orderBy",
+        orderDirection: "OrderDirection",
+        skip: "Int",
+        where: "Broadcast_filter",
+      },
+    },
+    createdAt: { __type: "BigInt!" },
+    id: { __type: "ID!" },
+    participatedIn: {
+      __type: "[Broadcast!]!",
+      __args: {
+        first: "Int",
+        orderBy: "Broadcast_orderBy",
+        orderDirection: "OrderDirection",
+        skip: "Int",
+        where: "Broadcast_filter",
+      },
+    },
+    subdomain: { __type: "Subdomain!" },
+    updatedAt: { __type: "BigInt!" },
+  },
+  User_filter: {
+    _change_block: { __type: "BlockChangedFilter" },
+    activeBroadcast: { __type: "String" },
+    activeBroadcast_: { __type: "Broadcast_filter" },
+    activeBroadcast_contains: { __type: "String" },
+    activeBroadcast_contains_nocase: { __type: "String" },
+    activeBroadcast_ends_with: { __type: "String" },
+    activeBroadcast_ends_with_nocase: { __type: "String" },
+    activeBroadcast_gt: { __type: "String" },
+    activeBroadcast_gte: { __type: "String" },
+    activeBroadcast_in: { __type: "[String!]" },
+    activeBroadcast_lt: { __type: "String" },
+    activeBroadcast_lte: { __type: "String" },
+    activeBroadcast_not: { __type: "String" },
+    activeBroadcast_not_contains: { __type: "String" },
+    activeBroadcast_not_contains_nocase: { __type: "String" },
+    activeBroadcast_not_ends_with: { __type: "String" },
+    activeBroadcast_not_ends_with_nocase: { __type: "String" },
+    activeBroadcast_not_in: { __type: "[String!]" },
+    activeBroadcast_not_starts_with: { __type: "String" },
+    activeBroadcast_not_starts_with_nocase: { __type: "String" },
+    activeBroadcast_starts_with: { __type: "String" },
+    activeBroadcast_starts_with_nocase: { __type: "String" },
+    address: { __type: "Bytes" },
+    address_contains: { __type: "Bytes" },
+    address_gt: { __type: "Bytes" },
+    address_gte: { __type: "Bytes" },
+    address_in: { __type: "[Bytes!]" },
+    address_lt: { __type: "Bytes" },
+    address_lte: { __type: "Bytes" },
+    address_not: { __type: "Bytes" },
+    address_not_contains: { __type: "Bytes" },
+    address_not_in: { __type: "[Bytes!]" },
+    and: { __type: "[User_filter]" },
+    broadcasts_: { __type: "Broadcast_filter" },
+    createdAt: { __type: "BigInt" },
+    createdAt_gt: { __type: "BigInt" },
+    createdAt_gte: { __type: "BigInt" },
+    createdAt_in: { __type: "[BigInt!]" },
+    createdAt_lt: { __type: "BigInt" },
+    createdAt_lte: { __type: "BigInt" },
+    createdAt_not: { __type: "BigInt" },
+    createdAt_not_in: { __type: "[BigInt!]" },
+    id: { __type: "ID" },
+    id_gt: { __type: "ID" },
+    id_gte: { __type: "ID" },
+    id_in: { __type: "[ID!]" },
+    id_lt: { __type: "ID" },
+    id_lte: { __type: "ID" },
+    id_not: { __type: "ID" },
+    id_not_in: { __type: "[ID!]" },
     or: { __type: "[User_filter]" },
-    streamingUrl: { __type: "String" },
-    streamingUrl_contains: { __type: "String" },
-    streamingUrl_contains_nocase: { __type: "String" },
-    streamingUrl_ends_with: { __type: "String" },
-    streamingUrl_ends_with_nocase: { __type: "String" },
-    streamingUrl_gt: { __type: "String" },
-    streamingUrl_gte: { __type: "String" },
-    streamingUrl_in: { __type: "[String!]" },
-    streamingUrl_lt: { __type: "String" },
-    streamingUrl_lte: { __type: "String" },
-    streamingUrl_not: { __type: "String" },
-    streamingUrl_not_contains: { __type: "String" },
-    streamingUrl_not_contains_nocase: { __type: "String" },
-    streamingUrl_not_ends_with: { __type: "String" },
-    streamingUrl_not_ends_with_nocase: { __type: "String" },
-    streamingUrl_not_in: { __type: "[String!]" },
-    streamingUrl_not_starts_with: { __type: "String" },
-    streamingUrl_not_starts_with_nocase: { __type: "String" },
-    streamingUrl_starts_with: { __type: "String" },
-    streamingUrl_starts_with_nocase: { __type: "String" },
-    streamingWith: { __type: "[String!]" },
-    streamingWith_contains: { __type: "[String!]" },
-    streamingWith_contains_nocase: { __type: "[String!]" },
-    streamingWith_not: { __type: "[String!]" },
-    streamingWith_not_contains: { __type: "[String!]" },
-    streamingWith_not_contains_nocase: { __type: "[String!]" },
-    subdomains_: { __type: "Subdomain_filter" },
+    participatedIn_: { __type: "Broadcast_filter" },
+    subdomain: { __type: "String" },
+    subdomain_: { __type: "Subdomain_filter" },
+    subdomain_contains: { __type: "String" },
+    subdomain_contains_nocase: { __type: "String" },
+    subdomain_ends_with: { __type: "String" },
+    subdomain_ends_with_nocase: { __type: "String" },
+    subdomain_gt: { __type: "String" },
+    subdomain_gte: { __type: "String" },
+    subdomain_in: { __type: "[String!]" },
+    subdomain_lt: { __type: "String" },
+    subdomain_lte: { __type: "String" },
+    subdomain_not: { __type: "String" },
+    subdomain_not_contains: { __type: "String" },
+    subdomain_not_contains_nocase: { __type: "String" },
+    subdomain_not_ends_with: { __type: "String" },
+    subdomain_not_ends_with_nocase: { __type: "String" },
+    subdomain_not_in: { __type: "[String!]" },
+    subdomain_not_starts_with: { __type: "String" },
+    subdomain_not_starts_with_nocase: { __type: "String" },
+    subdomain_starts_with: { __type: "String" },
+    subdomain_starts_with_nocase: { __type: "String" },
     updatedAt: { __type: "BigInt" },
     updatedAt_gt: { __type: "BigInt" },
     updatedAt_gte: { __type: "BigInt" },
@@ -751,24 +1111,24 @@ export const generatedSchema = {
   query: {
     __typename: { __type: "String!" },
     _meta: { __type: "_Meta_", __args: { block: "Block_height" } },
-    nameLabel: {
-      __type: "NameLabel",
+    broadcast: {
+      __type: "Broadcast",
       __args: {
         block: "Block_height",
         id: "ID!",
         subgraphError: "_SubgraphErrorPolicy_!",
       },
     },
-    nameLabels: {
-      __type: "[NameLabel!]!",
+    broadcasts: {
+      __type: "[Broadcast!]!",
       __args: {
         block: "Block_height",
         first: "Int",
-        orderBy: "NameLabel_orderBy",
+        orderBy: "Broadcast_orderBy",
         orderDirection: "OrderDirection",
         skip: "Int",
         subgraphError: "_SubgraphErrorPolicy_!",
-        where: "NameLabel_filter",
+        where: "Broadcast_filter",
       },
     },
     subdomain: {
@@ -789,6 +1149,26 @@ export const generatedSchema = {
         skip: "Int",
         subgraphError: "_SubgraphErrorPolicy_!",
         where: "Subdomain_filter",
+      },
+    },
+    textRecord: {
+      __type: "TextRecord",
+      __args: {
+        block: "Block_height",
+        id: "ID!",
+        subgraphError: "_SubgraphErrorPolicy_!",
+      },
+    },
+    textRecords: {
+      __type: "[TextRecord!]!",
+      __args: {
+        block: "Block_height",
+        first: "Int",
+        orderBy: "TextRecord_orderBy",
+        orderDirection: "OrderDirection",
+        skip: "Int",
+        subgraphError: "_SubgraphErrorPolicy_!",
+        where: "TextRecord_filter",
       },
     },
     user: {
@@ -815,63 +1195,104 @@ export const generatedSchema = {
   subscription: {},
 } as const;
 
-export interface NameLabel {
-  __typename?: "NameLabel";
+export interface Broadcast {
+  __typename?: "Broadcast";
   blockNumber?: Scalars["BigInt"]["output"];
   blockTimestamp?: Scalars["BigInt"]["output"];
+  broadcastUrl?: Scalars["String"]["output"];
+  broadcastWith: (args?: {
+    /**
+     * @defaultValue `100`
+     */
+    first?: Maybe<Scalars["Int"]["input"]>;
+    orderBy?: Maybe<User_orderBy>;
+    orderDirection?: Maybe<OrderDirection>;
+    /**
+     * @defaultValue `0`
+     */
+    skip?: Maybe<Scalars["Int"]["input"]>;
+    where?: Maybe<User_filter>;
+  }) => Array<User>;
+  endedAt?: Maybe<Scalars["BigInt"]["output"]>;
   id?: Scalars["ID"]["output"];
-  key?: Scalars["String"]["output"];
+  isLive?: Scalars["Boolean"]["output"];
   logIndex?: Scalars["BigInt"]["output"];
-  subdomain: Subdomain;
+  startedAt?: Scalars["BigInt"]["output"];
   transactionHash?: Scalars["Bytes"]["output"];
-  value?: Scalars["String"]["output"];
+  user: User;
 }
 
 export interface Subdomain {
   __typename?: "Subdomain";
   id?: Scalars["ID"]["output"];
   name?: Scalars["String"]["output"];
-  nameLabels: (args?: {
-    /**
-     * @defaultValue `100`
-     */
-    first?: Maybe<Scalars["Int"]["input"]>;
-    orderBy?: Maybe<NameLabel_orderBy>;
-    orderDirection?: Maybe<OrderDirection>;
-    /**
-     * @defaultValue `0`
-     */
-    skip?: Maybe<Scalars["Int"]["input"]>;
-    where?: Maybe<NameLabel_filter>;
-  }) => Array<NameLabel>;
   node?: Scalars["Bytes"]["output"];
   owner: User;
   registeredAt?: Scalars["BigInt"]["output"];
   registrationTxHash?: Scalars["Bytes"]["output"];
-  updatedAt?: Scalars["BigInt"]["output"];
-}
-
-export interface User {
-  __typename?: "User";
-  address?: Scalars["Bytes"]["output"];
-  createdAt?: Scalars["BigInt"]["output"];
-  id?: Scalars["ID"]["output"];
-  isStreaming?: Scalars["Boolean"]["output"];
-  streamingUrl?: Scalars["String"]["output"];
-  streamingWith?: Array<Scalars["String"]["output"]>;
-  subdomains: (args?: {
+  textRecords: (args?: {
     /**
      * @defaultValue `100`
      */
     first?: Maybe<Scalars["Int"]["input"]>;
-    orderBy?: Maybe<Subdomain_orderBy>;
+    orderBy?: Maybe<TextRecord_orderBy>;
     orderDirection?: Maybe<OrderDirection>;
     /**
      * @defaultValue `0`
      */
     skip?: Maybe<Scalars["Int"]["input"]>;
-    where?: Maybe<Subdomain_filter>;
-  }) => Array<Subdomain>;
+    where?: Maybe<TextRecord_filter>;
+  }) => Array<TextRecord>;
+  updatedAt?: Scalars["BigInt"]["output"];
+}
+
+export interface TextRecord {
+  __typename?: "TextRecord";
+  blockNumber?: Scalars["BigInt"]["output"];
+  blockTimestamp?: Scalars["BigInt"]["output"];
+  createdAt?: Scalars["BigInt"]["output"];
+  id?: Scalars["ID"]["output"];
+  key?: Scalars["String"]["output"];
+  logIndex?: Scalars["BigInt"]["output"];
+  subdomain: Subdomain;
+  transactionHash?: Scalars["Bytes"]["output"];
+  updatedAt?: Scalars["BigInt"]["output"];
+  value?: Scalars["String"]["output"];
+}
+
+export interface User {
+  __typename?: "User";
+  activeBroadcast?: Maybe<Broadcast>;
+  address?: Scalars["Bytes"]["output"];
+  broadcasts: (args?: {
+    /**
+     * @defaultValue `100`
+     */
+    first?: Maybe<Scalars["Int"]["input"]>;
+    orderBy?: Maybe<Broadcast_orderBy>;
+    orderDirection?: Maybe<OrderDirection>;
+    /**
+     * @defaultValue `0`
+     */
+    skip?: Maybe<Scalars["Int"]["input"]>;
+    where?: Maybe<Broadcast_filter>;
+  }) => Array<Broadcast>;
+  createdAt?: Scalars["BigInt"]["output"];
+  id?: Scalars["ID"]["output"];
+  participatedIn: (args?: {
+    /**
+     * @defaultValue `100`
+     */
+    first?: Maybe<Scalars["Int"]["input"]>;
+    orderBy?: Maybe<Broadcast_orderBy>;
+    orderDirection?: Maybe<OrderDirection>;
+    /**
+     * @defaultValue `0`
+     */
+    skip?: Maybe<Scalars["Int"]["input"]>;
+    where?: Maybe<Broadcast_filter>;
+  }) => Array<Broadcast>;
+  subdomain: Subdomain;
   updatedAt?: Scalars["BigInt"]["output"];
 }
 
@@ -927,7 +1348,7 @@ export interface Query {
    * Access to subgraph metadata
    */
   _meta: (args?: { block?: Maybe<Block_height> }) => Maybe<_Meta_>;
-  nameLabel: (args: {
+  broadcast: (args: {
     /**
      * The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
      */
@@ -938,8 +1359,8 @@ export interface Query {
      * @defaultValue `"deny"`
      */
     subgraphError?: Maybe<_SubgraphErrorPolicy_>;
-  }) => Maybe<NameLabel>;
-  nameLabels: (args: {
+  }) => Maybe<Broadcast>;
+  broadcasts: (args: {
     /**
      * The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
      */
@@ -948,7 +1369,7 @@ export interface Query {
      * @defaultValue `100`
      */
     first?: Maybe<Scalars["Int"]["input"]>;
-    orderBy?: Maybe<NameLabel_orderBy>;
+    orderBy?: Maybe<Broadcast_orderBy>;
     orderDirection?: Maybe<OrderDirection>;
     /**
      * @defaultValue `0`
@@ -959,8 +1380,8 @@ export interface Query {
      * @defaultValue `"deny"`
      */
     subgraphError?: Maybe<_SubgraphErrorPolicy_>;
-    where?: Maybe<NameLabel_filter>;
-  }) => Array<NameLabel>;
+    where?: Maybe<Broadcast_filter>;
+  }) => Array<Broadcast>;
   subdomain: (args: {
     /**
      * The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -995,6 +1416,40 @@ export interface Query {
     subgraphError?: Maybe<_SubgraphErrorPolicy_>;
     where?: Maybe<Subdomain_filter>;
   }) => Array<Subdomain>;
+  textRecord: (args: {
+    /**
+     * The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+     */
+    block?: Maybe<Block_height>;
+    id: Scalars["ID"]["input"];
+    /**
+     * Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+     * @defaultValue `"deny"`
+     */
+    subgraphError?: Maybe<_SubgraphErrorPolicy_>;
+  }) => Maybe<TextRecord>;
+  textRecords: (args: {
+    /**
+     * The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+     */
+    block?: Maybe<Block_height>;
+    /**
+     * @defaultValue `100`
+     */
+    first?: Maybe<Scalars["Int"]["input"]>;
+    orderBy?: Maybe<TextRecord_orderBy>;
+    orderDirection?: Maybe<OrderDirection>;
+    /**
+     * @defaultValue `0`
+     */
+    skip?: Maybe<Scalars["Int"]["input"]>;
+    /**
+     * Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+     * @defaultValue `"deny"`
+     */
+    subgraphError?: Maybe<_SubgraphErrorPolicy_>;
+    where?: Maybe<TextRecord_filter>;
+  }) => Array<TextRecord>;
   user: (args: {
     /**
      * The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.

@@ -1,38 +1,40 @@
+import { useQuery as useGqtyQuery } from "@/gqty";
+import { _SubgraphErrorPolicy_, type User } from "@/gqty/schema.generated";
 import { useAccount } from "wagmi";
 
 /**
- * Hook to detect which ENS name the connected wallet owns
- *
- * TODO: Real implementation should:
- * 1. Query subgraph for User entity where address = connected wallet
- * 2. Get associated Subdomain entities
- * 3. Return the owned ENS name(s)
- *
- * Query example:
- * ```graphql
- * query GetUserProfile($address: String!) {
- *   user(id: $address) {
- *     subdomains {
- *       name
- *       node
- *       registeredAt
- *     }
- *   }
- * }
- * ```
+ * Hook to detect which profile the connected wallet owns
+ * Returns GQty User if wallet owns a profile, null otherwise
  */
 export function useOwnedProfile() {
-	const { address } = useAccount();
+  const { address } = useAccount();
+  const { user } = useGqtyQuery();
 
-	// TODO: Replace with real subgraph query
-	// For now, return mock data if wallet is connected
-	// Use part of address to generate unique mock name per wallet
-	const mockEnsName = address ? `${address.slice(2, 8)}.osopit.eth` : null;
+  if (!address) {
+    return {
+      data: null,
+      ensName: null,
+      isLoading: false,
+      hasProfile: false,
+      error: null,
+    };
+  }
 
-	return {
-		ensName: mockEnsName,
-		isLoading: false,
-		hasProfile: !!mockEnsName,
-		error: null,
-	};
+  const data: User | null =
+    user({
+      id: address.toLowerCase(),
+      subgraphError: _SubgraphErrorPolicy_.deny,
+    }) ?? null;
+
+  const ensName = data?.subdomain?.name
+    ? `${data.subdomain.name}.catmisha.eth`
+    : null;
+
+  return {
+    data,
+    ensName,
+    isLoading: false,
+    hasProfile: !!data,
+    error: null,
+  };
 }

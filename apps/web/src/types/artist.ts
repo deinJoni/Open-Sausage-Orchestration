@@ -1,3 +1,7 @@
+/**
+ * Social link type for artist profiles
+ * Used by getSocials() helper to parse text records
+ */
 export type SocialLink = {
   platform:
     | "spotify"
@@ -10,16 +14,4 @@ export type SocialLink = {
     | "github";
   label?: string;
   url: string;
-};
-
-export type ArtistProfile = {
-  ensName: string;
-  address: string;
-  bio: string;
-  avatar: string;
-  socials: SocialLink[];
-  isStreaming: boolean;
-  streamUrl?: string;
-  streamPlatform?: "twitch" | "youtube";
-  taggedArtists: string[];
 };

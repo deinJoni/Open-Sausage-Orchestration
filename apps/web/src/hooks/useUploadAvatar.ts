@@ -5,21 +5,21 @@ import { toast } from "sonner";
  * Helper function to upload file to IPFS via backend API
  */
 async function uploadToIPFS(file: File): Promise<string> {
-	const formData = new FormData();
-	formData.append("file", file);
+  const formData = new FormData();
+  formData.append("file", file);
 
-	const response = await fetch("/api/upload-ipfs", {
-		method: "POST",
-		body: formData,
-	});
+  const response = await fetch("/api/upload-ipfs", {
+    method: "POST",
+    body: formData,
+  });
 
-	if (!response.ok) {
-		const error = await response.json();
-		throw new Error(error.error || "IPFS upload failed");
-	}
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "IPFS upload failed");
+  }
 
-	const data = await response.json();
-	return data.ipfsUrl; // Returns ipfs://QmHash...
+  const data = await response.json();
+  return data.ipfsUrl; // Returns ipfs://QmHash...
 }
 
 /**
@@ -36,20 +36,20 @@ async function uploadToIPFS(file: File): Promise<string> {
  * const ipfsUrl = uploadAvatar.data; // "ipfs://QmHash..."
  */
 export function useUploadAvatar() {
-	const mutation = useMutation({
-		mutationFn: async (file: File) => {
-			toast.info("Uploading avatar to IPFS...");
+  const mutation = useMutation({
+    mutationFn: async (file: File) => {
+      toast.info("Uploading avatar to IPFS...");
 
-			const ipfsUrl = await uploadToIPFS(file);
+      const ipfsUrl = await uploadToIPFS(file);
 
-			toast.success("Avatar uploaded!");
+      toast.success("Avatar uploaded!");
 
-			return ipfsUrl;
-		},
-		onError: (error: Error) => {
-			toast.error(error.message || "Failed to upload avatar");
-		},
-	});
+      return ipfsUrl;
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to upload avatar");
+    },
+  });
 
-	return mutation;
+  return mutation;
 }

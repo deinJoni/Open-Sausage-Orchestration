@@ -7,19 +7,19 @@ import { useUpdateTextRecords } from "./useUpdateTextRecords";
 import { useUploadAvatar } from "./useUploadAvatar";
 
 type InviteData = {
-	label: string;
-	recipient: string;
-	expiration: number;
-	inviter: string;
-	signature: string;
+  label: string;
+  recipient: string;
+  expiration: number;
+  inviter: string;
+  signature: string;
 };
 
 type CreateProfileInput = {
-	ensName: string;
-	bio: string;
-	avatar: File | string;
-	socials: SocialLink[];
-	inviteData?: InviteData | null;
+  ensName: string;
+  bio: string;
+  avatar: File | string;
+  socials: SocialLink[];
+  inviteData?: InviteData | null;
 };
 
 /**
@@ -38,59 +38,58 @@ type CreateProfileInput = {
  * });
  */
 export function useCreateProfile() {
-	const { address } = useAccount();
-	const uploadAvatar = useUploadAvatar();
-	const registerSubdomain = useRegisterSubdomain();
-	const updateTextRecords = useUpdateTextRecords();
+  const { address } = useAccount();
+  const uploadAvatar = useUploadAvatar();
+  const registerSubdomain = useRegisterSubdomain();
+  const updateTextRecords = useUpdateTextRecords();
 
-	const mutation = useMutation({
-		mutationFn: async (input: CreateProfileInput) => {
-			if (!address) {
-				toast.error("Please connect your wallet first");
-				throw new Error("Wallet not connected");
-			}
+  const mutation = useMutation({
+    mutationFn: async (input: CreateProfileInput) => {
+      if (!address) {
+        toast.error("Please connect your wallet first");
+        throw new Error("Wallet not connected");
+      }
 
-			try {
-				// Step 1: Upload avatar to IPFS (if File)
-				let avatarUrl = "";
-				if (input.avatar instanceof File) {
-					avatarUrl = await uploadAvatar.mutateAsync(input.avatar);
-				} else if (typeof input.avatar === "string" && input.avatar) {
-					avatarUrl = input.avatar;
-				}
+      try {
+        // Step 1: Upload avatar to IPFS (if File)
+        let avatarUrl = "";
+        if (input.avatar instanceof File) {
+          avatarUrl = await uploadAvatar.mutateAsync(input.avatar);
+        } else if (typeof input.avatar === "string" && input.avatar) {
+          avatarUrl = input.avatar;
+        }
 
-				// Step 2: Register subdomain with invite
-				if (input.inviteData) {
-					await registerSubdomain.mutateAsync({
-						label: input.ensName,
-						inviteData: input.inviteData,
-					});
-				}
+        // Step 2: Register subdomain with invite
+        if (input.inviteData) {
+          await registerSubdomain.mutateAsync({
+            label: input.ensName,
+            inviteData: input.inviteData,
+          });
+        }
 
-				// Step 3: Update text records (bio, avatar, socials)
-				await updateTextRecords.mutateAsync({
-					ensName: input.ensName,
-					textRecords: {
-						description: input.bio || undefined,
-						avatar: avatarUrl || undefined,
-						socials: input.socials.length > 0 ? input.socials : undefined,
-					},
-				});
+        // Step 3: Update text records (bio, avatar, socials)
+        await updateTextRecords.mutateAsync({
+          ensName: input.ensName,
+          textRecords: {
+            description: input.bio || undefined,
+            avatar: avatarUrl || undefined,
+            socials: input.socials.length > 0 ? input.socials : undefined,
+          },
+        });
 
-				toast.success("Profile created successfully! 🎉");
-			} catch (error) {
-				// Error toasts are already handled by individual hooks
-				// Just rethrow to maintain error state
-				throw error;
-			}
-		},
-	});
+        toast.success("Profile created successfully! 🎉");
+      } catch (error) {
+        toast.error("Failed to create profile");
+        throw error;
+      }
+    },
+  });
 
-	return {
-		mutation,
-		// Expose loading states from individual hooks
-		isUploadingAvatar: uploadAvatar.isPending,
-		isRegistering: registerSubdomain.isPending,
-		isUpdatingTextRecords: updateTextRecords.isPending,
-	};
+  return {
+    mutation,
+    // Expose loading states from individual hooks
+    isUploadingAvatar: uploadAvatar.isPending,
+    isRegistering: registerSubdomain.isPending,
+    isUpdatingTextRecords: updateTextRecords.isPending,
+  };
 }

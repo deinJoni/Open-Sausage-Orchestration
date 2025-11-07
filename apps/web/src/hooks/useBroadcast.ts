@@ -1,5 +1,8 @@
 import { useQuery as useGqtyQuery } from "@/gqty";
-import { _SubgraphErrorPolicy_, type User } from "@/gqty/schema.generated";
+import {
+  _SubgraphErrorPolicy_,
+  type Broadcast,
+} from "@/gqty/schema.generated";
 
 /**
  * Extract subdomain label from full ENS name
@@ -11,15 +14,16 @@ function extractLabel(ensName: string): string {
 }
 
 /**
- * Hook to fetch a single artist profile by ENS name
- * Returns GQty User - use helpers from subgraphHelpers.ts to access data
+ * Hook to fetch active broadcast details for a user
+ * Returns GQty Broadcast - use helpers from subgraphHelpers.ts to access data
+ * Only call this when user.activeBroadcast exists
  */
-export function useArtistProfile(ensName?: string) {
+export function useBroadcast(ensName?: string) {
   const { subdomains } = useGqtyQuery();
 
   if (!ensName) {
     return {
-      data: undefined,
+      data: null,
       isLoading: false,
       error: null,
     };
@@ -35,8 +39,8 @@ export function useArtistProfile(ensName?: string) {
     subgraphError: _SubgraphErrorPolicy_.deny,
   });
 
-  const data: User | undefined =
-    result && result.length > 0 ? result[0].owner : undefined;
+  const data: Broadcast | null =
+    result && result.length > 0 ? result[0].owner?.activeBroadcast ?? null : null;
 
   return {
     data,

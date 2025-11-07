@@ -9,13 +9,13 @@ import { parseContractError } from "@/lib/parseContractError";
 import type { SocialLink } from "@/types/artist";
 
 type TextRecordsInput = {
-	ensName: string; // e.g., "alice" (just the label) or "alice.osopit.eth" (full name)
-	textRecords: {
-		description?: string;
-		avatar?: string;
-		socials?: SocialLink[];
-		broadcast?: string; // Pre-formatted broadcast payload
-	};
+  ensName: string; // e.g., "alice" (just the label) or "alice.osopit.eth" (full name)
+  textRecords: {
+    description?: string;
+    avatar?: string;
+    socials?: SocialLink[];
+    broadcast?: string; // Pre-formatted broadcast payload
+  };
 };
 
 /**
@@ -36,140 +36,138 @@ type TextRecordsInput = {
  * });
  */
 export function useUpdateTextRecords() {
-	const { address } = useAccount();
-	const { writeContractAsync } = useWriteContract();
-	const publicClient = usePublicClient();
+  const { address } = useAccount();
+  const { writeContractAsync } = useWriteContract();
+  const publicClient = usePublicClient();
 
-	const mutation = useMutation({
-		mutationFn: async (input: TextRecordsInput) => {
-			if (!address) {
-				toast.error("Please connect your wallet first");
-				throw new Error("Wallet not connected");
-			}
+  const mutation = useMutation({
+    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
+    mutationFn: async (input: TextRecordsInput) => {
+      if (!address) {
+        toast.error("Please connect your wallet first");
+        throw new Error("Wallet not connected");
+      }
 
-			try {
-				toast.info("Updating profile data...");
+      try {
+        toast.info("Updating profile data...");
 
-				// Get baseNode from registry
-				const baseNode = (await publicClient?.readContract({
-					address: L2_REGISTRY_ADDRESS,
-					abi: L2RegistryABI,
-					functionName: "baseNode",
-				})) as `0x${string}`;
+        // Get baseNode from registry
+        const baseNode = (await publicClient?.readContract({
+          address: L2_REGISTRY_ADDRESS,
+          abi: L2RegistryABI,
+          functionName: "baseNode",
+        })) as `0x${string}`;
 
-				if (!baseNode) {
-					throw new Error("Failed to fetch baseNode from registry");
-				}
+        if (!baseNode) {
+          throw new Error("Failed to fetch baseNode from registry");
+        }
 
-				// Extract label from ensName (e.g., "alice" from "alice.osopit.eth")
-				const label = input.ensName.split(".")[0];
+        // Extract label from ensName (e.g., "alice" from "alice.osopit.eth")
+        const label = input.ensName.split(".")[0];
 
-				// Calculate label hash
-				const labelHash = keccak256(encodePacked(["string"], [label]));
+        // Calculate label hash
+        const labelHash = keccak256(encodePacked(["string"], [label]));
 
-				// Calculate node: keccak256(abi.encodePacked(baseNode, labelHash))
-				const nodeHash = keccak256(
-					encodePacked(["bytes32", "bytes32"], [baseNode, labelHash]),
-				);
+        // Calculate node: keccak256(abi.encodePacked(baseNode, labelHash))
+        const nodeHash = keccak256(
+          encodePacked(["bytes32", "bytes32"], [baseNode, labelHash])
+        );
 
-				// Build multicall data for setText calls
-				const multicallData: `0x${string}`[] = [];
+        // Build multicall data for setText calls
+        const multicallData: `0x${string}`[] = [];
 
-				// Add description
-				if (input.textRecords.description) {
-					multicallData.push(
-						encodeFunctionData({
-							abi: L2RegistryABI,
-							functionName: "setText",
-							args: [
-								nodeHash,
-								ENS_TEXT_KEYS.DESCRIPTION,
-								input.textRecords.description,
-							],
-						}),
-					);
-				}
+        // Add description
+        if (input.textRecords.description) {
+          multicallData.push(
+            encodeFunctionData({
+              abi: L2RegistryABI,
+              functionName: "setText",
+              args: [
+                nodeHash,
+                ENS_TEXT_KEYS.DESCRIPTION,
+                input.textRecords.description,
+              ],
+            })
+          );
+        }
 
-				// Add avatar
-				if (input.textRecords.avatar) {
-					multicallData.push(
-						encodeFunctionData({
-							abi: L2RegistryABI,
-							functionName: "setText",
-							args: [nodeHash, ENS_TEXT_KEYS.AVATAR, input.textRecords.avatar],
-						}),
-					);
-				}
+        // Add avatar
+        if (input.textRecords.avatar) {
+          multicallData.push(
+            encodeFunctionData({
+              abi: L2RegistryABI,
+              functionName: "setText",
+              args: [nodeHash, ENS_TEXT_KEYS.AVATAR, input.textRecords.avatar],
+            })
+          );
+        }
 
-				// Add socials
-				if (
-					input.textRecords.socials &&
-					input.textRecords.socials.length > 0
-				) {
-					multicallData.push(
-						encodeFunctionData({
-							abi: L2RegistryABI,
-							functionName: "setText",
-							args: [
-								nodeHash,
-								ENS_TEXT_KEYS.SOCIALS,
-								JSON.stringify(input.textRecords.socials),
-							],
-						}),
-					);
-				}
+        // Add socials
+        if (input.textRecords.socials && input.textRecords.socials.length > 0) {
+          multicallData.push(
+            encodeFunctionData({
+              abi: L2RegistryABI,
+              functionName: "setText",
+              args: [
+                nodeHash,
+                ENS_TEXT_KEYS.SOCIALS,
+                JSON.stringify(input.textRecords.socials),
+              ],
+            })
+          );
+        }
 
-				// Add broadcast
-				if (input.textRecords.broadcast) {
-					multicallData.push(
-						encodeFunctionData({
-							abi: L2RegistryABI,
-							functionName: "setText",
-							args: [
-								nodeHash,
-								ENS_TEXT_KEYS.BROADCAST,
-								input.textRecords.broadcast,
-							],
-						}),
-					);
-				}
+        // Add broadcast
+        if (input.textRecords.broadcast) {
+          multicallData.push(
+            encodeFunctionData({
+              abi: L2RegistryABI,
+              functionName: "setText",
+              args: [
+                nodeHash,
+                ENS_TEXT_KEYS.BROADCAST,
+                input.textRecords.broadcast,
+              ],
+            })
+          );
+        }
 
-				// Execute multicall
-				if (multicallData.length === 0) {
-					throw new Error("No text records to update");
-				}
+        // Execute multicall
+        if (multicallData.length === 0) {
+          throw new Error("No text records to update");
+        }
 
-				const txHash = await writeContractAsync({
-					address: L2_REGISTRY_ADDRESS,
-					abi: L2RegistryABI,
-					functionName: "multicall",
-					args: [multicallData],
-				});
+        const txHash = await writeContractAsync({
+          address: L2_REGISTRY_ADDRESS,
+          abi: L2RegistryABI,
+          functionName: "multicall",
+          args: [multicallData],
+        });
 
-				toast.info("Waiting for confirmation...");
+        toast.info("Waiting for confirmation...");
 
-				const receipt = await publicClient?.waitForTransactionReceipt({
-					hash: txHash,
-				});
+        const receipt = await publicClient?.waitForTransactionReceipt({
+          hash: txHash,
+        });
 
-				if (receipt?.status === "reverted") {
-					throw new Error("Text records update failed");
-				}
+        if (receipt?.status === "reverted") {
+          throw new Error("Text records update failed");
+        }
 
-				toast.success("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
 
-				return {
-					txHash,
-					receipt,
-				};
-			} catch (error) {
-				const errorMsg =
-					error instanceof Error ? error.message : parseContractError(error);
-				toast.error(errorMsg);
-				throw error;
-			}
-		},
-	});
+        return {
+          txHash,
+          receipt,
+        };
+      } catch (error) {
+        const errorMsg =
+          error instanceof Error ? error.message : parseContractError(error);
+        toast.error(errorMsg);
+        throw error;
+      }
+    },
+  });
 
-	return mutation;
+  return mutation;
 }

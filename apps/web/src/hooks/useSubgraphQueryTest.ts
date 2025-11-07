@@ -1,16 +1,16 @@
+import { useQuery as useGqtyQuery } from "@/gqty";
 import {
   _SubgraphErrorPolicy_,
-  NameLabel_orderBy,
   OrderDirection,
+  TextRecord_orderBy,
 } from "@/gqty/schema.generated";
-import { useQuery as useGqtyQuery } from "@/gqty/subgraph";
 import { QUERY } from "@/lib/constants";
 
 export const useSubgraphQueryTest = () => {
-  const { nameLabels } = useGqtyQuery();
-  const result = nameLabels({
+  const { textRecords } = useGqtyQuery();
+  const result = textRecords({
     first: QUERY.SUBGRAPH_DEFAULT_LIMIT,
-    orderBy: NameLabel_orderBy.blockTimestamp,
+    orderBy: TextRecord_orderBy.blockTimestamp,
     orderDirection: OrderDirection.desc,
     subgraphError: _SubgraphErrorPolicy_.deny,
   });

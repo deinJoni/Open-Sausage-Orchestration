@@ -22,8 +22,8 @@ type Subdomain @entity(immutable: false) {
 
 type TextRecord @entity(immutable: false) {
   id: ID! #key-nodeHex to allow updates for the same key
-  key: String! # "avatar" "description" "email" "url" "header" "com.twitter" "com.github" "com.discord" "com.telegram" "social.farcaster" "social.lens" "art1" through "art8"
-  value: String! # url, text, boolean, etc.
+  key: String! # Standard ENS text records: "avatar" "description" "email" "url" "header" | Social links: "com.twitter" "com.github" "com.discord" "com.telegram" | Web3 social: "social.farcaster" "social.lens" | Art pieces: "art1" through "art8"
+  value: String! # url, text, or other string content
   subdomain: Subdomain! # relation to Subdomain
   blockNumber: BigInt!
   blockTimestamp: BigInt!
