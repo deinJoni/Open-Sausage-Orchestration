@@ -1,5 +1,5 @@
-import { log } from "@graphprotocol/graph-ts";
-import type { NameRegistered as NameRegisteredEvent } from "../generated/OsopitRegistry/OsopitRegistry";
+import { Bytes, log, ethereum } from "@graphprotocol/graph-ts";
+import { NameRegistered as NameRegisteredEvent } from "../generated/OsopitRegistry/OsopitRegistry";
 import { Subdomain, User } from "../generated/schema";
 import { namehash } from "./utils";
 
@@ -7,7 +7,13 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
   const ownerAddress = event.params.owner;
 
   // Extract the actual label string from transaction input
-  const label = event.params.label;
+  // Note: event.params.label is the keccak256 hash because it's indexed
+  let labelStringOrNull = event.transaction.input;
+
+  log.info("NameRegistered event: label={}, owner={}", [labelStringOrNull.toString(), ownerAddress.toHexString()]);
+
+  let labelString = labelStringOrNull.toString();
+  
   // Create or load User (by wallet address)
   const userId = event.params.owner.toHexString();
   let user = User.load(userId);
@@ -24,7 +30,7 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
   }
 
   // Calculate node hash for the subdomain
-  const fullName = `${label}.catmisha.eth`;
+  const fullName = labelString + ".catmisha.eth";
   const nodeBytes = namehash(fullName);
   const nodeHash = nodeBytes.toHexString();
 
@@ -54,3 +60,4 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
   user.updatedAt = event.block.timestamp;
   user.save();
 }
+ 
