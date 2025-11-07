@@ -18,7 +18,11 @@ export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
     storage: cookieStorage,
   }),
-  connectors: [porto()],
+  connectors: [
+    porto({
+      merchantUrl: "/api/porto/merchant",
+    }),
+  ],
   ssr: true,
   projectId,
   networks,

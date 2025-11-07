@@ -4,7 +4,11 @@ import { porto } from "wagmi/connectors";
 
 export const wagmiConfig = createConfig({
   chains: [base],
-  connectors: [porto()],
+  connectors: [
+    porto({
+      merchantUrl: "/api/porto/merchant",
+    }),
+  ],
   transports: {
     [base.id]: http(),
   },
