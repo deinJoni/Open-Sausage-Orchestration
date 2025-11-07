@@ -2,9 +2,27 @@ type User @entity(immutable: false) {
   id: ID! # wallet address (lowercase hex)
   address: Bytes! # wallet address
   subdomains: [Subdomain!]! @derivedFrom(field: "owner")
+  isStreaming: Boolean! # if we detect that user setText with key "app.osopit.streaming" then update this to the value (either true or false)
+  streamingUrl: String! # if we detect that user setText with key "app.osopit.streaming" then update this to the value (either true or false)
+  streamingWith: [User!]! @derivedFrom(field: "streamingWith") # users that are streaming with this user 
   createdAt: BigInt!
   updatedAt: BigInt!
 }
+
+# example payload of setText with key "app.osopit.streaming"
+# {
+#   key: "app.osopit.streaming",
+#   value: "true|streamingUrl|userId1|userId2|userId3|........",
+# }
+
+# in the handler
+# if (key === "app.osopit.streaming") {
+#   const [isStreaming, streamingUrl, ...streamingWith] = value.split("|");
+#   user.isStreaming = isStreaming;
+#   user.streamingUrl = streamingUrl;
+#   user.streamingWith = streamingWith.map(userId => User.load(userId));
+#   user.save();
+# }
 
 type Subdomain @entity(immutable: false) {
   id: ID! # node hash (bytes32 as hex string)

@@ -80,4 +80,15 @@ export function handleTextChanged(event: TextChanged): void {
   nameLabel.transactionHash = txHash;
   nameLabel.logIndex = logIndex;
   nameLabel.save();
+
+
+  // handle streaming key
+  if (key === "app.osopit.streaming") {
+    const [isStreaming, streamingUrl, ...streamingWith] = value.split("|");
+    const user = User.load(subdomain.owner);
+    user.isStreaming = isStreaming;
+    user.streamingUrl = streamingUrl;
+    user.streamingWith = streamingWith.map(userId => User.load(userId));
+    user.save();
+  }
 }

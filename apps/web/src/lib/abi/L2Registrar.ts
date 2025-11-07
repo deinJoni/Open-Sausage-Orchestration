@@ -1,1 +1,195 @@
-export const L2RegistrarABI = [{"type":"constructor","inputs":[{"name":"_registry","type":"address","internalType":"address"}],"stateMutability":"nonpayable"},{"type":"function","name":"addInviter","inputs":[{"name":"inviter","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"available","inputs":[{"name":"label","type":"string","internalType":"string"}],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"},{"type":"function","name":"chainId","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},{"type":"function","name":"coinType","inputs":[],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"view"},{"type":"function","name":"inviters","inputs":[{"name":"","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"},{"type":"function","name":"owner","inputs":[],"outputs":[{"name":"","type":"address","internalType":"address"}],"stateMutability":"view"},{"type":"function","name":"register","inputs":[{"name":"label","type":"string","internalType":"string"},{"name":"recipient","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"registerWithInvite","inputs":[{"name":"label","type":"string","internalType":"string"},{"name":"recipient","type":"address","internalType":"address"},{"name":"expiration","type":"uint256","internalType":"uint256"},{"name":"inviter","type":"address","internalType":"address"},{"name":"signature","type":"bytes","internalType":"bytes"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"registry","inputs":[],"outputs":[{"name":"","type":"address","internalType":"contract IL2Registry"}],"stateMutability":"view"},{"type":"function","name":"removeInviter","inputs":[{"name":"inviter","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"renounceOwnership","inputs":[],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"transferOwnership","inputs":[{"name":"newOwner","type":"address","internalType":"address"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"function","name":"universalSignatureValidator","inputs":[],"outputs":[{"name":"","type":"address","internalType":"contract IUniversalSignatureValidator"}],"stateMutability":"view"},{"type":"function","name":"usedInvites","inputs":[{"name":"","type":"bytes32","internalType":"bytes32"}],"outputs":[{"name":"","type":"bool","internalType":"bool"}],"stateMutability":"view"},{"type":"event","name":"InviterAdded","inputs":[{"name":"inviter","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"InviterRemoved","inputs":[{"name":"inviter","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"NameRegistered","inputs":[{"name":"label","type":"string","indexed":true,"internalType":"string"},{"name":"owner","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"event","name":"OwnershipTransferred","inputs":[{"name":"previousOwner","type":"address","indexed":true,"internalType":"address"},{"name":"newOwner","type":"address","indexed":true,"internalType":"address"}],"anonymous":false},{"type":"error","name":"InvalidInviter","inputs":[]},{"type":"error","name":"InviteAlreadyUsed","inputs":[]},{"type":"error","name":"OwnableInvalidOwner","inputs":[{"name":"owner","type":"address","internalType":"address"}]},{"type":"error","name":"OwnableUnauthorizedAccount","inputs":[{"name":"account","type":"address","internalType":"address"}]},{"type":"error","name":"SignatureExpired","inputs":[]},{"type":"error","name":"Unauthorized","inputs":[]}] as const;
+export const L2RegistrarABI = [
+  {
+    type: "constructor",
+    inputs: [{ name: "_registry", type: "address", internalType: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "addInviter",
+    inputs: [{ name: "inviter", type: "address", internalType: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "available",
+    inputs: [{ name: "label", type: "string", internalType: "string" }],
+    outputs: [{ name: "", type: "bool", internalType: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "chainId",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "coinType",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "inviters",
+    inputs: [{ name: "", type: "address", internalType: "address" }],
+    outputs: [{ name: "", type: "bool", internalType: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "owner",
+    inputs: [],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "register",
+    inputs: [
+      { name: "label", type: "string", internalType: "string" },
+      { name: "recipient", type: "address", internalType: "address" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "registerWithInvite",
+    inputs: [
+      { name: "label", type: "string", internalType: "string" },
+      { name: "recipient", type: "address", internalType: "address" },
+      { name: "expiration", type: "uint256", internalType: "uint256" },
+      { name: "inviter", type: "address", internalType: "address" },
+      { name: "signature", type: "bytes", internalType: "bytes" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "registry",
+    inputs: [],
+    outputs: [
+      { name: "", type: "address", internalType: "contract IL2Registry" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "removeInviter",
+    inputs: [{ name: "inviter", type: "address", internalType: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "renounceOwnership",
+    inputs: [],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "transferOwnership",
+    inputs: [{ name: "newOwner", type: "address", internalType: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "universalSignatureValidator",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address",
+        internalType: "contract IUniversalSignatureValidator",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "usedInvites",
+    inputs: [{ name: "", type: "bytes32", internalType: "bytes32" }],
+    outputs: [{ name: "", type: "bool", internalType: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "event",
+    name: "InviterAdded",
+    inputs: [
+      {
+        name: "inviter",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "InviterRemoved",
+    inputs: [
+      {
+        name: "inviter",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "NameRegistered",
+    inputs: [
+      { name: "label", type: "string", indexed: true, internalType: "string" },
+      {
+        name: "owner",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "OwnershipTransferred",
+    inputs: [
+      {
+        name: "previousOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "newOwner",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  { type: "error", name: "InvalidInviter", inputs: [] },
+  { type: "error", name: "InviteAlreadyUsed", inputs: [] },
+  {
+    type: "error",
+    name: "OwnableInvalidOwner",
+    inputs: [{ name: "owner", type: "address", internalType: "address" }],
+  },
+  {
+    type: "error",
+    name: "OwnableUnauthorizedAccount",
+    inputs: [{ name: "account", type: "address", internalType: "address" }],
+  },
+  { type: "error", name: "SignatureExpired", inputs: [] },
+  { type: "error", name: "Unauthorized", inputs: [] },
+] as const;

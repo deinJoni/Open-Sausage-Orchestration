@@ -65,7 +65,7 @@ export function MultiWalletConnectButton({
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover onOpenChange={setIsOpen} open={isOpen}>
       <PopoverTrigger asChild>
         <Button className={className} size={size}>
           {isPending ? "Connecting..." : "Connect Wallet"}
@@ -73,15 +73,15 @@ export function MultiWalletConnectButton({
       </PopoverTrigger>
       <PopoverContent className="w-64">
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold">Choose a wallet</h4>
+          <h4 className="font-semibold text-sm">Choose a wallet</h4>
           <div className="space-y-2">
             {availableConnectors.map((connector) => (
               <Button
+                className="w-full justify-start"
+                disabled={isPending}
                 key={connector.id}
                 onClick={() => handleConnect(connector.id)}
                 variant="outline"
-                className="w-full justify-start"
-                disabled={isPending}
               >
                 {connector.name}
               </Button>

@@ -1,10 +1,10 @@
-import { useQuery as useGqtyQuery } from "@/lib/subgraph";
+import { QUERY } from "@/lib/constants";
 import {
+  _SubgraphErrorPolicy_,
   NameLabel_orderBy,
   OrderDirection,
-  _SubgraphErrorPolicy_,
 } from "@/lib/schema.generated";
-import { QUERY } from "@/lib/constants";
+import { useQuery as useGqtyQuery } from "@/lib/subgraph";
 
 export const useSubgraphQueryTest = () => {
   const { nameLabels } = useGqtyQuery();

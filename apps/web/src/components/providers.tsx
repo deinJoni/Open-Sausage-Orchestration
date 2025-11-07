@@ -1,8 +1,8 @@
 "use client";
 
+import { AppKitProvider } from "./appkit-provider";
 import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "./ui/sonner";
-import { AppKitProvider } from "./appkit-provider";
 
 export default function Providers({
   children,

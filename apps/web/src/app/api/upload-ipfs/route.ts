@@ -32,7 +32,6 @@ export async function POST(request: NextRequest) {
     const pinataJWT = process.env.PINATA_JWT;
 
     if (!pinataJWT) {
-      console.error("PINATA_JWT environment variable not set");
       return NextResponse.json(
         { error: "IPFS upload not configured. Contact support." },
         { status: 500 }
@@ -56,11 +55,7 @@ export async function POST(request: NextRequest) {
 
     if (!pinataResponse.ok) {
       const errorText = await pinataResponse.text();
-      console.error("Pinata upload failed:", errorText);
-      return NextResponse.json(
-        { error: "IPFS upload failed" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: errorText }, { status: 500 });
     }
 
     const { IpfsHash } = await pinataResponse.json();
@@ -71,9 +66,10 @@ export async function POST(request: NextRequest) {
       gatewayUrl: `https://gateway.pinata.cloud/ipfs/${IpfsHash}`,
     });
   } catch (error) {
-    console.error("Upload error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error: error instanceof Error ? error.message : "Internal server error",
+      },
       { status: 500 }
     );
   }

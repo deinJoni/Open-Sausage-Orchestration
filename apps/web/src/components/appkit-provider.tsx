@@ -3,9 +3,10 @@
 import { base } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
-import { type Config, cookieToInitialState, WagmiProvider } from "wagmi";
+import { cookieToInitialState, WagmiProvider } from "wagmi";
 import { projectId, wagmiAdapter } from "@/lib/appkit";
 
 // Set up queryClient
@@ -53,17 +54,17 @@ export function AppKitProvider({
   children: ReactNode;
   cookies: string | null;
 }) {
-  const initialState = cookieToInitialState(
-    wagmiAdapter.wagmiConfig as Config,
-    cookies
-  );
+  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig, cookies);
 
   return (
     <WagmiProvider
-      config={wagmiAdapter.wagmiConfig as Config}
+      config={wagmiAdapter.wagmiConfig}
       initialState={initialState}
     >
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools />
+        {children}
+      </QueryClientProvider>
     </WagmiProvider>
   );
 }

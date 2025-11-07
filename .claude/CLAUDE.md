@@ -30,8 +30,16 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 - Prefer `for...of` loops over `.forEach()` and indexed `for` loops
 - Use optional chaining (`?.`) and nullish coalescing (`??`) for safer property access
 - Prefer template literals over string concatenation
-- Use destructuring for object and array assignments
+- Avoid destructuring - use explicit variable names for better traceability and context
+  - ✅ `const generateInvite = useGenerateInvite();` then `generateInvite()`
+  - ❌ `const { mutate, isPending } = useMutation();`
+  - ✅ `const user = getUserData();` then `user.name`
+  - ❌ `const { name } = getUserData();`
+  - ✅ `const items = getItems();` then `items[0]`
+  - ❌ `const [first] = getItems();`
+  - This applies to objects, arrays, and all variable declarations
 - Use `const` by default, `let` only when reassignment is needed, never `var`
+- Types over Interfaces
 
 ### Async & Promises
 

@@ -13,7 +13,7 @@ import {
   generatedSchema,
   scalarsEnumsHash,
   type GeneratedSchema,
-} from "@/gqty/schema.generated";
+} from "./schema.generated";
 import { CACHE } from "@/lib/constants";
 
 const queryFetcher: QueryFetcher = async (
@@ -89,11 +89,10 @@ export const {
   prepareReactRender,
   useHydrateCache,
   prepareQuery,
+  // @ts-expect-error - TODO: fix this
 } = createReactClient<GeneratedSchema>(client, {
   defaults: {
     // Enable Suspense, you can override this option for each hook.
     suspense: true,
   },
 });
-
-export * from "@/gqty/schema.generated";
