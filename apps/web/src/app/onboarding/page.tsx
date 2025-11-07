@@ -27,7 +27,15 @@ export default function OnboardingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteCode = searchParams?.get("invite");
-  const decoded = JSON.parse(atob(inviteCode || "")) as InviteData;
+  
+  let decoded: InviteData | null = null;
+  if (inviteCode) {
+    try {
+      decoded = JSON.parse(atob(inviteCode)) as InviteData;
+    } catch (error) {
+      console.error("Failed to decode invite code:", error);
+    }
+  }
 
   const { address, connector } = useAccount();
   const isPorto = connector?.name === "Porto";
