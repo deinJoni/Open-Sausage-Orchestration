@@ -36,7 +36,7 @@ type TextRecordsInput = {
  * });
  */
 export function useUpdateTextRecords() {
-	const { address } = useAccount();
+	const { address, connector } = useAccount();
 	const { writeContractAsync } = useWriteContract();
 	const publicClient = usePublicClient();
 
@@ -48,7 +48,20 @@ export function useUpdateTextRecords() {
 			}
 
 			try {
-				toast.info("Updating profile data...");
+				// Log connector info for debugging
+				const isPorto = connector?.name === "Porto";
+				console.log("📝 Update Text Records Transaction:", {
+					connector: connector?.name,
+					isPorto,
+					address,
+					ensName: input.ensName,
+				});
+
+				if (isPorto) {
+					toast.info("Updating profile data... (gas sponsored by Porto)");
+				} else {
+					toast.info("Updating profile data...");
+				}
 
 				// Get baseNode from registry
 				const baseNode = (await publicClient?.readContract({
@@ -145,6 +158,8 @@ export function useUpdateTextRecords() {
 					functionName: "multicall",
 					args: [multicallData],
 				});
+
+				console.log("✅ Transaction submitted:", txHash);
 
 				toast.info("Waiting for confirmation...");
 
