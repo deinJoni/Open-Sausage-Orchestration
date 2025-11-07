@@ -4,7 +4,7 @@ type User @entity(immutable: false) {
   subdomains: [Subdomain!]! @derivedFrom(field: "owner")
   isStreaming: Boolean! # if we detect that user setText with key "app.osopit.streaming" then update this to the value (either true or false)
   streamingUrl: String! # if we detect that user setText with key "app.osopit.streaming" then update this to the value (either true or false)
-  streamingWith: [User!]! @derivedFrom(field: "streamingWith") # users that are streaming with this user 
+  streamingWith: [String!]! # array of user IDs that are streaming with this user 
   createdAt: BigInt!
   updatedAt: BigInt!
 }
@@ -17,10 +17,14 @@ type User @entity(immutable: false) {
 
 # in the handler
 # if (key === "app.osopit.streaming") {
-#   const [isStreaming, streamingUrl, ...streamingWith] = value.split("|");
-#   user.isStreaming = isStreaming;
-#   user.streamingUrl = streamingUrl;
-#   user.streamingWith = streamingWith.map(userId => User.load(userId));
+#   let parts = value.split("|");
+#   user.isStreaming = parts[0] === "true";
+#   user.streamingUrl = parts[1];
+#   let streamingWithUsers: string[] = [];
+#   for (let i = 2; i < parts.length; i++) {
+#     if (parts[i].length > 0) streamingWithUsers.push(parts[i]);
+#   }
+#   user.streamingWith = streamingWithUsers;
 #   user.save();
 # }
 

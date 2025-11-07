@@ -72,7 +72,27 @@ export function handleTextChanged(event: TextChanged): void {
       nodeHex
     ]);
   }
-  
+
+  // handle streaming key
+  if (key == "app.osopit.streaming") {
+    let parts = value.split("|");
+    const user = User.load(subdomain.owner);
+    if (user != null) {
+      user.isStreaming = parts.length > 0 ? parts[0] === "true" : false;
+      user.streamingUrl = parts.length > 1 ? parts[1] : "";
+      
+      // Get all user IDs (from index 2 onwards) and filter out empty strings
+      let streamingWithUsers: string[] = [];
+      for (let i = 2; i < parts.length; i++) {
+        if (parts[i].length > 0) {
+          streamingWithUsers.push(parts[i]);
+        }
+      }
+      user.streamingWith = streamingWithUsers;
+      user.save();
+    }
+  }
+  else {
   // Update fields (works for both new and existing)
   nameLabel.value = value;
   nameLabel.blockNumber = blockNumber;
@@ -80,15 +100,7 @@ export function handleTextChanged(event: TextChanged): void {
   nameLabel.transactionHash = txHash;
   nameLabel.logIndex = logIndex;
   nameLabel.save();
-
-
-  // handle streaming key
-  if (key === "app.osopit.streaming") {
-    const [isStreaming, streamingUrl, ...streamingWith] = value.split("|");
-    const user = User.load(subdomain.owner);
-    user.isStreaming = isStreaming;
-    user.streamingUrl = streamingUrl;
-    user.streamingWith = streamingWith.map(userId => User.load(userId));
-    user.save();
   }
+
+
 }

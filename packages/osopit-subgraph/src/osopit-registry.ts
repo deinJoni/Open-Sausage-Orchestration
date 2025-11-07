@@ -24,6 +24,9 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
   if (user == null) {
     user = new User(userId);
     user.address = ownerAddress;
+    user.isStreaming = false;
+    user.streamingUrl = "";
+    user.streamingWith = [];
     user.createdAt = event.block.timestamp;
     user.updatedAt = event.block.timestamp;
     user.save();
