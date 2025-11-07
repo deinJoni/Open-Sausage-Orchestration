@@ -5,10 +5,9 @@ import { namehash } from "./utils";
 
 export function handleNameRegistered(event: NameRegisteredEvent): void {
   let ownerAddress = event.params.owner;
-  let labelHash = event.params.label; // This is the keccak256 hash since label is indexed
-  
+
   // Extract the actual label string from transaction input
-  let labelStringOrNull = extractLabelFromTxInput(event.transaction.input);
+  let labelStringOrNull = extractLabelFromTxInput(event.transaction.input)
   
   if (labelStringOrNull == null) {
     log.warning("Could not extract label from transaction input for tx {}", [event.transaction.hash.toHexString()]);
@@ -17,6 +16,8 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
   
   // At this point we know it's not null, so we can safely use it
   let labelString: string = labelStringOrNull as string;
+  
+  log.info("NameRegistered event: label={}, owner={}", [labelString, ownerAddress.toHexString()]);
   
   // Create or load User (by wallet address)
   let userId = ownerAddress.toHexString();
@@ -75,25 +76,16 @@ function extractLabelFromTxInput(input: Bytes): string | null {
     return null;
   }
   
-  // Get function selector (first 4 bytes)
-  let selector = input.toHexString().slice(0, 10); // 0x + 8 hex chars
-  
-  // register(string,address) = 0xd393c871
-  // registerWithInvite(string,address,uint256,address,bytes) = need to check
-  
-  // For both functions, the label is the first parameter
   // Skip the 4-byte function selector
   let dataWithoutSelector = Bytes.fromUint8Array(input.subarray(4));
   
   // Decode the string parameter
-  // In ABI encoding, the first 32 bytes point to the offset of the string data
-  // The string data starts at that offset with 32 bytes for length, then the actual string
+  // In ABI encoding, the first 32 bytes contain the offset to the string data
   if (dataWithoutSelector.length < 32) {
     return null;
   }
   
-  // For string as first parameter, it typically starts at offset 0x20 (32 bytes)
-  // But we need to read the offset first
+  // Read the offset (first 32 bytes)
   let offsetBytes = Bytes.fromUint8Array(dataWithoutSelector.subarray(0, 32));
   let offset = ethereum.decode("uint256", offsetBytes);
   if (offset == null) {
@@ -115,6 +107,11 @@ function extractLabelFromTxInput(input: Bytes): string | null {
   
   let lengthValue = length.toBigInt().toI32();
   
+  // Validate length is reasonable (prevent issues with malformed data)
+  if (lengthValue <= 0 || lengthValue > 1000) {
+    return null;
+  }
+  
   // Then comes the actual string data
   if (dataWithoutSelector.length < offsetValue + 32 + lengthValue) {
     return null;
@@ -122,10 +119,11 @@ function extractLabelFromTxInput(input: Bytes): string | null {
   
   let stringBytes = dataWithoutSelector.subarray(offsetValue + 32, offsetValue + 32 + lengthValue);
   
-  // Convert Uint8Array to string by creating a string from char codes
+  // Convert bytes to string by decoding each byte as a character
   let result = "";
-  for (let i = 0; i < stringBytes.length; i++) {
+  for (let i = 0; i < lengthValue; i++) {
     result += String.fromCharCode(stringBytes[i]);
   }
+  
   return result;
 }
