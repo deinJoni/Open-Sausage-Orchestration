@@ -1,28 +1,19 @@
-import { Bytes, log, ethereum } from "@graphprotocol/graph-ts";
-import { NameRegistered as NameRegisteredEvent } from "../generated/OsopitRegistry/OsopitRegistry";
+import { log } from "@graphprotocol/graph-ts";
+import type { NameRegistered as NameRegisteredEvent } from "../generated/OsopitRegistry/OsopitRegistry";
 import { Subdomain, User } from "../generated/schema";
 import { namehash } from "./utils";
 
 export function handleNameRegistered(event: NameRegisteredEvent): void {
   const ownerAddress = event.params.owner;
 
-  // Extract the actual label string from transaction input
-  // Note: event.params.label is the keccak256 hash because it's indexed
-  let labelStringOrNull = event.transaction.input;
+  const label = event.params.label;
 
-  log.info("NameRegistered event: label={}, owner={}", [labelStringOrNull.toString(), ownerAddress.toHexString()]);
-
-  let labelString = labelStringOrNull.toString();
-  
   // Create or load User (by wallet address)
   const userId = event.params.owner.toHexString();
   let user = User.load(userId);
   if (user == null) {
     user = new User(userId);
     user.address = ownerAddress;
-    user.isStreaming = false;
-    user.streamingUrl = "";
-    user.streamingWith = [];
     user.createdAt = event.block.timestamp;
     user.updatedAt = event.block.timestamp;
     user.save();
@@ -30,7 +21,7 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
   }
 
   // Calculate node hash for the subdomain
-  const fullName = labelString + ".catmisha.eth";
+  const fullName = `${label}.catmisha.eth`;
   const nodeBytes = namehash(fullName);
   const nodeHash = nodeBytes.toHexString();
 
@@ -38,26 +29,18 @@ export function handleNameRegistered(event: NameRegisteredEvent): void {
   if (subdomain == null) {
     subdomain = new Subdomain(nodeHash);
     subdomain.node = nodeBytes;
-    subdomain.name = labelString;
+    subdomain.name = label;
     subdomain.owner = userId;
     subdomain.registeredAt = event.block.timestamp;
-    subdomain.updatedAt = event.block.timestamp;
     subdomain.registrationTxHash = event.transaction.hash;
-    subdomain.save();
-
-    log.info("Created Subdomain: {} for user {}", [labelString, userId]);
-  } else {
-    // Update if ownership changed
-    subdomain.owner = userId;
-    subdomain.name = labelString;
     subdomain.updatedAt = event.block.timestamp;
     subdomain.save();
-
-    log.info("Updated Subdomain ownership: {} -> {}", [labelString, userId]);
+  } else {
+    log.error("Subdomain already exists: {}", [nodeHash]);
+    return;
   }
 
-  // Update user's updatedAt
+  user.subdomain = nodeHash;
   user.updatedAt = event.block.timestamp;
   user.save();
 }
- 

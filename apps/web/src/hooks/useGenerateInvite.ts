@@ -26,7 +26,7 @@ export function useGenerateInvite() {
 
       // Calculate expiration timestamp
       const expirationTimestamp = Math.floor(
-        Date.now() / 1000 +
+        Date.now() / TIME.MS_PER_SECOND +
           Number.parseInt(input.expirationDays, 10) * TIME.SECONDS_PER_DAY
       );
 

@@ -1,45 +1,26 @@
 type User @entity(immutable: false) {
   id: ID! # wallet address (lowercase hex)
   address: Bytes! # wallet address
-  subdomains: [Subdomain!]! @derivedFrom(field: "owner")
-  isStreaming: Boolean! # if we detect that user setText with key "app.osopit.streaming" then update this to the value (either true or false)
-  streamingUrl: String! # if we detect that user setText with key "app.osopit.streaming" then update this to the value (either true or false)
-  streamingWith: [String!]! # array of user IDs that are streaming with this user 
+  subdomain: Subdomain! # the subdomain that this user owns
+  activeBroadcast: Broadcast # current live broadcast (nullable)
+  broadcasts: [Broadcast!]! @derivedFrom(field: "user") # all broadcasts by this user
+  participatedIn: [Broadcast!]! @derivedFrom(field: "broadcastWith") # broadcasts this user participated in as guest
   createdAt: BigInt!
   updatedAt: BigInt!
 }
-
-# example payload of setText with key "app.osopit.streaming"
-# {
-#   key: "app.osopit.streaming",
-#   value: "true|streamingUrl|userId1|userId2|userId3|........",
-# }
-
-# in the handler
-# if (key === "app.osopit.streaming") {
-#   let parts = value.split("|");
-#   user.isStreaming = parts[0] === "true";
-#   user.streamingUrl = parts[1];
-#   let streamingWithUsers: string[] = [];
-#   for (let i = 2; i < parts.length; i++) {
-#     if (parts[i].length > 0) streamingWithUsers.push(parts[i]);
-#   }
-#   user.streamingWith = streamingWithUsers;
-#   user.save();
-# }
 
 type Subdomain @entity(immutable: false) {
   id: ID! # node hash (bytes32 as hex string)
   node: Bytes! # ENS node (bytes32)
   name: String! # readable subdomain name (e.g., "alice" or full "alice.osopit.eth")
   owner: User! # wallet that owns this subdomain
-  nameLabels: [NameLabel!]! @derivedFrom(field: "subdomain")
+  textRecords: [TextRecord!]! @derivedFrom(field: "subdomain")
   registeredAt: BigInt!
-  updatedAt: BigInt!
   registrationTxHash: Bytes!
+  updatedAt: BigInt!
 }
 
-type NameLabel @entity(immutable: false) {
+type TextRecord @entity(immutable: false) {
   id: ID! #key-nodeHex to allow updates for the same key
   key: String! # "avatar" "description" "email" "url" "header" "com.twitter" "com.github" "com.discord" "com.telegram" "social.farcaster" "social.lens" "livestream.url" "livestream.active" "art1" through "art8"
   value: String! # url, text, boolean, etc.
@@ -48,4 +29,25 @@ type NameLabel @entity(immutable: false) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
   logIndex: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+
+# Broadcast tracking
+# TextChanged event with key "app.osopit.broadcast" and value format: "true|url|userId1|userId2|..."
+# - When isLive=true: creates new broadcast, sets User.activeBroadcast
+# - When isLive=false: updates existing broadcast (isLive=false, endedAt), clears User.activeBroadcast
+type Broadcast @entity(immutable: false) {
+  id: ID! # subdomain.id + startedAt timestamp
+  isLive: Boolean!
+  user: User!
+  broadcastUrl: String!
+  broadcastWith: [User!]! # guest users participating in the broadcast
+  startedAt: BigInt!
+  endedAt: BigInt # nullable - set when broadcast ends
+  transactionHash: Bytes!
+  logIndex: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
 }

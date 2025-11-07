@@ -9,15 +9,15 @@ import {
   defaultResponseHandler,
   type QueryFetcher,
 } from "gqty";
+import { CACHE } from "@/lib/constants";
 import {
+  type GeneratedSchema,
   generatedSchema,
   scalarsEnumsHash,
-  type GeneratedSchema,
 } from "./schema.generated";
-import { CACHE } from "@/lib/constants";
 
 const queryFetcher: QueryFetcher = async (
-  { query, variables, operationName },
+  { query: queryString, variables, operationName },
   fetchOptions
 ) => {
   // Modify "https://api.studio.thegraph.com/query/1714097/osopit-subgraphv-1/version/latest" if needed
@@ -29,7 +29,7 @@ const queryFetcher: QueryFetcher = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        query,
+        query: queryString,
         variables,
         operationName,
       }),
@@ -89,7 +89,7 @@ export const {
   prepareReactRender,
   useHydrateCache,
   prepareQuery,
-  // @ts-expect-error - TODO: fix this
+  // @ts-expect-error - TODO: fix this type
 } = createReactClient<GeneratedSchema>(client, {
   defaults: {
     // Enable Suspense, you can override this option for each hook.

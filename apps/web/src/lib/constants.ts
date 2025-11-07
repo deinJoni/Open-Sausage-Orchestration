@@ -17,8 +17,12 @@ export const SUBDOMAIN_VALIDATION = {
 
 // Time constants
 export const TIME = {
+  MS_PER_SECOND: 1000,
   SECONDS_PER_DAY: 24 * 60 * 60,
   DEFAULT_INVITE_EXPIRATION_DAYS: 7,
+  MS_PER_MINUTE: 60_000,
+  MS_PER_HOUR: 3_600_000,
+  MS_PER_DAY: 86_400_000,
 } as const;
 
 // ENS text record keys
@@ -26,12 +30,7 @@ export const ENS_TEXT_KEYS = {
   DESCRIPTION: "description",
   AVATAR: "avatar",
   SOCIALS: "app.osopit.socials",
-  STREAMING: "app.osopit.streaming",
-} as const;
-
-// Default values
-export const DEFAULTS = {
-  STREAMING_STATUS: "false",
+  BROADCAST: "app.osopit.broadcast",
 } as const;
 
 export const THOUSAND = 1024;

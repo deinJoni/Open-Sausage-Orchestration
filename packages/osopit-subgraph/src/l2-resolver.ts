@@ -1,106 +1,130 @@
-import { BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { TextChanged } from "../generated/L2Resolver/ITextResolver";
-import { User, Subdomain, NameLabel } from "../generated/schema";
+import { log } from "@graphprotocol/graph-ts";
+import type { TextChanged } from "../generated/L2Resolver/ITextResolver";
+import { Broadcast, Subdomain, TextRecord, User } from "../generated/schema";
 
 /**
  * Handle TextChanged events from ITextResolver
- * 
+ *
  * Event signature: TextChanged(bytes32 node, string indexed indexedKey, string key, string value)
- * 
+ *
  * Strategy:
  * - Load existing Subdomain by node hash (must already exist from NameRegistered event)
  * - Create NameLabel linked to Subdomain
  * - Throws error if Subdomain doesn't exist
  */
+
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
 export function handleTextChanged(event: TextChanged): void {
   // Extract event data
-  let node = event.params.node;
-  let nodeHex = node.toHexString();
-  let key = event.params.key;
-  let value = event.params.value;
-  let txFrom = event.transaction.from;
-  let txHash = event.transaction.hash;
-  let blockNumber = event.block.number;
-  let blockTimestamp = event.block.timestamp;
-  let logIndex = event.logIndex;
+  const node = event.params.node;
+  const nodeHex = node.toHexString();
+  const key = event.params.key;
+  const value = event.params.value;
+  const txHash = event.transaction.hash;
+  const blockNumber = event.block.number;
+  const blockTimestamp = event.block.timestamp;
+  const logIndex = event.logIndex;
 
   // Load Subdomain by node hash - it must already exist
-  let subdomain = Subdomain.load(nodeHex);
-  
+  const subdomain = Subdomain.load(nodeHex);
+
   if (subdomain == null) {
-    // Subdomain must exist before TextChanged event
-    // It should be created by NameRegistered event first
-    log.warning("Subdomain not found for node: {}. NameRegistered must be processed first.", [node.toHexString()]);
-    log.error("Subdomain not found for node: {}. NameRegistered must be processed first.", [nodeHex]);
-    return; // Exit early if subdomain doesn't exist
-    // throw new Error("Subdomain not found for node: " + nodeHex + ". NameRegistered event must be processed before TextChanged.");
+    log.error("Subdomain not found for node: {}", [nodeHex]);
+    return;
   }
 
-  // Update subdomain's updatedAt
+  // Update subdomain and user timestamps
   subdomain.updatedAt = blockTimestamp;
   subdomain.save();
 
-  // Update owner's updatedAt
-  let owner = User.load(subdomain.owner);
-  if (owner != null) {
-    owner.updatedAt = blockTimestamp;
-    owner.save();
+  const user = User.load(subdomain.owner);
+  if (user == null) {
+    log.error("User not found for subdomain: {}", [nodeHex]);
+    return;
   }
+  user.updatedAt = blockTimestamp;
+  user.save();
 
-  // Create or update NameLabel (mutable - only keeps latest value)
-  // ID format: key-nodeHex to allow updates for the same key
-  let nameLabelId = key + "-" + nodeHex;
-  let nameLabel = NameLabel.load(nameLabelId);
-  
-  if (nameLabel == null) {
-    nameLabel = new NameLabel(nameLabelId);
-    nameLabel.key = key;
-    nameLabel.subdomain = nodeHex; // link to Subdomain
-    
-    log.info("Created NameLabel: {} -> {}={} for subdomain {}", [
-      nameLabelId,
-      key,
-      value,
-      nodeHex
-    ]);
-  } else {
-    log.info("Updated NameLabel: {} -> {}={} (was: {}) for subdomain {}", [
-      nameLabelId,
-      key,
-      value,
-      nameLabel.value,
-      nodeHex
-    ]);
-  }
+  // Handle broadcast key
+  if (key === "app.osopit.broadcast") {
+    const parts = value.split("|");
+    const isLive = parts.length > 0 ? parts[0] === "true" : false;
+    const broadcastUrl = parts.length > 1 ? parts[1] : "";
 
-  // handle streaming key
-  if (key == "app.osopit.streaming") {
-    let parts = value.split("|");
-    const user = User.load(subdomain.owner);
-    if (user != null) {
-      user.isStreaming = parts.length > 0 ? parts[0] === "true" : false;
-      user.streamingUrl = parts.length > 1 ? parts[1] : "";
-      
-      // Get all user IDs (from index 2 onwards) and filter out empty strings
-      let streamingWithUsers: string[] = [];
-      for (let i = 2; i < parts.length; i++) {
-        if (parts[i].length > 0) {
-          streamingWithUsers.push(parts[i]);
-        }
+    // Get guest user IDs (from index 2 onwards)
+    const guestIds: string[] = [];
+    for (const part of parts.slice(2)) {
+      if (part.length > 0) {
+        guestIds.push(part);
       }
-      user.streamingWith = streamingWithUsers;
+    }
+
+    if (isLive) {
+      // Starting a new broadcast
+      const broadcastId = `${nodeHex}-${blockTimestamp.toString()}`;
+      const broadcast = new Broadcast(broadcastId);
+      broadcast.isLive = true;
+      broadcast.user = user.id;
+      broadcast.broadcastUrl = broadcastUrl;
+      broadcast.broadcastWith = guestIds;
+      broadcast.startedAt = blockTimestamp;
+      broadcast.transactionHash = txHash;
+      broadcast.logIndex = logIndex;
+      broadcast.blockNumber = blockNumber;
+      broadcast.blockTimestamp = blockTimestamp;
+      broadcast.save();
+
+      // Set as active broadcast
+      user.activeBroadcast = broadcastId;
+      user.updatedAt = blockTimestamp;
+      user.save();
+
+      log.info("Created new broadcast: {} for user {}", [broadcastId, user.id]);
+    }
+    // Ending the broadcast
+    else if (user.activeBroadcast != null) {
+      const broadcast = Broadcast.load(user.activeBroadcast);
+      if (broadcast != null) {
+        broadcast.isLive = false;
+        broadcast.endedAt = blockTimestamp;
+        broadcast.save();
+
+        log.info("Ended broadcast: {}", [user.activeBroadcast]);
+      }
+
+      // Clear active broadcast
+      user.activeBroadcast = null;
+      user.updatedAt = blockTimestamp;
       user.save();
     }
   }
-  else {
-  // Update fields (works for both new and existing)
-  nameLabel.value = value;
-  nameLabel.blockNumber = blockNumber;
-  nameLabel.blockTimestamp = blockTimestamp;
-  nameLabel.transactionHash = txHash;
-  nameLabel.logIndex = logIndex;
-  nameLabel.save();
+
+  // Create or update TextRecord (for all keys including broadcast)
+  const textRecordId = `${key}-${nodeHex}`;
+  let textRecord = TextRecord.load(textRecordId);
+
+  if (textRecord == null) {
+    textRecord = new TextRecord(textRecordId);
+    textRecord.key = key;
+    textRecord.subdomain = nodeHex;
+    textRecord.createdAt = blockTimestamp;
+    log.info("Created TextRecord: {} for subdomain {}", [
+      textRecordId,
+      nodeHex,
+    ]);
+  } else {
+    log.info("Updated TextRecord: {} (was: {}, now: {})", [
+      textRecordId,
+      textRecord.value,
+      value,
+    ]);
   }
 
-
+  textRecord.value = value;
+  textRecord.blockNumber = blockNumber;
+  textRecord.blockTimestamp = blockTimestamp;
+  textRecord.transactionHash = txHash;
+  textRecord.logIndex = logIndex;
+  textRecord.updatedAt = blockTimestamp;
+  textRecord.save();
 }

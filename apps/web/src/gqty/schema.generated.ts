@@ -2,7 +2,7 @@
  * GQty AUTO-GENERATED CODE: PLEASE DO NOT MODIFY MANUALLY
  */
 
-import { type ScalarsEnumsHash } from "gqty";
+import type { ScalarsEnumsHash } from "gqty";
 
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -17,7 +17,7 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
 };
 export type MakeEmpty<
   T extends { [key: string]: unknown },
-  K extends keyof T
+  K extends keyof T,
 > = { [_ in K]?: never };
 export type Incremental<T> =
   | T
@@ -290,6 +290,8 @@ export enum Subdomain_orderBy {
   owner__address = "owner__address",
   owner__createdAt = "owner__createdAt",
   owner__id = "owner__id",
+  owner__isStreaming = "owner__isStreaming",
+  owner__streamingUrl = "owner__streamingUrl",
   owner__updatedAt = "owner__updatedAt",
   registeredAt = "registeredAt",
   registrationTxHash = "registrationTxHash",
@@ -326,7 +328,39 @@ export interface User_filter {
   id_lte?: InputMaybe<Scalars["ID"]["input"]>;
   id_not?: InputMaybe<Scalars["ID"]["input"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  isStreaming?: InputMaybe<Scalars["Boolean"]["input"]>;
+  isStreaming_in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
+  isStreaming_not?: InputMaybe<Scalars["Boolean"]["input"]>;
+  isStreaming_not_in?: InputMaybe<Array<Scalars["Boolean"]["input"]>>;
   or?: InputMaybe<Array<InputMaybe<User_filter>>>;
+  streamingUrl?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_contains?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_gt?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_gte?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  streamingUrl_lt?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_lte?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_not?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_not_contains?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_not_contains_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_not_ends_with?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_not_ends_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_not_in?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  streamingUrl_not_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_not_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_starts_with?: InputMaybe<Scalars["String"]["input"]>;
+  streamingUrl_starts_with_nocase?: InputMaybe<Scalars["String"]["input"]>;
+  streamingWith?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  streamingWith_contains?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  streamingWith_contains_nocase?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  streamingWith_not?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  streamingWith_not_contains?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  streamingWith_not_contains_nocase?: InputMaybe<
+    Array<Scalars["String"]["input"]>
+  >;
   subdomains_?: InputMaybe<Subdomain_filter>;
   updatedAt?: InputMaybe<Scalars["BigInt"]["input"]>;
   updatedAt_gt?: InputMaybe<Scalars["BigInt"]["input"]>;
@@ -342,6 +376,9 @@ export enum User_orderBy {
   address = "address",
   createdAt = "createdAt",
   id = "id",
+  isStreaming = "isStreaming",
+  streamingUrl = "streamingUrl",
+  streamingWith = "streamingWith",
   subdomains = "subdomains",
   updatedAt = "updatedAt",
 }
@@ -612,6 +649,9 @@ export const generatedSchema = {
     address: { __type: "Bytes!" },
     createdAt: { __type: "BigInt!" },
     id: { __type: "ID!" },
+    isStreaming: { __type: "Boolean!" },
+    streamingUrl: { __type: "String!" },
+    streamingWith: { __type: "[String!]!" },
     subdomains: {
       __type: "[Subdomain!]!",
       __args: {
@@ -653,7 +693,37 @@ export const generatedSchema = {
     id_lte: { __type: "ID" },
     id_not: { __type: "ID" },
     id_not_in: { __type: "[ID!]" },
+    isStreaming: { __type: "Boolean" },
+    isStreaming_in: { __type: "[Boolean!]" },
+    isStreaming_not: { __type: "Boolean" },
+    isStreaming_not_in: { __type: "[Boolean!]" },
     or: { __type: "[User_filter]" },
+    streamingUrl: { __type: "String" },
+    streamingUrl_contains: { __type: "String" },
+    streamingUrl_contains_nocase: { __type: "String" },
+    streamingUrl_ends_with: { __type: "String" },
+    streamingUrl_ends_with_nocase: { __type: "String" },
+    streamingUrl_gt: { __type: "String" },
+    streamingUrl_gte: { __type: "String" },
+    streamingUrl_in: { __type: "[String!]" },
+    streamingUrl_lt: { __type: "String" },
+    streamingUrl_lte: { __type: "String" },
+    streamingUrl_not: { __type: "String" },
+    streamingUrl_not_contains: { __type: "String" },
+    streamingUrl_not_contains_nocase: { __type: "String" },
+    streamingUrl_not_ends_with: { __type: "String" },
+    streamingUrl_not_ends_with_nocase: { __type: "String" },
+    streamingUrl_not_in: { __type: "[String!]" },
+    streamingUrl_not_starts_with: { __type: "String" },
+    streamingUrl_not_starts_with_nocase: { __type: "String" },
+    streamingUrl_starts_with: { __type: "String" },
+    streamingUrl_starts_with_nocase: { __type: "String" },
+    streamingWith: { __type: "[String!]" },
+    streamingWith_contains: { __type: "[String!]" },
+    streamingWith_contains_nocase: { __type: "[String!]" },
+    streamingWith_not: { __type: "[String!]" },
+    streamingWith_not_contains: { __type: "[String!]" },
+    streamingWith_not_contains_nocase: { __type: "[String!]" },
     subdomains_: { __type: "Subdomain_filter" },
     updatedAt: { __type: "BigInt" },
     updatedAt_gt: { __type: "BigInt" },
@@ -786,6 +856,9 @@ export interface User {
   address?: Scalars["Bytes"]["output"];
   createdAt?: Scalars["BigInt"]["output"];
   id?: Scalars["ID"]["output"];
+  isStreaming?: Scalars["Boolean"]["output"];
+  streamingUrl?: Scalars["String"]["output"];
+  streamingWith?: Array<Scalars["String"]["output"]>;
   subdomains: (args?: {
     /**
      * @defaultValue `100`

@@ -7,7 +7,7 @@ import { L2RegistryABI } from "./abi/L2Registry";
 export const L2_REGISTRY_ADDRESS =
   "0xa609955257eacbbd566a1fa654e6c5f4b1fdc9e2" as const;
 export const L2_REGISTRAR_ADDRESS =
-  "0x7CF7abAeaa2833F2c9FDd85781439bd98e1b9891" as const;
+  "0x63e7b8F8A8d42b043fe58Be1243d7cBcb1Ca5514" as const;
 
 /**
  * Combined contract configuration
@@ -39,10 +39,10 @@ export const CONTRACT_METADATA = {
   L2Registrar: {
     address: L2_REGISTRAR_ADDRESS,
     abi: L2RegistrarABI,
-    deploymentBlock: 37_865_987,
+    deploymentBlock: 37_871_976,
     deploymentTx:
-      "0x1ec1c13e2456a9d5bab39b3d903b69a9f8a229216153f4078e0c9634a6e951c2",
+      "0x8f9ed92d8a5e54a9167688368b9dbc0a1441823080387e8c110a842f025602fd",
     explorer: `https://basescan.org/address/${L2_REGISTRAR_ADDRESS}`,
-    name: "L2 Registrar (Invite-based, zero-address support)",
+    name: "L2 Registrar (Invite-based, one subdomain per wallet)",
   },
 } as const;

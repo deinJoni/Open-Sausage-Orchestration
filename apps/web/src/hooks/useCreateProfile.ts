@@ -89,29 +89,16 @@ export function useCreateProfile() {
         // node = keccak256(abi.encodePacked(baseNode, keccak256(label)))
         toast.info("Setting profile data...");
 
-        // Fetch baseNode from registry
-        const baseNodeResponse = await fetch(
-          `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || "demo"}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              jsonrpc: "2.0",
-              method: "eth_call",
-              params: [
-                {
-                  to: L2_REGISTRY_ADDRESS,
-                  data: "0x3f15457f", // baseNode() selector
-                },
-                "latest",
-              ],
-              id: 1,
-            }),
-          }
-        );
+        // Fetch baseNode from registry using publicClient
+        const baseNode = await publicClient?.readContract({
+          address: L2_REGISTRY_ADDRESS,
+          abi: L2RegistryABI,
+          functionName: "baseNode",
+        }) as `0x${string}`;
 
-        const baseNodeData = await baseNodeResponse.json();
-        const baseNode = baseNodeData.result as `0x${string}`;
+        if (!baseNode) {
+          throw new Error("Failed to fetch baseNode from registry");
+        }
 
         // Calculate label hash
         const labelHash = keccak256(encodePacked(["string"], [input.ensName]));

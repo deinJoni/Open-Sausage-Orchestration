@@ -2,22 +2,15 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { useAccount } from "wagmi";
+import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateProfile } from "@/hooks/useCreateProfile";
-import {
-  ADDRESS_PREFIX_LENGTH,
-  ADDRESS_SUFFIX_LENGTH,
-  ADDRESSES,
-  THOUSAND,
-  TIME,
-} from "@/lib/constants";
-import { parseContractError } from "@/lib/parseContractError";
+import { ADDRESS_PREFIX_LENGTH, ADDRESS_SUFFIX_LENGTH } from "@/lib/constants";
 import type { SocialLink } from "@/types/artist";
 
 type Step = "basic" | "avatar" | "socials";
@@ -33,70 +26,22 @@ type InviteData = {
 export default function OnboardingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { address } = useAccount();
+  const inviteCode = searchParams?.get("invite");
+  const decoded = JSON.parse(atob(inviteCode || "")) as InviteData;
+
+  const { address, connector } = useAccount();
+  const isPorto = connector?.name === "Porto";
+
   const [step, setStep] = useState<Step>("basic");
   const createProfile = useCreateProfile();
 
   // Form state
-  const [ensName, setEnsName] = useState("");
+  const [ensName, setEnsName] = useState(decoded?.label || "");
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState<File | string>("");
   const [socials, setSocials] = useState<SocialLink[]>([]);
-  const [inviteData, setInviteData] = useState<InviteData | null>(null);
 
-  // Check for invite code in URL params
-  useEffect(() => {
-    const inviteCode = searchParams?.get("invite");
-    if (!inviteCode) {
-      return;
-    }
-
-    try {
-      const decoded = JSON.parse(atob(inviteCode)) as InviteData;
-
-      // Validate expiration
-      const now = Math.floor(Date.now() / THOUSAND);
-      if (decoded.expiration < now) {
-        toast.error("This invite has expired");
-        return;
-      }
-
-      // Check if invite is for specific recipient
-      const isZeroAddress = decoded.recipient === ADDRESSES.ZERO;
-
-      if (
-        !isZeroAddress &&
-        address &&
-        decoded.recipient.toLowerCase() !== address.toLowerCase()
-      ) {
-        toast.error("This invite is for a different wallet address");
-        return;
-      }
-
-      // Show warning if no wallet connected and invite is recipient-specific
-      if (!(isZeroAddress || address)) {
-        toast.warning(
-          "This invite is for a specific address. Please connect your wallet first."
-        );
-      }
-
-      // Pre-fill subdomain
-      setEnsName(decoded.label);
-      setInviteData(decoded);
-
-      const daysRemaining = Math.ceil(
-        (decoded.expiration - now) / TIME.SECONDS_PER_DAY
-      );
-      toast.success(
-        `Invite loaded! ${daysRemaining} day${daysRemaining !== 1 ? "s" : ""} remaining`
-      );
-    } catch (error) {
-      const errorMsg =
-        error instanceof Error ? error.message : parseContractError(error);
-      toast.error(errorMsg);
-      throw error;
-    }
-  }, [searchParams, address]);
+  const inviteData = decoded;
 
   const handleSubmit = async () => {
     await createProfile.mutation.mutateAsync({
@@ -110,6 +55,19 @@ export default function OnboardingPage() {
     router.push("/");
   };
 
+  if (!isPorto) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-12">
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 font-bold text-3xl text-white">
+            <PortoConnectButton />
+            Connect with Porto Wallet
+          </h1>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       <div className="mb-8 text-center">
@@ -118,6 +76,7 @@ export default function OnboardingPage() {
         </h1>
         <p className="text-zinc-400">
           Set up your profile and start receiving tips
+          {address}
         </p>
       </div>
 

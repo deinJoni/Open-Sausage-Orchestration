@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useEthToUsd } from "@/hooks/useEthToUsd";
 import { useSendTip } from "@/hooks/useSendTip";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -36,10 +35,8 @@ export function DonationModal({ artistEnsName, onClose }: DonationModalProps) {
   const [amount, setAmount] = useState("0.01");
   const [customAmount, setCustomAmount] = useState("");
   const { mutate, isPending } = useSendTip();
-  const { convertToUsd } = useEthToUsd();
 
   const selectedAmount = customAmount || amount;
-  const usdValue = convertToUsd(Number.parseFloat(selectedAmount));
 
   const handleSend = async () => {
     await mutate(artistEnsName, selectedAmount);
@@ -99,12 +96,6 @@ export function DonationModal({ artistEnsName, onClose }: DonationModalProps) {
               <span className="text-zinc-500">Amount:</span>
               <span className="font-mono font-semibold text-white">
                 {selectedAmount} ETH
-              </span>
-            </div>
-            <div className="mt-2 flex justify-between text-sm">
-              <span className="text-zinc-500">USD equivalent:</span>
-              <span className="font-mono text-zinc-400">
-                ≈ ${usdValue.toFixed(2)}
               </span>
             </div>
           </div>
