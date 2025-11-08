@@ -3,7 +3,6 @@ import {
   _SubgraphErrorPolicy_,
   OrderDirection,
   User_orderBy,
-  type User,
 } from "@/gqty/schema.generated";
 import { QUERY } from "@/lib/constants";
 
@@ -11,10 +10,10 @@ import { QUERY } from "@/lib/constants";
  * Hook to fetch users with active broadcasts
  * Returns GQty User[] - use helpers from subgraphHelpers.ts to access data
  */
-export function useActiveStreamers() {
+export function useActiveBroadcasts() {
   const { users } = useGqtyQuery();
 
-  const data: User[] =
+  const data =
     users({
       where: {
         activeBroadcast_not: null,
@@ -31,3 +30,7 @@ export function useActiveStreamers() {
     error: null,
   };
 }
+
+export type ActiveBroadcasts = NonNullable<
+  Awaited<ReturnType<typeof useActiveBroadcasts>>["data"]
+>;

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 export function useSendTip() {
   const [isPending, setIsPending] = useState(false);
 
-  const mutate = async (ensName: string, amountEth: string) => {
+  const mutate = async (ensName: string, _amountEth: string) => {
     setIsPending(true);
 
     // TODO: Replace with real implementation:
@@ -14,9 +14,7 @@ export function useSendTip() {
     // 4. Show success/error state
 
     // Simulate transaction
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    console.log(`💸 Sent ${amountEth} ETH to ${ensName}`);
+    await Promise.resolve();
 
     setIsPending(false);
 

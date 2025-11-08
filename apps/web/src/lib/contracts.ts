@@ -1,5 +1,5 @@
-import { L2RegistrarABI } from "./abi/L2Registrar";
-import { L2RegistryABI } from "./abi/L2Registry";
+import { L2RegistrarABI } from "./abi/l2-registrar";
+import { L2RegistryABI } from "./abi/l2-registry";
 
 /**
  * Contract addresses for catmisha.eth on Base mainnet

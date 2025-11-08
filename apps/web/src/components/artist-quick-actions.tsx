@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useArtistProfile } from "@/hooks/useArtistProfile";
+import { useArtistProfile } from "@/hooks/use-artist-profile";
+import { ipfsToHttp } from "@/lib/utils";
 import { DonationModal } from "./donation-modal";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -52,16 +53,22 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
       <div className="w-72">
         <div className="mb-4 flex items-center gap-3">
           <Image
-            alt={artist.ensName}
+            alt={artist.subdomain ?? ""}
             className="h-12 w-12 rounded-full border-2 border-zinc-700"
             height={48}
-            src={artist.avatar}
+            src={ipfsToHttp(
+              artist.user?.subdomain
+                ?.textRecords?.()
+                ?.find((record) => record.key === "avatar")?.value ?? ""
+            )}
             width={48}
           />
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h4 className="font-semibold text-white">{artist.ensName}</h4>
-              {artist.isStreaming && (
+              <h4 className="font-semibold text-white">
+                {artist.subdomain ?? ""}
+              </h4>
+              {artist.user?.activeBroadcast?.isLive && (
                 <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-red-400 text-xs">
                   LIVE
                 </span>
@@ -70,11 +77,16 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
           </div>
         </div>
 
-        <p className="mb-4 line-clamp-3 text-sm text-zinc-400">{artist.bio}</p>
+        <p className="mb-4 line-clamp-3 text-sm text-zinc-400">
+          {artist.user?.subdomain
+            ?.textRecords?.()
+            ?.find((record) => record.key === "description")?.value ??
+            "Description"}
+        </p>
 
         <div className="flex gap-2">
           <Button asChild className="flex-1" size="sm" variant="outline">
-            <Link href={`/artist/${artist.ensName}`}>View Profile</Link>
+            <Link href={`/artist/${artist.subdomain ?? ""}`}>View Profile</Link>
           </Button>
           <Button
             className="flex-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
@@ -88,7 +100,7 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
 
       {showDonationModal && (
         <DonationModal
-          artistEnsName={artist.ensName}
+          artistEnsName={artist.subdomain ?? ""}
           onClose={() => setShowDonationModal(false)}
         />
       )}

@@ -3,40 +3,41 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import type { ArtistProfile } from "@/types/artist";
+import type { ActiveBroadcasts } from "@/hooks/use-active-broadcast";
+import { resolveIPFS } from "@/lib/ipfs";
 import { ArtistQuickActions } from "./artist-quick-actions";
 import { StreamEmbed } from "./stream-embed";
 import { Button } from "./ui/button";
 
 type LivestreamCarouselProps = {
-  streamers: ArtistProfile[];
+  broadcasts: ActiveBroadcasts;
 };
 
-export function LivestreamCarousel({ streamers }: LivestreamCarouselProps) {
+export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  if (!streamers || streamers.length === 0) {
+  if (!broadcasts || broadcasts.length === 0) {
     return null;
   }
 
-  const currentStreamer = streamers[currentIndex];
+  const currentBroadcast = broadcasts[currentIndex];
 
   const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? streamers.length - 1 : prev - 1));
+    setCurrentIndex((prev) => (prev === 0 ? broadcasts.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev === streamers.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) => (prev === broadcasts.length - 1 ? 0 : prev + 1));
   };
 
   return (
     <div className="mb-12 w-full">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-bold text-2xl text-white">🔴 Live Now</h2>
-        {streamers.length > 1 && (
+        {broadcasts.length > 1 && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-zinc-400">
-              {currentIndex + 1} / {streamers.length}
+              {currentIndex + 1} / {broadcasts.length}
             </span>
             <div className="flex gap-1">
               <Button
@@ -62,13 +63,17 @@ export function LivestreamCarousel({ streamers }: LivestreamCarouselProps) {
 
       <div className="relative">
         {/* Stream Embed */}
-        {currentStreamer.streamUrl && currentStreamer.streamPlatform ? (
+        {currentBroadcast.activeBroadcast?.broadcastUrl ? (
           <StreamEmbed
-            artistName={currentStreamer.ensName}
+            artistName={currentBroadcast.subdomain?.name ?? ""}
             showPlatformBadge
-            streamPlatform={currentStreamer.streamPlatform}
-            streamUrl={currentStreamer.streamUrl}
-            taggedArtists={currentStreamer.taggedArtists}
+            streamPlatform={"youtube"} // TODO make this dynamic or remove it even...
+            streamUrl={currentBroadcast.activeBroadcast?.broadcastUrl}
+            taggedArtists={
+              currentBroadcast.activeBroadcast
+                ?.broadcastWith?.()
+                ?.map((broadcast) => broadcast.subdomain?.name ?? "") ?? []
+            }
           />
         ) : (
           <div className="flex aspect-video items-center justify-center rounded-lg border border-zinc-800 bg-zinc-800">
@@ -78,24 +83,39 @@ export function LivestreamCarousel({ streamers }: LivestreamCarouselProps) {
 
         {/* Streamer Info Bar */}
         <div className="mt-2 rounded-lg border border-zinc-800 bg-zinc-900/90 p-4 backdrop-blur">
-          <ArtistQuickActions ensName={currentStreamer.ensName}>
+          <ArtistQuickActions ensName={currentBroadcast.subdomain?.name ?? ""}>
             <button
               className="flex items-center gap-4 transition-opacity hover:opacity-80"
               type="button"
             >
-              <Image
-                alt={currentStreamer.ensName}
-                className="h-12 w-12 rounded-full border-2 border-red-500"
-                height={48}
-                src={currentStreamer.avatar}
-                width={48}
-              />
+              {currentBroadcast.subdomain
+                ?.textRecords?.()
+                ?.find((record) => record.key === "avatar")?.value ? (
+                <Image
+                  alt={currentBroadcast.subdomain?.name ?? ""}
+                  className="h-12 w-12 rounded-full border-2 border-red-500"
+                  height={48}
+                  src={resolveIPFS(
+                    currentBroadcast.subdomain
+                      ?.textRecords?.()
+                      ?.find((record) => record.key === "avatar")?.value
+                  )}
+                  width={48}
+                />
+              ) : (
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-red-500 bg-zinc-800 text-2xl">
+                  👤
+                </div>
+              )}
               <div className="flex-1 text-left">
                 <p className="font-semibold text-white">
-                  {currentStreamer.ensName}
+                  {currentBroadcast.subdomain?.name ?? ""}
                 </p>
                 <p className="line-clamp-1 text-sm text-zinc-400">
-                  {currentStreamer.bio}
+                  {currentBroadcast.subdomain
+                    ?.textRecords?.()
+                    ?.find((record) => record.key === "description")?.value ??
+                    "Description"}
                 </p>
               </div>
             </button>
@@ -104,16 +124,16 @@ export function LivestreamCarousel({ streamers }: LivestreamCarouselProps) {
       </div>
 
       {/* Navigation Dots */}
-      {streamers.length > 1 && (
+      {broadcasts.length > 1 && (
         <div className="mt-4 flex justify-center gap-2">
-          {streamers.map((_, index) => (
+          {broadcasts.map((_, index) => (
             <button
               className={`h-2 w-2 rounded-full transition-all ${
                 index === currentIndex
                   ? "w-8 bg-purple-500"
                   : "bg-zinc-700 hover:bg-zinc-600"
               }`}
-              key={`dot-${streamers[index]?.ensName || index}`}
+              key={`dot-${broadcasts[index]?.subdomain?.name ?? index}`}
               onClick={() => setCurrentIndex(index)}
               type="button"
             />

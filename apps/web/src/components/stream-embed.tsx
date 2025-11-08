@@ -3,8 +3,8 @@ import { ArtistQuickActions } from "./artist-quick-actions";
 
 type StreamEmbedProps = {
   streamUrl: string;
-  streamPlatform: "twitch" | "youtube";
-  artistName: string;
+  streamPlatform: string;
+  artistName?: string;
   showPlatformBadge?: boolean;
   taggedArtists?: string[];
 };

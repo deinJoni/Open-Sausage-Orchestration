@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { useAllArtists } from "@/hooks/useAllArtists";
+import { useAllArtists } from "@/hooks/use-all-artists";
+import { ipfsToHttp } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
@@ -21,8 +22,10 @@ export function TagArtistsModal({ onConfirm, onCancel }: TagArtistsModalProps) {
   const filteredArtists =
     allArtists?.filter(
       (artist) =>
-        artist.ensName.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        artist.ensName !== "yourname.eth" // Don't show self
+        artist.subdomain?.name
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) &&
+        artist.subdomain.name !== "yourname.eth" // Don't show self
     ) || [];
 
   const toggleArtist = (ensName: string) => {
@@ -66,24 +69,35 @@ export function TagArtistsModal({ onConfirm, onCancel }: TagArtistsModalProps) {
             filteredArtists.map((artist) => (
               <button
                 className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
-                  selectedArtists.includes(artist.ensName)
+                  selectedArtists.includes(artist.subdomain?.name ?? "")
                     ? "border-purple-500 bg-purple-500/10"
                     : "border-zinc-700 hover:border-zinc-600"
                 }`}
-                key={artist.ensName}
-                onClick={() => toggleArtist(artist.ensName)}
+                key={artist.subdomain?.name ?? ""}
+                onClick={() => toggleArtist(artist.subdomain?.name ?? "")}
                 type="button"
               >
                 <Image
-                  alt={artist.ensName}
+                  alt={artist.subdomain?.name ?? ""}
                   className="h-10 w-10 rounded-full"
-                  src={artist.avatar}
+                  src={ipfsToHttp(
+                    artist.subdomain
+                      ?.textRecords?.()
+                      ?.find((record) => record.key === "avatar")?.value ?? ""
+                  )}
                 />
                 <div className="flex-1">
-                  <div className="font-medium text-white">{artist.ensName}</div>
-                  <div className="text-xs text-zinc-400">{artist.bio}</div>
+                  <div className="font-medium text-white">
+                    {artist.subdomain?.name ?? ""}
+                  </div>
+                  <div className="text-xs text-zinc-400">
+                    {artist.subdomain
+                      ?.textRecords?.()
+                      ?.find((record) => record.key === "description")?.value ??
+                      "Description"}
+                  </div>
                 </div>
-                {selectedArtists.includes(artist.ensName) && (
+                {selectedArtists.includes(artist.subdomain?.name ?? "") && (
                   <span className="text-purple-400">✓</span>
                 )}
               </button>

@@ -8,24 +8,32 @@ import { DonationModal } from "@/components/donation-modal";
 import { StreamEmbed } from "@/components/stream-embed";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useArtistProfile } from "@/hooks/useArtistProfile";
+import { useArtistProfile } from "@/hooks/use-artist-profile";
+import { SocialKey } from "@/lib/constants";
+import { resolveIPFS } from "@/lib/ipfs";
 
-const SOCIAL_ICONS: Record<string, string> = {
-  spotify: "🎵",
-  soundcloud: "🎧",
-  twitch: "📺",
-  youtube: "▶️",
-  twitter: "🐦",
-  instagram: "📷",
-  github: "🔧",
-  custom: "🔗",
+const SOCIAL_ICONS: Record<SocialKey, string> = {
+  "com.spotify": "🎵",
+  "com.soundcloud": "🎧",
+  "com.twitch": "📺",
+  "com.youtube": "▶️",
+  "com.twitter": "🐦",
+  "com.instagram": "📷",
+  "com.github": "🔧",
+  "com.discord": "🔗",
+  "com.telegram": "🔗",
+  "com.tiktok": "🔗",
+  "com.facebook": "🔗",
+  "com.linkedin": "🔗",
+  "com.pinterest": "🔗",
+  "com.reddit": "🔗",
 };
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
 export default function ArtistProfilePage() {
   const params = useParams();
   const ensName = params.ensName as string;
-  const { data, isLoading } = useArtistProfile(ensName, true); // Include streaming data
-  const artist = data as import("@/types/artist").FullArtistProfile | undefined;
+  const { data: artist, isLoading } = useArtistProfile(ensName);
   const [showDonationModal, setShowDonationModal] = useState(false);
 
   if (isLoading) {
@@ -70,10 +78,10 @@ export default function ArtistProfilePage() {
       </div>
 
       {/* Stream Embed - Show if artist is currently streaming */}
-      {"isStreaming" in artist && artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
+      {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
         <div className="mb-8">
           <StreamEmbed
-            artistName={ensName}
+            artistName={artist.subdomain || ensName}
             streamPlatform={artist.streamPlatform}
             streamUrl={artist.streamUrl}
             taggedArtists={artist.taggedArtists || []}
@@ -85,18 +93,27 @@ export default function ArtistProfilePage() {
       <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-start">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          {artist.avatar ? (
+          {artist.textRecords?.()?.find((record) => record.key === "avatar")
+            ?.value ? (
             <Image
-              alt={ensName}
+              alt={artist.subdomain || ensName}
               className={`h-32 w-32 rounded-full border-4 ${
-                "isStreaming" in artist && artist.isStreaming ? "border-red-500" : "border-zinc-700"
+                artist.isStreaming ? "border-red-500" : "border-zinc-700"
               }`}
               height={128}
-              src={artist.avatar}
+              src={resolveIPFS(
+                artist
+                  .textRecords?.()
+                  ?.find((record) => record.key === "avatar")?.value
+              )}
               width={128}
             />
           ) : (
-            <div className="h-32 w-32 rounded-full border-4 border-zinc-700 bg-zinc-800 flex items-center justify-center text-4xl">
+            <div
+              className={`flex h-32 w-32 items-center justify-center rounded-full border-4 ${
+                artist.isStreaming ? "border-red-500" : "border-zinc-700"
+              } bg-zinc-800 text-4xl`}
+            >
               👤
             </div>
           )}
@@ -106,10 +123,18 @@ export default function ArtistProfilePage() {
         <div className="flex-1 space-y-4">
           <div>
             <h1 className="mb-2 font-bold text-4xl text-white">
-              {ensName}
+              {artist.subdomain || ensName}
             </h1>
-            {artist.bio && (
-              <p className="text-lg text-zinc-300">{artist.bio}</p>
+            {artist
+              .textRecords?.()
+              ?.find((record) => record.key === "description")?.value && (
+              <p className="text-lg text-zinc-300">
+                {
+                  artist
+                    .textRecords?.()
+                    ?.find((record) => record.key === "description")?.value
+                }
+              </p>
             )}
           </div>
 
@@ -124,42 +149,43 @@ export default function ArtistProfilePage() {
       </div>
 
       {/* Social Links */}
-      {artist.socials && artist.socials.length > 0 && (
-        <div>
-          <h3 className="mb-4 font-semibold text-white text-xl">
-            🔗 Connect & Listen
-          </h3>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {artist.socials.map((social) => (
+      <div>
+        <h3 className="mb-4 font-semibold text-white text-xl">
+          🔗 Connect & Listen
+        </h3>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {artist
+            .textRecords?.()
+            ?.filter((record) => SocialKey.safeParse(record.key).success)
+            .map((record) => (
               <a
                 className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 transition-colors hover:border-purple-500/50 hover:bg-zinc-900/80"
-                href={social.url}
-                key={social.url}
+                href={record.value}
+                key={record.value}
                 rel="noopener noreferrer"
                 target="_blank"
               >
                 <span className="text-2xl">
-                  {SOCIAL_ICONS[social.platform] || "🔗"}
+                  {SOCIAL_ICONS[SocialKey.parse(record.key)] || "🔗"}
                 </span>
                 <div className="flex-1 overflow-hidden">
                   <div className="font-medium text-white capitalize">
-                    {social.label || social.platform}
+                    {record.key}
                   </div>
                   <div className="truncate text-xs text-zinc-500">
-                    {social.url}
+                    {record.value}
                   </div>
                 </div>
                 <span className="text-zinc-500">→</span>
               </a>
             ))}
-          </div>
         </div>
-      )}
+      </div>
 
       {/* Donation Modal */}
       {showDonationModal && (
         <DonationModal
-          artistEnsName={ensName}
+          artistEnsName={artist.subdomain ?? ""}
           onClose={() => setShowDonationModal(false)}
         />
       )}

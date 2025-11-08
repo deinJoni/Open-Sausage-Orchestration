@@ -8,18 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCheckSubdomainAvailability } from "@/hooks/useCheckSubdomainAvailability";
-import { useGenerateInvite } from "@/hooks/useGenerateInvite";
-import { L2RegistrarABI } from "@/lib/abi/L2Registrar";
+import { useCheckSubdomainAvailability } from "@/hooks/use-check-subdomain-availability";
+import { useGenerateInvite } from "@/hooks/use-generate-profile";
+import { L2RegistrarABI } from "@/lib/abi/l2-registrar";
 import {
   ADDRESS_PREFIX_LENGTH,
   ADDRESS_SUFFIX_LENGTH,
   ADDRESSES,
+  DEBOUNCE_TIME,
+  ENS,
   SUBDOMAIN_VALIDATION,
   TIME,
 } from "@/lib/constants";
 import { L2_REGISTRAR_ADDRESS } from "@/lib/contracts";
-import { parseContractError } from "@/lib/parseContractError";
+import { parseContractError } from "@/lib/parse-contract-error";
 
 export default function InvitePage() {
   const { address, isConnected, connector } = useAccount();
@@ -36,7 +38,7 @@ export default function InvitePage() {
   const generateInvite = useGenerateInvite();
 
   // Debounce label to avoid excessive queries while typing
-  const [debouncedLabel] = useDebounceValue(label, 300);
+  const [debouncedLabel] = useDebounceValue(label, DEBOUNCE_TIME);
 
   // Check if subdomain is available
   const { isAvailable, error: availabilityError } =
@@ -100,14 +102,16 @@ export default function InvitePage() {
 
     if (availabilityError) {
       return (
-        <p className="mt-1 text-yellow-400 text-xs">
+        <p className="mt-1 text-xs text-yellow-400">
           ⚠️ Unable to check availability - subgraph error
         </p>
       );
     }
 
     if (isChecking) {
-      return <p className="mt-1 text-zinc-400 text-xs">Checking availability...</p>;
+      return (
+        <p className="mt-1 text-xs text-zinc-400">Checking availability...</p>
+      );
     }
 
     if (isAvailable === false) {
@@ -300,8 +304,8 @@ export default function InvitePage() {
               </p>
               <div className="space-y-1 text-xs text-zinc-400">
                 <p>
-                  <span className="text-zinc-500">Subdomain:</span> {label}
-                  .osopit.eth
+                  <span className="text-zinc-500">Subdomain:</span> {label}.
+                  {ENS.PARENT_DOMAIN}
                 </p>
                 <p>
                   <span className="text-zinc-500">Expires in:</span>{" "}
@@ -324,7 +328,7 @@ export default function InvitePage() {
                   value={label}
                 />
                 <span className="-translate-y-1/2 absolute top-1/2 right-3 text-sm text-zinc-500">
-                  .osopit.eth
+                  .{ENS.PARENT_DOMAIN}
                 </span>
               </div>
               {getAvailabilityMessage()}

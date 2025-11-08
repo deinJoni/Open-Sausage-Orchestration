@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useAccount } from "wagmi";
+import { BroadcastControl } from "@/components/broadcast-control";
+import { ProfileEditForm } from "@/components/profile-edit-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useOwnedProfile } from "@/hooks/useOwnedProfile";
-import { useArtistProfile } from "@/hooks/useArtistProfile";
-import { useProfileActivity } from "@/hooks/useProfileActivity";
-import { ProfilePreview } from "@/components/ProfilePreview";
-import { ProfileEditForm } from "@/components/ProfileEditForm";
-import { ActivityFeed } from "@/components/ActivityFeed";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useOwnedProfile } from "@/hooks/use-owned-profile";
 
 /**
  * Profile management page (/me)
@@ -18,85 +16,105 @@ import { ActivityFeed } from "@/components/ActivityFeed";
  * Uses key prop on ProfileEditForm to reset form when profile changes
  */
 export default function MePage() {
-	const { isConnected } = useAccount();
-	const { ensName, hasProfile, isLoading: isLoadingOwnership } =
-		useOwnedProfile();
-	const { data: profile, isLoading: isLoadingProfile, refetch: refetchProfile } = useArtistProfile(
-		ensName || ""
-	);
-	const { activities, refetch: refetchActivities } = useProfileActivity(ensName);
+  const { isConnected } = useAccount();
+  const ownedProfile = useOwnedProfile();
 
-	// Refetch both profile and activities
-	const handleProfileUpdate = async () => {
-		await Promise.all([refetchProfile(), refetchActivities()]);
-	};
+  // No wallet connected
+  if (!isConnected) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
+        <Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+          <h1 className="mb-4 font-bold text-2xl text-white">Your Profile</h1>
+          <p className="mb-6 text-zinc-400">
+            Connect your wallet to view and manage your profile
+          </p>
+          <appkit-button size="md" />
+        </Card>
+      </div>
+    );
+  }
 
-	// No wallet connected
-	if (!isConnected) {
-		return (
-			<div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-				<Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
-					<h1 className="mb-4 font-bold text-2xl text-white">Your Profile</h1>
-					<p className="mb-6 text-zinc-400">
-						Connect your wallet to view and manage your profile
-					</p>
-					<appkit-button size="md" />
-				</Card>
-			</div>
-		);
-	}
+  // Loading state with skeleton matching the actual UI
+  if (ownedProfile.isLoading) {
+    return (
+      <div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
+        <Skeleton className="mb-8 h-10 w-64" />
 
-	// Loading state
-	if (isLoadingOwnership || isLoadingProfile) {
-		return (
-			<div className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-4">
-				<p className="text-zinc-400">Loading profile...</p>
-			</div>
-		);
-	}
+        <div className="grid gap-6">
+          {/* Edit Form Skeleton */}
+          <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
+            <div className="mb-6">
+              <div className="mb-3">
+                <Skeleton className="h-7 w-48" />
+              </div>
+              <Skeleton className="h-9 w-40" />
+            </div>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-24 w-24 rounded-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
-	// No profile found
-	if (!hasProfile || !profile) {
-		return (
-			<div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-				<Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
-					<h1 className="mb-4 font-bold text-2xl text-white">
-						No Profile Found
-					</h1>
-					<p className="mb-6 text-zinc-400">
-						You haven't created an artist profile yet. Get an invite code to
-						get started!
-					</p>
-					<Link href="/onboarding">
-						<Button className="bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600">
-							Create Profile
-						</Button>
-					</Link>
-				</Card>
-			</div>
-		);
-	}
+  // No profile found
+  if (!ownedProfile.hasProfile) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
+        <Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+          <h1 className="mb-4 font-bold text-2xl text-white">
+            No Profile Found
+          </h1>
+          <p className="mb-6 text-zinc-400">
+            You haven't created an artist profile yet. Get an invite code to get
+            started!
+          </p>
+          <Link href="/onboarding">
+            <Button className="bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600">
+              Create Profile
+            </Button>
+          </Link>
+        </Card>
+      </div>
+    );
+  }
 
-	// Main profile view
-	return (
-		<div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
-			<h1 className="mb-8 font-bold text-3xl text-white">Your Profile</h1>
+  // Main profile view
+  return (
+    <div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
+      <h1 className="mb-8 font-bold text-3xl text-white">Your Profile</h1>
 
-			<div className="grid gap-6">
-				{/* Profile Preview */}
-				<ProfilePreview profile={profile} ensName={ensName || ""} />
+      <div className="grid gap-6">
+        {/* Edit Form - key prop ensures component remounts when profile changes */}
+        {ownedProfile.data && (
+          <ProfileEditForm
+            key={ownedProfile.data?.ensName}
+            profile={ownedProfile.data}
+          />
+        )}
 
-				{/* Edit Form - key prop ensures component remounts when profile changes */}
-				<ProfileEditForm 
-					key={ensName} 
-					profile={profile} 
-					ensName={ensName || ""} 
-					onUpdate={handleProfileUpdate}
-				/>
+        {/* Broadcast Control */}
+        <BroadcastControl />
 
-				{/* Activity Feed */}
-				<ActivityFeed activities={activities} />
-			</div>
-		</div>
-	);
+        {/* Activity Feed */}
+        {/* <ActivityFeed activities={activities} /> */}
+      </div>
+    </div>
+  );
 }
