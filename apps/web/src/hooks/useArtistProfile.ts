@@ -1,5 +1,11 @@
 import { useQuery as useGqtyQuery } from "@/gqty";
-import { _SubgraphErrorPolicy_, type User } from "@/gqty/schema.generated";
+import { _SubgraphErrorPolicy_ } from "@/gqty/schema.generated";
+import type { ArtistProfile } from "@/types/artist";
+import {
+  getTextRecord,
+  getSocials,
+  resolveIPFS,
+} from "@/utils/subgraphHelpers";
 
 /**
  * Extract subdomain label from full ENS name
@@ -12,7 +18,7 @@ function extractLabel(ensName: string): string {
 
 /**
  * Hook to fetch a single artist profile by ENS name
- * Returns GQty User - use helpers from subgraphHelpers.ts to access data
+ * Queries the subgraph and transforms the data into ArtistProfile format
  */
 export function useArtistProfile(ensName?: string) {
   const { subdomains } = useGqtyQuery();
@@ -35,9 +41,16 @@ export function useArtistProfile(ensName?: string) {
     subgraphError: _SubgraphErrorPolicy_.deny,
   });
 
-  const data: User | undefined =
-    result && result.length > 0 ? result[0].owner : undefined;
-
+  // Transform subgraph data into ArtistProfile format
+  const data: ArtistProfile | undefined =
+    result && result.length > 0
+      ? {
+          bio: getTextRecord(result[0].textRecords(), "description"),
+          avatar: resolveIPFS(getTextRecord(result[0].textRecords(), "avatar")),
+          socials: getSocials(result[0].textRecords()),
+        }
+      : undefined;
+        console.log("result",data);
   return {
     data,
     isLoading: false,

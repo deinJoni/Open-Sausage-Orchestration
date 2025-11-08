@@ -110,7 +110,7 @@ export function useUpdateTextRecords() {
           );
         }
 
-        // Add socials
+        // Add socials - stored as JSON array in "app.osopit.socials" key
         if (input.textRecords.socials && input.textRecords.socials.length > 0) {
           multicallData.push(
             encodeFunctionData({

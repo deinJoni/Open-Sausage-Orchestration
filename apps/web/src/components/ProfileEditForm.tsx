@@ -17,20 +17,27 @@ interface ProfileEditFormProps {
  * Profile edit form component
  *
  * Follows React best practices:
- * - State initialized once from props (on mount)
- * - Parent passes key prop to force remount on profile change
- * - useEffect only for side effects (blob URL cleanup)
+ * - State syncs with profile prop via useEffect
+ * - useEffect for side effects (profile sync, blob URL cleanup)
  * - useMemo for expensive calculations (change detection)
  * - Validation in event handlers
  */
 export function ProfileEditForm({ profile, ensName }: ProfileEditFormProps) {
-	// ✅ Initialize state once from props
-	const [bio, setBio] = useState(profile.bio);
-	const [avatar, setAvatar] = useState<File | string>(profile.avatar);
-	const [socials, setSocials] = useState<SocialLink[]>(profile.socials);
-	const [avatarPreview, setAvatarPreview] = useState(profile.avatar);
+	// ✅ Initialize state once from props with safe defaults
+	const [bio, setBio] = useState(profile.bio || "");
+	const [avatar, setAvatar] = useState<File | string>(profile.avatar || "");
+	const [socials, setSocials] = useState<SocialLink[]>(profile.socials || []);
+	const [avatarPreview, setAvatarPreview] = useState(profile.avatar || "");
 
 	const { mutate: updateProfile, isPending } = useUpdateProfile();
+
+	// ✅ Side effect: Sync state when profile data loads/changes
+	useEffect(() => {
+		setBio(profile.bio || "");
+		setAvatar(profile.avatar || "");
+		setSocials(profile.socials || []);
+		setAvatarPreview(profile.avatar || "");
+	}, [profile]);
 
 	// ✅ Side effect: Blob URL cleanup
 	useEffect(() => {
@@ -39,15 +46,15 @@ export function ProfileEditForm({ profile, ensName }: ProfileEditFormProps) {
 			setAvatarPreview(url);
 			return () => URL.revokeObjectURL(url);
 		}
-		setAvatarPreview(typeof avatar === "string" ? avatar : profile.avatar);
+		setAvatarPreview(typeof avatar === "string" ? avatar : profile.avatar || "");
 	}, [avatar, profile.avatar]);
 
 	// ✅ Calculate during render (useMemo for expensive operation)
 	const hasChanges = useMemo(() => {
 		return (
-			bio !== profile.bio ||
-			avatar !== profile.avatar ||
-			JSON.stringify(socials) !== JSON.stringify(profile.socials)
+			bio !== (profile.bio || "") ||
+			avatar !== (profile.avatar || "") ||
+			JSON.stringify(socials) !== JSON.stringify(profile.socials || [])
 		);
 	}, [bio, avatar, socials, profile]);
 

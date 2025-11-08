@@ -39,34 +39,27 @@ export function getTextRecord(
 
 /**
  * Parse social links from text records
+ * Socials are stored as JSON array in "app.osopit.socials" key
  */
 export function getSocials(records: TextRecord[] | undefined): SocialLink[] {
   if (!records) return [];
 
-  const socials: SocialLink[] = [];
+  // Find the app.osopit.socials record
+  const socialsRecord = records.find((r) => r.key === "app.osopit.socials");
+  
+  if (!socialsRecord?.value) return [];
 
-  for (const record of records) {
-    const key = record.key;
-    const value = record.value;
-
-    if (!key || !value) continue;
-
-    if (key === "com.twitter") {
-      socials.push({ platform: "twitter", url: value });
-    } else if (key === "com.github") {
-      socials.push({ platform: "github", url: value });
-    } else if (key === "com.discord") {
-      socials.push({ platform: "custom", label: "Discord", url: value });
-    } else if (key === "com.telegram") {
-      socials.push({ platform: "custom", label: "Telegram", url: value });
-    } else if (key === "social.farcaster") {
-      socials.push({ platform: "custom", label: "Farcaster", url: value });
-    } else if (key === "social.lens") {
-      socials.push({ platform: "custom", label: "Lens", url: value });
+  try {
+    // Parse the JSON array
+    const parsed = JSON.parse(socialsRecord.value);
+    if (Array.isArray(parsed)) {
+      return parsed as SocialLink[];
     }
+    return [];
+  } catch (error) {
+    console.error("Failed to parse socials JSON:", error);
+    return [];
   }
-
-  return socials;
 }
 
 /**
