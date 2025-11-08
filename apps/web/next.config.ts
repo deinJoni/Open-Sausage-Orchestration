@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "avatars.jakerunzer.com",
       },
+      {
+        protocol: "https",
+        hostname: "ipfs.io",
+      },
     ],
   },
 };

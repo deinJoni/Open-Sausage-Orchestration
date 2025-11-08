@@ -1,10 +1,11 @@
 import { useQuery as useGqtyQuery } from "@/gqty";
 import { _SubgraphErrorPolicy_ } from "@/gqty/schema.generated";
-import type { ArtistProfile } from "@/types/artist";
+import type { ArtistProfile, FullArtistProfile } from "@/types/artist";
 import {
   getTextRecord,
   getSocials,
   resolveIPFS,
+  deriveStreamPlatform,
 } from "@/utils/subgraphHelpers";
 
 /**
@@ -17,10 +18,33 @@ function extractLabel(ensName: string): string {
 }
 
 /**
+ * Parse broadcast text record value
+ * Format: "true|url|userId1|userId2|..."
+ */
+function parseBroadcast(value: string | undefined): {
+  isLive: boolean;
+  url?: string;
+  taggedArtists?: string[];
+} {
+  if (!value) return { isLive: false };
+
+  const parts = value.split("|");
+  const isLive = parts[0] === "true";
+  
+  if (!isLive) return { isLive: false };
+
+  return {
+    isLive: true,
+    url: parts[1] || undefined,
+    taggedArtists: parts.slice(2).filter(Boolean),
+  };
+}
+
+/**
  * Hook to fetch a single artist profile by ENS name
  * Queries the subgraph and transforms the data into ArtistProfile format
  */
-export function useArtistProfile(ensName?: string) {
+export function useArtistProfile(ensName?: string, includeStreaming = false) {
   const { subdomains, $refetch } = useGqtyQuery();
 
   if (!ensName) {
@@ -43,15 +67,33 @@ export function useArtistProfile(ensName?: string) {
   });
 
   // Transform subgraph data into ArtistProfile format
-  const data: ArtistProfile | undefined =
-    result && result.length > 0
-      ? {
-          bio: getTextRecord(result[0].textRecords(), "description"),
-          avatar: resolveIPFS(getTextRecord(result[0].textRecords(), "avatar")),
-          socials: getSocials(result[0].textRecords()),
-        }
-      : undefined;
-        console.log("result",data);
+  let data: ArtistProfile | FullArtistProfile | undefined;
+  
+  if (result && result.length > 0) {
+    const textRecords = result[0].textRecords();
+    const baseProfile: ArtistProfile = {
+      bio: getTextRecord(textRecords, "description"),
+      avatar: resolveIPFS(getTextRecord(textRecords, "avatar")),
+      socials: getSocials(textRecords),
+    };
+
+    if (includeStreaming) {
+      const broadcastValue = getTextRecord(textRecords, "app.osopit.broadcast");
+      const broadcast = parseBroadcast(broadcastValue);
+      
+      data = {
+        ...baseProfile,
+        ensName,
+        isStreaming: broadcast.isLive,
+        streamUrl: broadcast.url,
+        streamPlatform: deriveStreamPlatform(broadcast.url),
+        taggedArtists: broadcast.taggedArtists,
+      } as FullArtistProfile;
+    } else {
+      data = baseProfile;
+    }
+  }
+
   return {
     data,
     isLoading: false,

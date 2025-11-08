@@ -24,7 +24,8 @@ const SOCIAL_ICONS: Record<string, string> = {
 export default function ArtistProfilePage() {
   const params = useParams();
   const ensName = params.ensName as string;
-  const { data: artist, isLoading } = useArtistProfile(ensName);
+  const { data, isLoading } = useArtistProfile(ensName, true); // Include streaming data
+  const artist = data as import("@/types/artist").FullArtistProfile | undefined;
   const [showDonationModal, setShowDonationModal] = useState(false);
 
   if (isLoading) {
@@ -69,13 +70,13 @@ export default function ArtistProfilePage() {
       </div>
 
       {/* Stream Embed - Show if artist is currently streaming */}
-      {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
+      {"isStreaming" in artist && artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
         <div className="mb-8">
           <StreamEmbed
-            artistName={artist.ensName}
+            artistName={ensName}
             streamPlatform={artist.streamPlatform}
             streamUrl={artist.streamUrl}
-            taggedArtists={artist.taggedArtists}
+            taggedArtists={artist.taggedArtists || []}
           />
         </div>
       )}
@@ -84,24 +85,32 @@ export default function ArtistProfilePage() {
       <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-start">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          <Image
-            alt={artist.ensName}
-            className={`h-32 w-32 rounded-full border-4 ${
-              artist.isStreaming ? "border-red-500" : "border-zinc-700"
-            }`}
-            height={128}
-            src={artist.avatar}
-            width={128}
-          />
+          {artist.avatar ? (
+            <Image
+              alt={ensName}
+              className={`h-32 w-32 rounded-full border-4 ${
+                "isStreaming" in artist && artist.isStreaming ? "border-red-500" : "border-zinc-700"
+              }`}
+              height={128}
+              src={artist.avatar}
+              width={128}
+            />
+          ) : (
+            <div className="h-32 w-32 rounded-full border-4 border-zinc-700 bg-zinc-800 flex items-center justify-center text-4xl">
+              👤
+            </div>
+          )}
         </div>
 
         {/* Name + Bio + Action */}
         <div className="flex-1 space-y-4">
           <div>
             <h1 className="mb-2 font-bold text-4xl text-white">
-              {artist.ensName}
+              {ensName}
             </h1>
-            <p className="text-lg text-zinc-300">{artist.bio}</p>
+            {artist.bio && (
+              <p className="text-lg text-zinc-300">{artist.bio}</p>
+            )}
           </div>
 
           <Button
@@ -115,7 +124,7 @@ export default function ArtistProfilePage() {
       </div>
 
       {/* Social Links */}
-      {artist.socials.length > 0 && (
+      {artist.socials && artist.socials.length > 0 && (
         <div>
           <h3 className="mb-4 font-semibold text-white text-xl">
             🔗 Connect & Listen
@@ -150,7 +159,7 @@ export default function ArtistProfilePage() {
       {/* Donation Modal */}
       {showDonationModal && (
         <DonationModal
-          artistEnsName={artist.ensName}
+          artistEnsName={ensName}
           onClose={() => setShowDonationModal(false)}
         />
       )}
