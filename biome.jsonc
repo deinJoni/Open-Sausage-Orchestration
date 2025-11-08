@@ -8,7 +8,8 @@
       "!**/.next",
       "!**/dist",
       "!**/.turbo",
-      "!apps/web/src/gqty"
+      "!apps/web/src/gqty",
+      "!packages/osopit-subgraph/src"
     ]
   }
 }

@@ -1,6 +1,5 @@
 import { useAccount } from "wagmi";
 import { useQuery as useGqtyQuery } from "@/gqty";
-import type { User } from "@/gqty/schema.generated";
 
 /**
  * Hook to detect which profile the connected wallet owns
@@ -8,35 +7,45 @@ import type { User } from "@/gqty/schema.generated";
  */
 export function useOwnedProfile() {
   const { address } = useAccount();
-  const { user } = useGqtyQuery();
+  const query = useGqtyQuery();
 
   if (!address) {
     return {
       data: null,
-      ensName: null,
       isLoading: false,
       hasProfile: false,
       error: null,
     };
   }
 
-  const data: User | null =
-    user({
-      id: address.toLowerCase(),
-    }) ?? null;
+  const userData = query.user({
+    id: address.toLowerCase(),
+  });
 
-  const ensName = data?.subdomain?.name
-    ? `${data.subdomain.name}.osopit.eth`
+  // Access subdomain and textRecords
+  const subdomainData = userData?.subdomain;
+  const textRecordsData = subdomainData?.textRecords?.();
+
+  const ensName = subdomainData?.name
+    ? `${subdomainData.name}.osopit.eth`
     : null;
 
   // If we have an address but data is still undefined (not null), query is loading
-  const isLoading = data === undefined;
+  const isLoading = userData === undefined;
 
   return {
-    data,
-    ensName,
+    data: {
+      user: userData,
+      subdomain: subdomainData,
+      textRecords: textRecordsData,
+      ensName,
+    },
     isLoading,
-    hasProfile: !!data,
+    hasProfile: !!userData,
     error: null,
   };
 }
+
+export type OwnedProfile = NonNullable<
+  Awaited<ReturnType<typeof useOwnedProfile>>["data"]
+>;

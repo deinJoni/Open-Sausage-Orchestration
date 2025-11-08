@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useAccount } from "wagmi";
-import { useCapabilities, useSendCalls } from "wagmi/experimental";
+import { useAccount, useCapabilities, useSendCalls } from "wagmi";
 import { L2RegistrarABI } from "@/lib/abi/L2Registrar";
 import { L2_REGISTRAR_ADDRESS } from "@/lib/contracts";
 import { parseContractError } from "@/lib/parseContractError";

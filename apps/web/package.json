@@ -41,7 +41,7 @@
     "usehooks-ts": "^3.1.1",
     "viem": "2.38.6",
     "wagmi": "^2.19.2",
-    "zod": "catalog:"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@gqty/react": "^3.1.1",

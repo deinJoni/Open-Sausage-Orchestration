@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
-import type { SocialLink } from "@/types/artist";
+import type { AllValidKeys } from "@/lib/constants";
 import { useRegisterSubdomain } from "./useRegisterSubdomain";
 import { useUpdateTextRecords } from "./useUpdateTextRecords";
 import { useUploadAvatar } from "./useUploadAvatar";
@@ -16,9 +16,11 @@ type InviteData = {
 
 type CreateProfileInput = {
   ensName: string;
-  bio: string;
   avatar?: File;
-  socials: SocialLink[];
+  textRecords: {
+    key: AllValidKeys;
+    value: string;
+  }[];
   inviteData?: InviteData | null;
 };
 
@@ -52,9 +54,11 @@ export function useCreateProfile() {
 
       try {
         // Step 1: Upload avatar to IPFS (if File)
-        let avatarUrl: string | undefined;
         if (input.avatar) {
-          avatarUrl = await uploadAvatar.mutateAsync(input.avatar);
+          input.textRecords.push({
+            key: "avatar",
+            value: await uploadAvatar.mutateAsync(input.avatar),
+          });
         }
 
         // Step 2: Register subdomain with invite
@@ -68,11 +72,7 @@ export function useCreateProfile() {
         // Step 3: Update text records (bio, avatar, socials)
         await updateTextRecords.mutateAsync({
           ensName: input.ensName,
-          textRecords: {
-            description: input.bio || undefined,
-            avatar: avatarUrl || undefined,
-            socials: input.socials.length > 0 ? input.socials : undefined,
-          },
+          textRecords: input.textRecords,
         });
 
         toast.success("Profile created successfully! 🎉");

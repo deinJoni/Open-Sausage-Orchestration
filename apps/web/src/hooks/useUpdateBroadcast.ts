@@ -8,7 +8,6 @@ import {
   constructBroadcastPayload,
   validateBroadcastParams,
 } from "@/lib/broadcast";
-import { ENS_TEXT_KEYS } from "@/lib/constants";
 import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
 import { parseContractError } from "@/lib/parseContractError";
 import { useOwnedProfile } from "./useOwnedProfile";
@@ -47,7 +46,7 @@ export function useUpdateBroadcast() {
         return;
       }
 
-      if (!ownedProfile.ensName) {
+      if (!ownedProfile.data?.ensName) {
         toast.error("No ENS profile found. Please create a profile first");
         return;
       }
@@ -68,7 +67,7 @@ export function useUpdateBroadcast() {
         }
 
         // Extract label from ensName (e.g., "alice" from "alice.osopit.eth")
-        const label = ownedProfile.ensName.split(".")[0];
+        const label = ownedProfile.data?.ensName.split(".")[0];
 
         // Calculate label hash
         const labelHash = keccak256(encodePacked(["string"], [label]));
@@ -85,7 +84,7 @@ export function useUpdateBroadcast() {
         const setTextData = encodeFunctionData({
           abi: L2RegistryABI,
           functionName: "setText",
-          args: [nodeHash, ENS_TEXT_KEYS.BROADCAST, payload],
+          args: [nodeHash, "app.osopit.broadcast", payload],
         });
 
         // Execute via multicall

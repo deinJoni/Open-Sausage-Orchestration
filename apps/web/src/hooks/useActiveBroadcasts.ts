@@ -3,7 +3,6 @@ import {
   _SubgraphErrorPolicy_,
   OrderDirection,
   User_orderBy,
-  type User,
 } from "@/gqty/schema.generated";
 import { QUERY } from "@/lib/constants";
 
@@ -14,7 +13,7 @@ import { QUERY } from "@/lib/constants";
 export function useActiveStreamers() {
   const { users } = useGqtyQuery();
 
-  const data: User[] =
+  const data =
     users({
       where: {
         activeBroadcast_not: null,

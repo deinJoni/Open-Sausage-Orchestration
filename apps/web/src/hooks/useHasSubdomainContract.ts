@@ -1,6 +1,6 @@
 import { useReadContract } from "wagmi";
-import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
 import { L2RegistryABI } from "@/lib/abi/L2Registry";
+import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
 
 /**
  * Check if an address owns a subdomain by reading directly from the L2Registry contract
@@ -19,8 +19,8 @@ export function useHasSubdomainContract(address: string | undefined) {
   });
 
   return {
-    hasSubdomain: balance ? balance > 0n : false,
-    balance: balance ?? 0n,
+    hasSubdomain: balance ? balance > BigInt(0) : false,
+    balance: balance ?? BigInt(0),
     isLoading,
   };
 }

@@ -11,7 +11,31 @@ export type SocialLink = {
     | "twitter"
     | "instagram"
     | "custom"
-    | "github";
+    | "github"
+    | "discord"
+    | "telegram"
+    | "farcaster"
+    | "lens";
   label?: string;
   url: string;
+};
+
+/**
+ * Individual social platform text record
+ * Maps to ENS standard social keys (com.twitter, com.github, etc.)
+ */
+export type SocialPlatformRecord = {
+  platform: SocialLink["platform"];
+  url: string;
+};
+
+/**
+ * Art piece stored in ENS text records
+ * Key format: art.{customTitle}
+ * Value: URL to mp3/mp4/image file
+ */
+export type ArtPiece = {
+  key: `art.${string}`; // e.g., "art.MyTrackTitle"
+  title: string; // extracted from key, e.g., "MyTrackTitle"
+  url: string; // URL to the file
 };

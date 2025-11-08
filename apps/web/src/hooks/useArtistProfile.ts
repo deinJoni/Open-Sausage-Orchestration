@@ -1,5 +1,6 @@
 import { useQuery as useGqtyQuery } from "@/gqty";
-import { _SubgraphErrorPolicy_, type User } from "@/gqty/schema.generated";
+import { _SubgraphErrorPolicy_ } from "@/gqty/schema.generated";
+import { calculateNodeHash } from "@/lib/utils";
 
 /**
  * Extract subdomain label from full ENS name
@@ -15,7 +16,7 @@ function extractLabel(ensName: string): string {
  * Returns GQty User - use helpers from subgraphHelpers.ts to access data
  */
 export function useArtistProfile(ensName?: string) {
-  const { subdomains } = useGqtyQuery();
+  const { subdomain, $state } = useGqtyQuery();
 
   if (!ensName) {
     return {
@@ -26,21 +27,20 @@ export function useArtistProfile(ensName?: string) {
   }
 
   const label = extractLabel(ensName);
+  const nodeHash = calculateNodeHash(label);
 
-  const result = subdomains({
-    where: {
-      name: label,
-    },
-    first: 1,
+  const result = subdomain({
+    id: nodeHash,
     subgraphError: _SubgraphErrorPolicy_.deny,
   });
 
-  const data: User | undefined =
-    result && result.length > 0 ? result[0].owner : undefined;
-
   return {
-    data,
-    isLoading: false,
-    error: null,
+    data: {
+      user: result?.owner,
+      subdomain: result?.name,
+      textRecords: result?.textRecords,
+    },
+    isLoading: $state.isLoading,
+    error: $state.error,
   };
 }

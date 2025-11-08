@@ -1,15 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { useAccount } from "wagmi";
-import type { SocialLink } from "@/types/artist";
+import type { AllValidKeys } from "@/lib/constants";
 import { useUpdateTextRecords } from "./useUpdateTextRecords";
 import { useUploadAvatar } from "./useUploadAvatar";
 
 type UpdateProfileInput = {
+  avatar?: File;
   ensName: string;
-  bio?: string;
-  avatar?: File | string;
-  socials?: SocialLink[];
+  textRecords: {
+    key: AllValidKeys;
+    value: string;
+  }[];
 };
 
 /**
@@ -37,32 +38,21 @@ export function useUpdateProfile() {
         throw new Error("Wallet not connected");
       }
 
-      try {
-        // Step 1: Upload new avatar to IPFS if File provided
-        let avatarUrl: string | undefined;
-        if (input.avatar instanceof File) {
-          avatarUrl = await uploadAvatar.mutateAsync(input.avatar);
-        } else if (typeof input.avatar === "string" && input.avatar) {
-          avatarUrl = input.avatar;
-        }
-
-        // Step 2: Update text records via multicall
-        await updateTextRecords.mutateAsync({
-          ensName: input.ensName,
-          textRecords: {
-            description: input.bio,
-            avatar: avatarUrl,
-            socials: input.socials,
-          },
+      // Step 1: Upload new avatar to IPFS if File provided
+      if (input.avatar) {
+        input.textRecords.push({
+          key: "avatar",
+          value: await uploadAvatar.mutateAsync(input.avatar),
         });
-
-        // Success toast is handled by updateTextRecords
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Failed to update profile";
-        toast.error(message);
-        throw error;
       }
+
+      // Step 2: Update text records via multicall
+      await updateTextRecords.mutateAsync({
+        ensName: input.ensName,
+        textRecords: input.textRecords,
+      });
+
+      // Success toast is handled by updateTextRecords
     },
   });
 

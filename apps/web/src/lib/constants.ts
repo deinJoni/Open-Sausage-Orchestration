@@ -1,7 +1,7 @@
 /**
  * Application constants and configuration values
  */
-
+import { z } from "zod";
 // Subdomain validation rules
 export const SUBDOMAIN_VALIDATION = {
   MIN_LENGTH: 3,
@@ -28,13 +28,82 @@ export const TIME = {
   MS_PER_2_WEEKS: 1_209_600_000,
 } as const;
 
-// ENS text record keys
-export const ENS_TEXT_KEYS = {
-  DESCRIPTION: "description",
-  AVATAR: "avatar",
-  SOCIALS: "app.osopit.socials",
-  BROADCAST: "app.osopit.broadcast",
+// ENS configuration
+export const ENS = {
+  PARENT_DOMAIN: "catmisha.eth",
 } as const;
+
+// ENS text record keys
+
+// Standard ENS text records
+export const STANDARD_ENS_KEYS = [
+  "description",
+  "avatar",
+  "email",
+  "url",
+  "header",
+] as const;
+
+// Social platform keys (standard ENS format)
+export const SOCIAL_KEYS = [
+  "com.twitter",
+  "com.github",
+  "com.discord",
+  "com.telegram",
+  "com.youtube",
+  "com.twitch",
+  "com.instagram",
+  "com.tiktok",
+  "com.facebook",
+  "com.linkedin",
+  "com.pinterest",
+  "com.reddit",
+] as const;
+
+// Web3 social keys
+export const WEB3_SOCIAL_KEYS = ["social.farcaster", "social.lens"] as const;
+
+// Custom osopit keys
+export const OSOPIT_KEYS = ["app.osopit.broadcast"] as const;
+
+// Art key utilities
+export const ART_KEY_PREFIX = "art." as const;
+
+export const createArtKey = (title: string): `art.${string}` =>
+  `${ART_KEY_PREFIX}${title}`;
+
+export const isArtKey = (key: string): boolean =>
+  key.startsWith(ART_KEY_PREFIX);
+
+export const getArtTitle = (key: string): string | null =>
+  isArtKey(key) ? key.slice(ART_KEY_PREFIX.length) : null;
+
+// Combined for convenience
+export const ENS_TEXT_KEYS = [
+  ...STANDARD_ENS_KEYS,
+  ...SOCIAL_KEYS,
+  ...WEB3_SOCIAL_KEYS,
+  ...OSOPIT_KEYS,
+] as const;
+
+// Type helpers
+export const EnsTextKey = z.enum(ENS_TEXT_KEYS);
+export type EnsTextKey = z.infer<typeof EnsTextKey>;
+
+export const StandardEnsKey = z.enum(STANDARD_ENS_KEYS);
+export type StandardEnsKey = z.infer<typeof StandardEnsKey>;
+export const SocialKey = z.enum(SOCIAL_KEYS);
+export type SocialKey = z.infer<typeof SocialKey>;
+export const Web3SocialKey = z.enum(WEB3_SOCIAL_KEYS);
+export type Web3SocialKey = z.infer<typeof Web3SocialKey>;
+export const OsopitKey = z.enum(OSOPIT_KEYS);
+export type OsopitKey = z.infer<typeof OsopitKey>;
+export const ArtKey = z.custom<`art.${string}`>(
+  (val) => typeof val === "string" && val.startsWith(ART_KEY_PREFIX)
+);
+export type ArtKey = z.infer<typeof ArtKey>;
+export const AllValidKeys = z.union([EnsTextKey, ArtKey]);
+export type AllValidKeys = z.infer<typeof AllValidKeys>;
 
 export const THOUSAND = 1024;
 const THIRTY = 30;
@@ -74,7 +143,8 @@ export const ERROR_MESSAGES = {
   SIGNATURE_EXPIRED: "This invite has expired. Please request a new one",
   INVALID_INVITER:
     "Invalid inviter. This wallet is not authorized to create invites",
-  NAME_TAKEN: "This name is already taken or you already have a subdomain registered (only one per wallet is allowed)",
+  NAME_TAKEN:
+    "This name is already taken or you already have a subdomain registered (only one per wallet is allowed)",
   UNAUTHORIZED: "You are not authorized to perform this action",
 
   // Transaction errors

@@ -3,7 +3,6 @@ import {
   _SubgraphErrorPolicy_,
   OrderDirection,
   User_orderBy,
-  type User,
 } from "@/gqty/schema.generated";
 import { QUERY } from "@/lib/constants";
 
@@ -14,7 +13,7 @@ import { QUERY } from "@/lib/constants";
 export function useAllArtists() {
   const { users } = useGqtyQuery();
 
-  const data: User[] =
+  const data =
     users({
       first: QUERY.SUBGRAPH_DEFAULT_LIMIT,
       orderBy: User_orderBy.createdAt,

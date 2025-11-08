@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LivestreamCarousel } from "@/components/livestream-carousel";
-import { useActiveStreamers } from "@/hooks/useActiveStreamers";
+import { useActiveStreamers } from "@/hooks/useActiveBroadcasts";
 
 export default function Home() {
 	const { data: activeStreamers, isLoading } = useActiveStreamers();
