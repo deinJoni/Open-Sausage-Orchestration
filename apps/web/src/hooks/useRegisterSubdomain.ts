@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useAccount, useCapabilities, useSendCalls } from "wagmi";
+import { useAccount } from "wagmi";
+import { useCapabilities, useSendCalls } from "wagmi/experimental";
 import { L2RegistrarABI } from "@/lib/abi/L2Registrar";
 import { L2_REGISTRAR_ADDRESS } from "@/lib/contracts";
 import { parseContractError } from "@/lib/parseContractError";
@@ -37,7 +38,7 @@ type RegisterSubdomainInput = {
  */
 export function useRegisterSubdomain() {
   const { address, chainId } = useAccount();
-  const { sendCallsAsync } = useSendCalls();
+  const { sendCalls } = useSendCalls();
   const { data: capabilities } = useCapabilities();
 
   const mutation = useMutation({
@@ -57,9 +58,9 @@ export function useRegisterSubdomain() {
 
         // Check if atomic batch is supported
         const atomicBatchSupported =
-          capabilities?.[chainId]?.atomic?.status === "supported";
+          capabilities?.[chainId]?.atomicBatch?.supported;
 
-        const result = await sendCallsAsync({
+        const result = await sendCalls({
           calls: [
             {
               abi: L2RegistrarABI,

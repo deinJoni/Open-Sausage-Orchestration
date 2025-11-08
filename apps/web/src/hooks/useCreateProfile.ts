@@ -17,7 +17,7 @@ type InviteData = {
 type CreateProfileInput = {
   ensName: string;
   bio: string;
-  avatar: File;
+  avatar?: File;
   socials: SocialLink[];
   inviteData?: InviteData | null;
 };
@@ -52,7 +52,10 @@ export function useCreateProfile() {
 
       try {
         // Step 1: Upload avatar to IPFS (if File)
-        const avatarUrl = await uploadAvatar.mutateAsync(input.avatar);
+        let avatarUrl: string | undefined;
+        if (input.avatar) {
+          avatarUrl = await uploadAvatar.mutateAsync(input.avatar);
+        }
 
         // Step 2: Register subdomain with invite
         if (input.inviteData) {
