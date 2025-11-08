@@ -8,7 +8,7 @@ dataSources:
     name: OsopitRegistry
     network: base
     source:
-      address: "0xd1F76f91C7536a360a4CBBc108928Bd85F97E1f9"
+      address: "0x63e7b8F8A8d42b043fe58Be1243d7cBcb1Ca5514"
       abi: OsopitRegistry
       startBlock: 37844974
     mapping:
