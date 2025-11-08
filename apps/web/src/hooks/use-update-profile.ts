@@ -38,18 +38,22 @@ export function useUpdateProfile() {
         throw new Error("Wallet not connected");
       }
 
+      // Create a copy of textRecords to avoid mutating input
+      const textRecords = [...input.textRecords];
+
       // Step 1: Upload new avatar to IPFS if File provided
       if (input.avatar) {
-        input.textRecords.push({
+        const avatarUrl = await uploadAvatar.mutateAsync(input.avatar);
+        textRecords.push({
           key: "avatar",
-          value: await uploadAvatar.mutateAsync(input.avatar),
+          value: avatarUrl,
         });
       }
 
       // Step 2: Update text records via multicall
       await updateTextRecords.mutateAsync({
         ensName: input.ensName,
-        textRecords: input.textRecords,
+        textRecords: textRecords,
       });
 
       // Success toast is handled by updateTextRecords
