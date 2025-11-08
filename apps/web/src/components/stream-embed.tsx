@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { convertToEmbedUrl } from "@/lib/broadcast";
 import { ArtistQuickActions } from "./artist-quick-actions";
 
 type StreamEmbedProps = {
@@ -16,6 +17,9 @@ export function StreamEmbed({
   showPlatformBadge = true,
   taggedArtists = [],
 }: StreamEmbedProps) {
+  // Convert the URL to embeddable format
+  const embedUrl = convertToEmbedUrl(streamUrl);
+
   return (
     <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/50">
       <div className="relative aspect-video w-full">
@@ -23,7 +27,7 @@ export function StreamEmbed({
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
           className="h-full w-full"
-          src={streamUrl}
+          src={embedUrl}
           title={`${artistName} livestream`}
         />
       </div>
