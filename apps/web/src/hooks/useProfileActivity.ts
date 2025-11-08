@@ -1,79 +1,94 @@
 /**
  * Hook to fetch profile activity history (text record changes)
- *
- * TODO: Real implementation should:
- * 1. Query subgraph NameLabel entities where subdomain.name = ensName
- * 2. Order by blockTimestamp desc
- * 3. Return array of changes with timestamp, txHash, key, value
- *
- * Query example:
- * ```graphql
- * query GetProfileActivity($subdomainName: String!) {
- *   nameLabels(
- *     where: { subdomain_: { name: $subdomainName } }
- *     orderBy: blockTimestamp
- *     orderDirection: desc
- *     first: 10
- *   ) {
- *     id
- *     key
- *     value
- *     blockTimestamp
- *     transactionHash
- *   }
- * }
- * ```
+ * Queries textRecords from the subgraph and formats them for display
  */
 
-import { TIME } from "@/lib/constants";
+import { useQuery as useGqtyQuery } from "@/gqty";
+import { _SubgraphErrorPolicy_, OrderDirection, TextRecord_orderBy } from "@/gqty/schema.generated";
 
 export type ProfileActivity = {
   key: string;
-  value: string;
   timestamp: number;
   txHash: string;
   displayText: string;
 };
 
+/**
+ * Extract subdomain label from full ENS name
+ * e.g., "kristjan.catmisha.eth" → "kristjan"
+ */
+function extractLabel(ensName: string): string {
+  const parts = ensName.split(".");
+  return parts[0];
+}
+
+/**
+ * Generate human-readable display text for a text record change
+ */
+function getDisplayText(key: string): string {
+  // Profile fields
+  if (key === "description") return "Updated bio";
+  if (key === "avatar") return "Changed avatar";
+  
+  // Social links
+  if (key === "app.osopit.socials") return "Updated social links";
+  
+  // Streaming
+  if (key === "app.osopit.broadcast") return "Updated streaming status";
+  
+  // Generic text record
+  return `Updated ${key}`;
+}
+
 export function useProfileActivity(ensName: string | null) {
-  // TODO: Replace with real subgraph query
-  // For now, return mock activity data
-  const mockActivities: ProfileActivity[] = ensName
-    ? [
-        {
-          key: "description",
-          value: "Updated my bio to reflect new music style",
-          timestamp: Date.now() - TIME.MS_PER_DAY, // 1 day ago
-          txHash: "0xabc123...",
-          displayText: "Updated bio",
-        },
-        {
-          key: "avatar",
-          value: "ipfs://QmNewAvatar123...",
-          timestamp: Date.now() - TIME.MS_PER_2_DAYS, // 2 days ago
-          txHash: "0xdef456...",
-          displayText: "Changed avatar",
-        },
-        {
-          key: "app.osopit.socials",
-          value: JSON.stringify([{ platform: "spotify", url: "https://..." }]),
-          timestamp: Date.now() - TIME.MS_PER_WEEK, // 1 week ago
-          txHash: "0xghi789...",
-          displayText: "Added Spotify link",
-        },
-        {
-          key: "app.osopit.streaming",
-          value: "true|twitch|artist1|artist2",
-          timestamp: Date.now() - TIME.MS_PER_2_WEEKS, // 2 weeks ago
-          txHash: "0xjkl012...",
-          displayText: "Started streaming",
-        },
-      ]
+  const { textRecords, $refetch } = useGqtyQuery();
+
+  if (!ensName) {
+    return {
+      activities: [] as ProfileActivity[],
+      isLoading: false,
+      error: null,
+      refetch: async () => {},
+    };
+  }
+
+  const label = extractLabel(ensName);
+
+  // Query text records for this subdomain, ordered by most recent first
+  const records = textRecords({
+    where: {
+      subdomain_: {
+        name: label,
+      },
+    },
+    orderBy: TextRecord_orderBy.updatedAt,
+    orderDirection: OrderDirection.desc,
+    first: 10,
+    subgraphError: _SubgraphErrorPolicy_.deny,
+  });
+
+  // Transform text records into activity feed items (one row per text record)
+  const activities: ProfileActivity[] = records
+    ? records.map((record) => {
+        const blockTimestamp = record.blockTimestamp ? Number(record.blockTimestamp) : 0;
+        const updatedAt = record.updatedAt ? Number(record.updatedAt) : 0;
+        const timestamp = (blockTimestamp || updatedAt) * 1000; // Convert to milliseconds
+        const txHash = record.transactionHash?.toString() || "";
+        const key = record.key || "";
+
+        return {
+          key,
+          timestamp,
+          txHash,
+          displayText: getDisplayText(key),
+        };
+      })
     : [];
 
   return {
-    activities: mockActivities,
+    activities,
     isLoading: false,
     error: null,
+    refetch: $refetch,
   };
 }

@@ -11,6 +11,7 @@ import type { ArtistProfile, SocialLink } from "@/types/artist";
 interface ProfileEditFormProps {
 	profile: ArtistProfile;
 	ensName: string;
+	onUpdate?: () => void;
 }
 
 /**
@@ -22,14 +23,16 @@ interface ProfileEditFormProps {
  * - useMemo for expensive calculations (change detection)
  * - Validation in event handlers
  */
-export function ProfileEditForm({ profile, ensName }: ProfileEditFormProps) {
+export function ProfileEditForm({ profile, ensName, onUpdate }: ProfileEditFormProps) {
 	// ✅ Initialize state once from props with safe defaults
 	const [bio, setBio] = useState(profile.bio || "");
 	const [avatar, setAvatar] = useState<File | string>(profile.avatar || "");
 	const [socials, setSocials] = useState<SocialLink[]>(profile.socials || []);
 	const [avatarPreview, setAvatarPreview] = useState(profile.avatar || "");
+	const [isRefetching, setIsRefetching] = useState(false);
 
 	const { mutate: updateProfile, isPending } = useUpdateProfile();
+	const isLoading = isPending || isRefetching;
 
 	// ✅ Side effect: Sync state when profile data loads/changes
 	useEffect(() => {
@@ -69,12 +72,23 @@ export function ProfileEditForm({ profile, ensName }: ProfileEditFormProps) {
 	};
 
 	// ✅ Event handler for form submission
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		updateProfile(
 			{ ensName, bio, avatar, socials },
 			{
-				onSuccess: () => {
-					toast.success("Profile updated successfully!");
+				onSuccess: async () => {
+					// Show loading state while waiting for subgraph to index
+					setIsRefetching(true);
+					toast.info("Refreshing profile data...");
+					
+					// Wait a bit more to ensure subgraph has indexed
+					await new Promise((resolve) => setTimeout(resolve, 4000));
+					
+					// Trigger parent to refresh profile data
+					await onUpdate?.();
+					
+					setIsRefetching(false);
+					toast.success("Profile refreshed!");
 				},
 			}
 		);
@@ -112,7 +126,7 @@ export function ProfileEditForm({ profile, ensName }: ProfileEditFormProps) {
 							<input
 								accept="image/*"
 								className="hidden"
-								disabled={isPending}
+								disabled={isLoading}
 								id="avatar-upload"
 								type="file"
 								onChange={(e) => {
@@ -128,7 +142,7 @@ export function ProfileEditForm({ profile, ensName }: ProfileEditFormProps) {
 								<Button
 									asChild
 									className="w-full sm:w-auto"
-									disabled={isPending}
+									disabled={isLoading}
 									variant="outline"
 								>
 									<span>Upload New Image</span>
@@ -146,7 +160,7 @@ export function ProfileEditForm({ profile, ensName }: ProfileEditFormProps) {
 					<Label htmlFor="bio">Bio</Label>
 					<textarea
 						className="mt-2 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:border-purple-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-						disabled={isPending}
+						disabled={isLoading}
 						id="bio"
 						maxLength={160}
 						placeholder="Tell people about your music..."
@@ -172,7 +186,7 @@ export function ProfileEditForm({ profile, ensName }: ProfileEditFormProps) {
 								<div className="flex items-center gap-2" key={social.platform}>
 									<span className="text-2xl">{social.icon}</span>
 									<Input
-										disabled={isPending}
+										disabled={isLoading}
 										placeholder={`${social.label} URL`}
 										type="url"
 										value={existingLink?.url || ""}
@@ -199,10 +213,10 @@ export function ProfileEditForm({ profile, ensName }: ProfileEditFormProps) {
 				{/* Submit Button */}
 				<Button
 					className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
-					disabled={!hasChanges || isPending}
+					disabled={!hasChanges || isLoading}
 					onClick={handleSubmit}
 				>
-					{isPending ? "Saving..." : "Save Changes"}
+					{isPending ? "Saving..." : isRefetching ? "Refreshing..." : "Save Changes"}
 				</Button>
 			</div>
 		</Card>

@@ -21,10 +21,15 @@ export default function MePage() {
 	const { isConnected } = useAccount();
 	const { ensName, hasProfile, isLoading: isLoadingOwnership } =
 		useOwnedProfile();
-	const { data: profile, isLoading: isLoadingProfile } = useArtistProfile(
+	const { data: profile, isLoading: isLoadingProfile, refetch: refetchProfile } = useArtistProfile(
 		ensName || ""
 	);
-	const { activities } = useProfileActivity(ensName);
+	const { activities, refetch: refetchActivities } = useProfileActivity(ensName);
+
+	// Refetch both profile and activities
+	const handleProfileUpdate = async () => {
+		await Promise.all([refetchProfile(), refetchActivities()]);
+	};
 
 	// No wallet connected
 	if (!isConnected) {
@@ -82,7 +87,12 @@ export default function MePage() {
 				<ProfilePreview profile={profile} ensName={ensName || ""} />
 
 				{/* Edit Form - key prop ensures component remounts when profile changes */}
-				<ProfileEditForm key={ensName} profile={profile} ensName={ensName || ""} />
+				<ProfileEditForm 
+					key={ensName} 
+					profile={profile} 
+					ensName={ensName || ""} 
+					onUpdate={handleProfileUpdate}
+				/>
 
 				{/* Activity Feed */}
 				<ActivityFeed activities={activities} />

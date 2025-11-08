@@ -21,13 +21,14 @@ function extractLabel(ensName: string): string {
  * Queries the subgraph and transforms the data into ArtistProfile format
  */
 export function useArtistProfile(ensName?: string) {
-  const { subdomains } = useGqtyQuery();
+  const { subdomains, $refetch } = useGqtyQuery();
 
   if (!ensName) {
     return {
       data: undefined,
       isLoading: false,
       error: null,
+      refetch: async () => {},
     };
   }
 
@@ -55,5 +56,6 @@ export function useArtistProfile(ensName?: string) {
     data,
     isLoading: false,
     error: null,
+    refetch: $refetch,
   };
 }

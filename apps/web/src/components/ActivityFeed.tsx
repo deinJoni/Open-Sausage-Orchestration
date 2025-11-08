@@ -22,7 +22,7 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
           {activities.map((activity, index) => (
             <div
               className="flex items-start gap-3 border-zinc-800 border-b pb-4 last:border-0 last:pb-0"
-              key={`${activity.txHash}-${index}`}
+              key={`${activity.txHash}-${activity.key}-${index}`}
             >
               <div className="mt-1 h-2 w-2 rounded-full bg-purple-500" />
               <div className="flex-1">

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
+import { client } from "@/gqty";
 import type { SocialLink } from "@/types/artist";
 import { useUpdateTextRecords } from "./useUpdateTextRecords";
 import { useUploadAvatar } from "./useUploadAvatar";
@@ -56,7 +57,11 @@ export function useUpdateProfile() {
           },
         });
 
-        // Success toast is handled by updateTextRecords
+        // Step 3: Wait for subgraph to index and clear cache
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        
+        // Clear GQty cache to force fresh data on refetch
+        client.cache.clear();
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "Failed to update profile";
