@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
 import { SocialKey } from "@/lib/constants";
+import { resolveIPFS } from "@/lib/ipfs";
 
 const SOCIAL_ICONS: Record<SocialKey, string> = {
   "com.spotify": "🎵",
@@ -100,11 +101,11 @@ export default function ArtistProfilePage() {
                 artist.isStreaming ? "border-red-500" : "border-zinc-700"
               }`}
               height={128}
-              src={
+              src={resolveIPFS(
                 artist
                   .textRecords?.()
-                  ?.find((record) => record.key === "avatar")?.value || ""
-              }
+                  ?.find((record) => record.key === "avatar")?.value
+              )}
               width={128}
             />
           ) : (

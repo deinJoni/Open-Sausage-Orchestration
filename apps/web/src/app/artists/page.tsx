@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllArtists } from "@/hooks/use-all-artists";
 import { ARTISTS_GRID_SIZE } from "@/lib/constants";
+import { resolveIPFS } from "@/lib/ipfs";
 
 type FilterType = "all" | "live" | "offline";
 
@@ -81,23 +82,27 @@ export default function ArtistsPage() {
             <Link href={`/artist/${artist.subdomain?.name ?? ""}`}>
               <div className="mb-4 flex justify-center">
                 <div className="relative">
-                  <Image
-                    alt={
-                      artist.subdomain
-                        ?.textRecords?.()
-                        ?.find((record) => record.key === "avatar")?.value ??
-                      "Avatar"
-                    }
-                    className={`h-24 w-24 rounded-full border-2 transition-transform group-hover:scale-105 ${avatarBorderColor}`}
-                    height={96}
-                    src={
-                      artist.subdomain
-                        ?.textRecords?.()
-                        ?.find((record) => record.key === "avatar")?.value ??
-                      "Avatar"
-                    }
-                    width={96}
-                  />
+                  {artist.subdomain
+                    ?.textRecords?.()
+                    ?.find((record) => record.key === "avatar")?.value ? (
+                    <Image
+                      alt={artist.subdomain?.name ?? ""}
+                      className={`h-24 w-24 rounded-full border-2 transition-transform group-hover:scale-105 ${avatarBorderColor}`}
+                      height={96}
+                      src={resolveIPFS(
+                        artist.subdomain
+                          ?.textRecords?.()
+                          ?.find((record) => record.key === "avatar")?.value
+                      )}
+                      width={96}
+                    />
+                  ) : (
+                    <div
+                      className={`flex h-24 w-24 items-center justify-center rounded-full border-2 bg-zinc-800 text-4xl transition-transform group-hover:scale-105 ${avatarBorderColor}`}
+                    >
+                      👤
+                    </div>
+                  )}
                   {artist.activeBroadcast?.isLive && (
                     <span className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-red-500">
                       <span className="h-3 w-3 animate-pulse rounded-full bg-white" />
@@ -141,13 +146,25 @@ export default function ArtistsPage() {
                         className="flex items-center gap-1.5 rounded-full bg-purple-500/20 px-2.5 py-1.5 transition-all hover:bg-purple-500/30"
                         type="button"
                       >
-                        <Image
-                          alt={taggedArtist.subdomain?.name ?? ""}
-                          className="h-4 w-4 rounded-full border border-purple-400"
-                          height={16}
-                          src={`https://avatars.jakerunzer.com/${taggedArtist}`}
-                          width={16}
-                        />
+                        {taggedArtist.subdomain
+                          ?.textRecords?.()
+                          ?.find((r) => r.key === "avatar")?.value ? (
+                          <Image
+                            alt={taggedArtist.subdomain?.name ?? ""}
+                            className="h-4 w-4 rounded-full border border-purple-400"
+                            height={16}
+                            src={resolveIPFS(
+                              taggedArtist.subdomain
+                                ?.textRecords?.()
+                                ?.find((r) => r.key === "avatar")?.value
+                            )}
+                            width={16}
+                          />
+                        ) : (
+                          <div className="flex h-4 w-4 items-center justify-center rounded-full border border-purple-400 bg-zinc-800 text-[8px]">
+                            👤
+                          </div>
+                        )}
                         <span className="text-purple-300 text-xs">
                           {taggedArtist.subdomain?.name ?? ""}
                         </span>

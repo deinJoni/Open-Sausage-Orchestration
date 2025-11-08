@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import type { ActiveBroadcasts } from "@/hooks/use-active-broadcast";
+import { resolveIPFS } from "@/lib/ipfs";
 import { ArtistQuickActions } from "./artist-quick-actions";
 import { StreamEmbed } from "./stream-embed";
 import { Button } from "./ui/button";
@@ -83,24 +84,29 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
         {/* Streamer Info Bar */}
         <div className="mt-2 rounded-lg border border-zinc-800 bg-zinc-900/90 p-4 backdrop-blur">
           <ArtistQuickActions ensName={currentBroadcast.subdomain?.name ?? ""}>
-            {" "}
-            {/* TODO fix this */}
             <button
               className="flex items-center gap-4 transition-opacity hover:opacity-80"
               type="button"
             >
-              <Image
-                alt={currentBroadcast.subdomain?.name ?? ""}
-                className="h-12 w-12 rounded-full border-2 border-red-500"
-                height={48}
-                src={
-                  currentBroadcast.subdomain
-                    ?.textRecords?.()
-                    ?.find((record) => record.key === "avatar")?.value ??
-                  "Avatar"
-                }
-                width={48}
-              />
+              {currentBroadcast.subdomain
+                ?.textRecords?.()
+                ?.find((record) => record.key === "avatar")?.value ? (
+                <Image
+                  alt={currentBroadcast.subdomain?.name ?? ""}
+                  className="h-12 w-12 rounded-full border-2 border-red-500"
+                  height={48}
+                  src={resolveIPFS(
+                    currentBroadcast.subdomain
+                      ?.textRecords?.()
+                      ?.find((record) => record.key === "avatar")?.value
+                  )}
+                  width={48}
+                />
+              ) : (
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-red-500 bg-zinc-800 text-2xl">
+                  👤
+                </div>
+              )}
               <div className="flex-1 text-left">
                 <p className="font-semibold text-white">
                   {currentBroadcast.subdomain?.name ?? ""}

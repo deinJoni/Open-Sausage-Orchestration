@@ -92,8 +92,6 @@ export default function OnboardingPage() {
       textRecords,
       inviteData,
     });
-
-    router.push("/");
   };
 
   if (!isPorto) {

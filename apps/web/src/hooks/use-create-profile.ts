@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import type { AllValidKeys } from "@/lib/constants";
@@ -44,8 +45,11 @@ export function useCreateProfile() {
   const uploadAvatar = useUploadAvatar();
   const registerSubdomain = useRegisterSubdomain();
   const updateTextRecords = useUpdateTextRecords();
-
+  const router = useRouter();
   const mutation = useMutation({
+    onSuccess: () => {
+      router.push("/me");
+    },
     mutationFn: async (input: CreateProfileInput) => {
       if (!address) {
         toast.error("Please connect your wallet first");
