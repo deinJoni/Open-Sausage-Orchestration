@@ -12,8 +12,58 @@ function extractLabel(ensName: string): string {
 }
 
 /**
+ * Parse broadcast text record value
+ * Format: "true|url|userId1|userId2|..."
+ */
+function parseBroadcast(value: string | undefined): {
+  isLive: boolean;
+  url?: string;
+  taggedArtists?: string[];
+} {
+  if (!value) {
+    return { isLive: false };
+  }
+
+  const parts = value.split("|");
+  const isLive = parts[0] === "true";
+
+  if (!isLive) {
+    return { isLive: false };
+  }
+
+  return {
+    isLive: true,
+    url: parts[1] || undefined,
+    taggedArtists: parts.slice(2).filter(Boolean),
+  };
+}
+
+/**
+ * Derive stream platform from broadcast URL
+ */
+function deriveStreamPlatform(
+  url: string | undefined
+): "youtube" | "twitch" | undefined {
+  if (!url) {
+    return;
+  }
+
+  const lowerUrl = url.toLowerCase();
+
+  if (lowerUrl.includes("youtube.com") || lowerUrl.includes("youtu.be")) {
+    return "youtube";
+  }
+
+  if (lowerUrl.includes("twitch.tv")) {
+    return "twitch";
+  }
+
+  return;
+}
+
+/**
  * Hook to fetch a single artist profile by ENS name
- * Returns GQty User - use helpers from subgraphHelpers.ts to access data
+ * Returns GQty subdomain data with streaming info
  */
 export function useArtistProfile(ensName?: string) {
   const { subdomain, $state } = useGqtyQuery();
@@ -34,12 +84,24 @@ export function useArtistProfile(ensName?: string) {
     subgraphError: _SubgraphErrorPolicy_.deny,
   });
 
+  // Parse broadcast data
+  const broadcastRecord = result
+    ?.textRecords?.()
+    ?.find((record) => record.key === "app.osopit.broadcast");
+  const broadcast = parseBroadcast(broadcastRecord?.value);
+
+  const data = {
+    user: result?.owner,
+    subdomain: result?.name,
+    textRecords: result?.textRecords,
+    isStreaming: broadcast.isLive,
+    streamUrl: broadcast.url,
+    streamPlatform: deriveStreamPlatform(broadcast.url),
+    taggedArtists: broadcast.taggedArtists,
+  };
+
   return {
-    data: {
-      user: result?.owner,
-      subdomain: result?.name,
-      textRecords: result?.textRecords,
-    },
+    data,
     isLoading: $state.isLoading,
     error: $state.error,
   };

@@ -21,6 +21,28 @@ export type SocialLink = {
 };
 
 /**
+ * Artist profile type
+ * Contains all editable profile information
+ */
+export type ArtistProfile = {
+  bio?: string;
+  avatar?: string;
+  socials?: SocialLink[];
+};
+
+/**
+ * Full artist profile with streaming information
+ * Used for public artist pages
+ */
+export type FullArtistProfile = ArtistProfile & {
+  ensName: string;
+  isStreaming: boolean;
+  streamUrl?: string;
+  streamPlatform?: "youtube" | "twitch";
+  taggedArtists?: string[];
+};
+
+/**
  * Individual social platform text record
  * Maps to ENS standard social keys (com.twitter, com.github, etc.)
  */

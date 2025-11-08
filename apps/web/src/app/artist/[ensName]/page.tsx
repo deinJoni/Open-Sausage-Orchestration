@@ -28,6 +28,7 @@ const SOCIAL_ICONS: Record<SocialKey, string> = {
   "com.reddit": "🔗",
 };
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
 export default function ArtistProfilePage() {
   const params = useParams();
   const ensName = params.ensName as string;
@@ -76,19 +77,13 @@ export default function ArtistProfilePage() {
       </div>
 
       {/* Stream Embed - Show if artist is currently streaming */}
-      {artist.user?.activeBroadcast?.broadcastUrl && (
+      {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
         <div className="mb-8">
           <StreamEmbed
-            artistName={artist.subdomain}
-            streamPlatform={artist.user?.activeBroadcast?.broadcastUrl}
-            streamUrl={artist.user?.activeBroadcast?.broadcastUrl}
-            taggedArtists={
-              artist.user?.activeBroadcast
-                ?.broadcastWith()
-                .map(
-                  (broadcast) => broadcast.subdomain.name ?? "UNDEFINED FIXME"
-                ) ?? []
-            }
+            artistName={artist.subdomain || ensName}
+            streamPlatform={artist.streamPlatform}
+            streamUrl={artist.streamUrl}
+            taggedArtists={artist.taggedArtists || []}
           />
         </div>
       )}
@@ -97,37 +92,49 @@ export default function ArtistProfilePage() {
       <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-start">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          <Image
-            alt={
-              artist.textRecords?.()?.find((record) => record.key === "avatar")
-                ?.value ?? "Avatar"
-            }
-            className={`h-32 w-32 rounded-full border-4 ${
-              artist.user?.activeBroadcast?.isLive
-                ? "border-red-500"
-                : "border-zinc-700"
-            }`}
-            height={128}
-            src={
-              artist.textRecords?.()?.find((record) => record.key === "avatar")
-                ?.value ?? "Avatar"
-            }
-            width={128}
-          />
+          {artist.textRecords?.()?.find((record) => record.key === "avatar")
+            ?.value ? (
+            <Image
+              alt={artist.subdomain || ensName}
+              className={`h-32 w-32 rounded-full border-4 ${
+                artist.isStreaming ? "border-red-500" : "border-zinc-700"
+              }`}
+              height={128}
+              src={
+                artist
+                  .textRecords?.()
+                  ?.find((record) => record.key === "avatar")?.value || ""
+              }
+              width={128}
+            />
+          ) : (
+            <div
+              className={`flex h-32 w-32 items-center justify-center rounded-full border-4 ${
+                artist.isStreaming ? "border-red-500" : "border-zinc-700"
+              } bg-zinc-800 text-4xl`}
+            >
+              👤
+            </div>
+          )}
         </div>
 
         {/* Name + Bio + Action */}
         <div className="flex-1 space-y-4">
           <div>
             <h1 className="mb-2 font-bold text-4xl text-white">
-              {artist.subdomain}
+              {artist.subdomain || ensName}
             </h1>
-            <p className="text-lg text-zinc-300">
-              {artist
-                .textRecords?.()
-                ?.find((record) => record.key === "description")?.value ??
-                "Description"}
-            </p>
+            {artist
+              .textRecords?.()
+              ?.find((record) => record.key === "description")?.value && (
+              <p className="text-lg text-zinc-300">
+                {
+                  artist
+                    .textRecords?.()
+                    ?.find((record) => record.key === "description")?.value
+                }
+              </p>
+            )}
           </div>
 
           <Button
