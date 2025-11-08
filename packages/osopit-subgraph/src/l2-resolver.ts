@@ -46,9 +46,9 @@ export function handleTextChanged(event: TextChanged): void {
   user.save();
 
   // Handle broadcast key
-  if (key === "app.osopit.broadcast") {
+  if (key == "app.osopit.broadcast") {
     const parts = value.split("|");
-    const isLive = parts.length > 0 ? parts[0] === "true" : false;
+    const isLive = parts.length > 0 ? parts[0] == "true" : false;
     const broadcastUrl = parts.length > 1 ? parts[1] : "";
 
     // Get guest user IDs (from index 2 onwards)

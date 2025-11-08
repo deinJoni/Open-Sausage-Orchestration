@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAccount } from "wagmi";
+import { BroadcastControl } from "@/components/broadcast-control";
 import { ProfileEditForm } from "@/components/profile-edit-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,16 +18,6 @@ import { useOwnedProfile } from "@/hooks/use-owned-profile";
 export default function MePage() {
   const { isConnected } = useAccount();
   const ownedProfile = useOwnedProfile();
-
-  // Debug logging
-  console.log("MePage render:", {
-    isConnected,
-    isLoading: ownedProfile.isLoading,
-    hasProfile: ownedProfile.hasProfile,
-    data: ownedProfile.data,
-    ensName: ownedProfile.data?.ensName,
-    textRecords: ownedProfile.data?.textRecords,
-  });
 
   // No wallet connected
   if (!isConnected) {
@@ -48,7 +39,7 @@ export default function MePage() {
     return (
       <div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
         <Skeleton className="mb-8 h-10 w-64" />
-        
+
         <div className="grid gap-6">
           {/* Edit Form Skeleton */}
           <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
@@ -117,6 +108,9 @@ export default function MePage() {
             profile={ownedProfile.data}
           />
         )}
+
+        {/* Broadcast Control */}
+        <BroadcastControl />
 
         {/* Activity Feed */}
         {/* <ActivityFeed activities={activities} /> */}

@@ -1,20 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { encodeFunctionData } from "viem";
-import { useAccount, usePublicClient, useWriteContract } from "wagmi";
-import { L2RegistryABI } from "@/lib/abi/l2-registry";
+import { useAccount } from "wagmi";
 import type { BroadcastParams } from "@/lib/broadcast";
 import {
   constructBroadcastPayload,
   validateBroadcastParams,
 } from "@/lib/broadcast";
-import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
-import { parseContractError } from "@/lib/parse-contract-error";
-import { calculateNodeHash } from "@/lib/utils";
 import { useOwnedProfile } from "./use-owned-profile";
+import { useUpdateTextRecords } from "./use-update-text-record";
 
 /**
  * Hook to update broadcast status via ENS setText
+ * Wraps useUpdateTextRecords for broadcast-specific UX
  *
  * @example
  * const updateBroadcast = useUpdateBroadcast();
@@ -35,75 +31,41 @@ import { useOwnedProfile } from "./use-owned-profile";
  */
 export function useUpdateBroadcast() {
   const { address } = useAccount();
-  const { writeContractAsync } = useWriteContract();
-  const publicClient = usePublicClient();
   const ownedProfile = useOwnedProfile();
+  const updateTextRecords = useUpdateTextRecords();
 
-  const mutation = useMutation({
-    mutationFn: async (params: BroadcastParams) => {
-      if (!address) {
-        toast.error("Please connect your wallet first");
-        return;
-      }
+  const mutate = (params: BroadcastParams) => {
+    if (!address) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
 
-      if (!ownedProfile.data?.ensName) {
-        toast.error("No ENS profile found. Please create a profile first");
-        return;
-      }
+    if (!ownedProfile.data?.ensName) {
+      toast.error("No ENS profile found. Please create a profile first");
+      return;
+    }
 
-      try {
-        // Validate broadcast parameters
-        validateBroadcastParams(params);
+    // Validate broadcast parameters
+    validateBroadcastParams(params);
 
-        // Extract label from ensName (e.g., "alice" from "alice.catmisha.eth")
-        const label = ownedProfile.data?.ensName.split(".")[0];
+    // Construct broadcast payload
+    const payload = constructBroadcastPayload(params);
 
-        // Calculate nodeHash using ENS namehash
-        const nodeHash = calculateNodeHash(label);
+    // Custom toast for broadcast-specific messaging
+    toast.info(params.isLive ? "Starting broadcast..." : "Ending broadcast...");
 
-        // Construct broadcast payload
-        const payload = constructBroadcastPayload(params);
+    // Delegate to text record update hook
+    updateTextRecords.mutate({
+      ensName: ownedProfile.data.ensName,
+      textRecords: [{ key: "app.osopit.broadcast", value: payload }],
+    });
+  };
 
-        // Encode setText call
-        const setTextData = encodeFunctionData({
-          abi: L2RegistryABI,
-          functionName: "setText",
-          args: [nodeHash, "app.osopit.broadcast", payload],
-        });
-
-        // Execute via multicall
-        toast.info(
-          params.isLive ? "Starting broadcast..." : "Ending broadcast..."
-        );
-
-        const txHash = await writeContractAsync({
-          address: L2_REGISTRY_ADDRESS,
-          abi: L2RegistryABI,
-          functionName: "multicall",
-          args: [[setTextData]],
-        });
-
-        toast.info("Waiting for confirmation...");
-
-        const receipt = await publicClient?.waitForTransactionReceipt({
-          hash: txHash,
-        });
-
-        if (receipt?.status === "reverted") {
-          throw new Error("Transaction failed");
-        }
-
-        toast.success(
-          params.isLive ? "You're now live! 🔴" : "Broadcast ended"
-        );
-      } catch (error) {
-        const errorMsg =
-          error instanceof Error ? error.message : parseContractError(error);
-        toast.error(errorMsg);
-        throw error;
-      }
-    },
-  });
-
-  return mutation;
+  return {
+    mutate,
+    isPending: updateTextRecords.isPending,
+    isSuccess: updateTextRecords.isSuccess,
+    isError: updateTextRecords.isError,
+    error: updateTextRecords.error,
+  };
 }
