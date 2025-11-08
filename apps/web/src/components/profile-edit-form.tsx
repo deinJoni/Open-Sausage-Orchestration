@@ -204,14 +204,12 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       <div className="mb-6">
         <div className="mb-3 flex flex-row items-center gap-3">
           {profile.ensName && (
-            <p className="text-xl font-bold text-zinc-400">{profile.ensName}</p>
+            <p className="font-bold text-xl text-zinc-400">{profile.ensName}</p>
           )}
         </div>
         {profile.ensName && (
           <Button asChild size="sm" variant="outline">
-            <Link href={`/artist/${profile.ensName}`}>
-              View Public Profile
-            </Link>
+            <Link href={`/artist/${profile.ensName}`}>View Public Profile</Link>
           </Button>
         )}
       </div>

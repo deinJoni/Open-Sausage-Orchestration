@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { isValidBroadcastUrl } from "@/lib/broadcast";
+import { useEffect, useState } from "react";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
-import { Input } from "./ui/input";
+import { isValidBroadcastUrl } from "@/lib/broadcast";
+import { ArtistPicker } from "./artist-picker";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import { ArtistPicker } from "./artist-picker";
+import { Input } from "./ui/input";
 
 /**
  * Detect streaming platform from URL
  */
 function detectPlatform(url: string): "youtube" | "twitch" | null {
-  if (!url) return null;
+  if (!url) {
+    return null;
+  }
 
   const lowerUrl = url.toLowerCase();
 
@@ -79,55 +81,53 @@ export function StartBroadcastForm() {
     <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
       <h2 className="mb-6 font-bold text-white text-xl">🎥 Start Streaming</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Stream URL Input */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-zinc-300">
+          <label className="mb-2 block font-medium text-sm text-zinc-300">
             Stream URL *
           </label>
           <Input
-            type="url"
-            placeholder="https://youtube.com/live/... or https://twitch.tv/..."
-            value={streamUrl}
-            onChange={(e) => setStreamUrl(e.target.value)}
             className={`border-zinc-700 ${urlError ? "border-red-500" : ""}`}
             disabled={updateBroadcast.isPending}
+            onChange={(e) => setStreamUrl(e.target.value)}
+            placeholder="https://youtube.com/live/... or https://twitch.tv/..."
+            type="url"
+            value={streamUrl}
           />
 
           {/* Platform Indicator */}
           {platform && !urlError && (
-            <p className="mt-2 flex items-center gap-2 text-sm text-green-400">
+            <p className="mt-2 flex items-center gap-2 text-green-400 text-sm">
               <span>✓</span>
               <span className="capitalize">{platform} detected</span>
             </p>
           )}
 
           {/* Error Message */}
-          {urlError && (
-            <p className="mt-2 text-sm text-red-400">{urlError}</p>
-          )}
+          {urlError && <p className="mt-2 text-red-400 text-sm">{urlError}</p>}
         </div>
 
         {/* Guest Artists Picker */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-zinc-300">
+          <label className="mb-2 block font-medium text-sm text-zinc-300">
             Tag Collaborators (Optional)
           </label>
           <p className="mb-3 text-xs text-zinc-500">
             Tag other artists you're streaming with
           </p>
           <ArtistPicker
-            selectedAddresses={selectedArtists}
-            onSelectionChange={setSelectedArtists}
             maxSelections={5}
+            onSelectionChange={setSelectedArtists}
+            selectedAddresses={selectedArtists}
           />
         </div>
 
         {/* Submit Button */}
         <Button
-          type="submit"
-          disabled={!isValid || updateBroadcast.isPending}
           className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 disabled:opacity-50"
+          disabled={!isValid || updateBroadcast.isPending}
+          type="submit"
         >
           {updateBroadcast.isPending ? "Starting..." : "Start Streaming 🔴"}
         </Button>

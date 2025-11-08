@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
 import { ExternalLink, Youtube } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useAllArtists } from "@/hooks/use-all-artists";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
-import { useAllArtists } from "@/hooks/use-all-artists";
 import { resolveIPFS } from "@/lib/ipfs";
-import { Card } from "./ui/card";
 import { Button } from "./ui/button";
+import { Card } from "./ui/card";
 
 type LiveBroadcastCardProps = {
   profile: OwnedProfile;
@@ -62,14 +62,16 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
 
   // Update duration every minute
   useEffect(() => {
-    if (!activeBroadcast?.startedAt) return;
+    if (!activeBroadcast?.startedAt) {
+      return;
+    }
 
     const updateTimer = () => {
       setDuration(formatDuration(activeBroadcast.startedAt));
     };
 
     updateTimer(); // Initial update
-    const interval = setInterval(updateTimer, 60000); // Update every minute
+    const interval = setInterval(updateTimer, 60_000); // Update every minute
 
     return () => clearInterval(interval);
   }, [activeBroadcast?.startedAt]);
@@ -81,7 +83,8 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
   const platform = getPlatform(activeBroadcast.broadcastUrl);
 
   // Get tagged artist details
-  const taggedArtists = activeBroadcast.broadcastWith?.()?.filter(Boolean) || [];
+  const taggedArtists =
+    activeBroadcast.broadcastWith?.()?.filter(Boolean) || [];
 
   const handleEndStream = () => {
     updateBroadcast.mutate({
@@ -97,7 +100,7 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
         {/* Live Badge + Duration */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-6 items-center gap-2 rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white">
+            <span className="flex h-6 items-center gap-2 rounded-full bg-red-500 px-3 py-1 font-semibold text-white text-xs">
               <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
               LIVE
             </span>
@@ -112,10 +115,10 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
             <span>{platform.name}</span>
           </div>
           <a
-            href={activeBroadcast.broadcastUrl}
-            target="_blank"
-            rel="noopener noreferrer"
             className="group flex items-center gap-2 text-purple-400 hover:text-purple-300"
+            href={activeBroadcast.broadcastUrl}
+            rel="noopener noreferrer"
+            target="_blank"
           >
             <span className="truncate text-sm">
               {activeBroadcast.broadcastUrl}
@@ -137,8 +140,8 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
 
                 return (
                   <div
-                    key={artist.id}
                     className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1"
+                    key={artist.id}
                   >
                     {avatar ? (
                       <Image
@@ -153,7 +156,7 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
                         👤
                       </div>
                     )}
-                    <span className="text-xs text-purple-300">{name}</span>
+                    <span className="text-purple-300 text-xs">{name}</span>
                   </div>
                 );
               })}
@@ -163,10 +166,10 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
 
         {/* End Stream Button */}
         <Button
-          onClick={handleEndStream}
-          disabled={updateBroadcast.isPending}
-          variant="outline"
           className="w-full border-zinc-700 hover:border-red-500/50 hover:bg-red-500/10"
+          disabled={updateBroadcast.isPending}
+          onClick={handleEndStream}
+          variant="outline"
         >
           {updateBroadcast.isPending ? "Ending..." : "End Stream"}
         </Button>

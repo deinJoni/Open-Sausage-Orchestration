@@ -33,15 +33,6 @@ export function useOwnedProfile() {
     ? `${subdomainData.name}.${ENS.PARENT_DOMAIN}`
     : null;
 
-  console.log("useOwnedProfile:", {
-    address,
-    isLoading: $state.isLoading,
-    userData,
-    subdomainData,
-    textRecordsData,
-    ensName,
-  });
-
   return {
     data: {
       user: userData,

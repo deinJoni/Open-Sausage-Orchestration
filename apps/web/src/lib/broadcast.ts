@@ -127,10 +127,10 @@ export function validateBroadcastParams(params: BroadcastParams): void {
  * @param url - The broadcast URL to analyze
  * @returns Platform name or null if not recognized
  */
-export function detectStreamPlatform(
-  url: string
-): "youtube" | "twitch" | null {
-  if (!url) return null;
+export function detectStreamPlatform(url: string): "youtube" | "twitch" | null {
+  if (!url) {
+    return null;
+  }
 
   const lowerUrl = url.toLowerCase();
 

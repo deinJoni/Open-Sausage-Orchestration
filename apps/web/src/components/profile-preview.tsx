@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { OwnedProfile } from "@/hooks/use-owned-profile";
-import { ipfsToHttp } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import type { OwnedProfile } from "@/hooks/use-owned-profile";
+import { ipfsToHttp } from "@/lib/utils";
 
 type ProfilePreviewProps = {
   profile: OwnedProfile;

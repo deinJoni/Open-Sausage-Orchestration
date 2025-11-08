@@ -14,8 +14,8 @@ import { useHasSubdomainContract } from "@/hooks/use-has-subdomain-contract";
 import {
   ADDRESS_PREFIX_LENGTH,
   ADDRESS_SUFFIX_LENGTH,
-  ENS,
   type AllValidKeys,
+  ENS,
 } from "@/lib/constants";
 import type { SocialLink } from "@/types/artist";
 

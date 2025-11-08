@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
 import { X } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
 import { useAllArtists } from "@/hooks/use-all-artists";
 import { resolveIPFS } from "@/lib/ipfs";
-import { Input } from "./ui/input";
 import { Card } from "./ui/card";
+import { Input } from "./ui/input";
 
 type ArtistPickerProps = {
   selectedAddresses: string[];
@@ -29,20 +29,24 @@ export function ArtistPicker({
   const [showDropdown, setShowDropdown] = useState(false);
 
   // Filter artists based on search and exclude already selected
-  const filteredArtists = allArtists?.filter((artist) => {
-    const address = artist.subdomain?.owner?.address;
-    const name = artist.subdomain?.name || "";
+  const filteredArtists =
+    allArtists?.filter((artist) => {
+      const address = artist.subdomain?.owner?.address;
+      const name = artist.subdomain?.name || "";
 
-    const matchesSearch = name.toLowerCase().includes(searchQuery.toLowerCase());
-    const notSelected = !selectedAddresses.includes(address || "");
+      const matchesSearch = name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const notSelected = !selectedAddresses.includes(address || "");
 
-    return matchesSearch && notSelected && address;
-  }) || [];
+      return matchesSearch && notSelected && address;
+    }) || [];
 
   // Get selected artist details for display
-  const selectedArtists = allArtists?.filter((artist) =>
-    selectedAddresses.includes(artist.subdomain?.owner?.address || "")
-  ) || [];
+  const selectedArtists =
+    allArtists?.filter((artist) =>
+      selectedAddresses.includes(artist.subdomain?.owner?.address || "")
+    ) || [];
 
   const handleSelect = (address: string) => {
     if (selectedAddresses.length < maxSelections) {
@@ -70,8 +74,8 @@ export function ArtistPicker({
 
             return (
               <div
-                key={address}
                 className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1.5"
+                key={address}
               >
                 {avatar ? (
                   <Image
@@ -86,11 +90,11 @@ export function ArtistPicker({
                     👤
                   </div>
                 )}
-                <span className="text-sm text-purple-300">{name}</span>
+                <span className="text-purple-300 text-sm">{name}</span>
                 <button
+                  className="text-purple-400 hover:text-purple-300"
                   onClick={() => handleRemove(address)}
                   type="button"
-                  className="text-purple-400 hover:text-purple-300"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -104,15 +108,15 @@ export function ArtistPicker({
       {selectedAddresses.length < maxSelections && (
         <div className="relative">
           <Input
-            placeholder="Search artists to tag..."
-            value={searchQuery}
+            className="border-zinc-700"
+            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setShowDropdown(e.target.value.length > 0);
             }}
             onFocus={() => searchQuery.length > 0 && setShowDropdown(true)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-            className="border-zinc-700"
+            placeholder="Search artists to tag..."
+            value={searchQuery}
           />
 
           {/* Dropdown */}
@@ -127,10 +131,10 @@ export function ArtistPicker({
 
                 return (
                   <button
+                    className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-zinc-800"
                     key={address}
                     onClick={() => handleSelect(address)}
                     type="button"
-                    className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-zinc-800"
                   >
                     {avatar ? (
                       <Image

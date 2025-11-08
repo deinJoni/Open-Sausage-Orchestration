@@ -304,8 +304,8 @@ export default function InvitePage() {
               </p>
               <div className="space-y-1 text-xs text-zinc-400">
                 <p>
-                  <span className="text-zinc-500">Subdomain:</span> {label}
-                  .{ENS.PARENT_DOMAIN}
+                  <span className="text-zinc-500">Subdomain:</span> {label}.
+                  {ENS.PARENT_DOMAIN}
                 </p>
                 <p>
                   <span className="text-zinc-500">Expires in:</span>{" "}

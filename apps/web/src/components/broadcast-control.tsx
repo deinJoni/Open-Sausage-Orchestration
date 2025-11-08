@@ -1,8 +1,8 @@
 "use client";
 
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
-import { StartBroadcastForm } from "./start-broadcast-form";
 import { LiveBroadcastCard } from "./live-broadcast-card";
+import { StartBroadcastForm } from "./start-broadcast-form";
 
 /**
  * Main broadcast control component
@@ -20,7 +20,7 @@ export function BroadcastControl() {
   }
 
   // No profile found
-  if (!ownedProfile.hasProfile || !ownedProfile.data) {
+  if (!(ownedProfile.hasProfile && ownedProfile.data)) {
     return null;
   }
 
