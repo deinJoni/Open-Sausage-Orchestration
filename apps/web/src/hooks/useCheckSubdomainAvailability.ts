@@ -1,19 +1,15 @@
-import { useDeferredValue } from "react";
 import { useQuery as useGqtyQuery } from "@/gqty";
 import { _SubgraphErrorPolicy_ } from "@/gqty/schema.generated";
 
 /**
  * Hook to check if a subdomain name is available for registration
  * Returns true if the subdomain does not exist, false if it's already taken
- * Debounces queries to avoid overwhelming the subgraph
+ * Note: label should be debounced before passing to this hook
  */
 export function useCheckSubdomainAvailability(label: string | undefined) {
-  const { subdomains } = useGqtyQuery();
+  const { subdomains } = useGqtyQuery({ suspense: false });
 
-  // Debounce the label to avoid excessive queries while typing
-  const deferredLabel = useDeferredValue(label);
-
-  if (!deferredLabel || deferredLabel.length === 0) {
+  if (!label || label.length === 0) {
     return {
       isAvailable: undefined,
       isChecking: false,
@@ -21,13 +17,10 @@ export function useCheckSubdomainAvailability(label: string | undefined) {
     };
   }
 
-  // Check if we're still waiting for debounced value
-  const isChecking = label !== deferredLabel;
-
   try {
     const result = subdomains({
       where: {
-        name: deferredLabel,
+        name: label,
       },
       first: 1,
       subgraphError: _SubgraphErrorPolicy_.deny,
@@ -41,7 +34,7 @@ export function useCheckSubdomainAvailability(label: string | undefined) {
 
     return {
       isAvailable,
-      isChecking,
+      isChecking: false,
       error: false,
     };
   } catch (error) {

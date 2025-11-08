@@ -17,7 +17,7 @@ type InviteData = {
 type CreateProfileInput = {
   ensName: string;
   bio: string;
-  avatar: File | string;
+  avatar: File;
   socials: SocialLink[];
   inviteData?: InviteData | null;
 };
@@ -52,12 +52,7 @@ export function useCreateProfile() {
 
       try {
         // Step 1: Upload avatar to IPFS (if File)
-        let avatarUrl = "";
-        if (input.avatar instanceof File) {
-          avatarUrl = await uploadAvatar.mutateAsync(input.avatar);
-        } else if (typeof input.avatar === "string" && input.avatar) {
-          avatarUrl = input.avatar;
-        }
+        const avatarUrl = await uploadAvatar.mutateAsync(input.avatar);
 
         // Step 2: Register subdomain with invite
         if (input.inviteData) {
@@ -68,14 +63,14 @@ export function useCreateProfile() {
         }
 
         // Step 3: Update text records (bio, avatar, socials)
-        //await updateTextRecords.mutateAsync({
-        //  ensName: input.ensName,
-        //  textRecords: {
-        //    description: input.bio || undefined,
-        //    avatar: avatarUrl || undefined,
-        //    socials: input.socials.length > 0 ? input.socials : undefined,
-        //  },
-        //});
+        await updateTextRecords.mutateAsync({
+          ensName: input.ensName,
+          textRecords: {
+            description: input.bio || undefined,
+            avatar: avatarUrl || undefined,
+            socials: input.socials.length > 0 ? input.socials : undefined,
+          },
+        });
 
         toast.success("Profile created successfully! 🎉");
       } catch (error) {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { useDebounceValue } from "usehooks-ts";
 import { useAccount, useDisconnect, useReadContract } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,9 +35,15 @@ export default function InvitePage() {
 
   const generateInvite = useGenerateInvite();
 
+  // Debounce label to avoid excessive queries while typing
+  const [debouncedLabel] = useDebounceValue(label, 300);
+
   // Check if subdomain is available
-  const { isAvailable, isChecking, error: availabilityError } =
-    useCheckSubdomainAvailability(label);
+  const { isAvailable, error: availabilityError } =
+    useCheckSubdomainAvailability(debouncedLabel);
+
+  // Track if we're waiting for debounced value to update
+  const isChecking = label !== debouncedLabel && label.length > 0;
 
   // Check if connected wallet is a whitelisted inviter
   const { data: isInviter, isLoading: isCheckingInviter } = useReadContract({

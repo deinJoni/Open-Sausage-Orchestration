@@ -1,7 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { encodeFunctionData, encodePacked, keccak256 } from "viem";
-import { useAccount, usePublicClient, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useCapabilities,
+  useChainId,
+  usePublicClient,
+  useSendCalls,
+} from "wagmi";
 import { L2RegistryABI } from "@/lib/abi/L2Registry";
 import { ENS_TEXT_KEYS } from "@/lib/constants";
 import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
@@ -37,8 +43,10 @@ type TextRecordsInput = {
  */
 export function useUpdateTextRecords() {
   const { address } = useAccount();
-  const { writeContractAsync } = useWriteContract();
+  const { sendCallsAsync } = useSendCalls();
   const publicClient = usePublicClient();
+  const { data: capabilities } = useCapabilities();
+  const chainId = useChainId();
 
   const mutation = useMutation({
     // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
@@ -137,29 +145,32 @@ export function useUpdateTextRecords() {
           throw new Error("No text records to update");
         }
 
-        const txHash = await writeContractAsync({
-          address: L2_REGISTRY_ADDRESS,
-          abi: L2RegistryABI,
-          functionName: "multicall",
-          args: [multicallData],
+        const atomicBatchSupported =
+          capabilities?.[chainId]?.atomic?.status === "supported";
+
+        const result = await sendCallsAsync({
+          calls: [
+            {
+              to: L2_REGISTRY_ADDRESS,
+              abi: L2RegistryABI,
+              functionName: "multicall",
+              args: [multicallData],
+            },
+          ],
+          ...(atomicBatchSupported && {
+            capabilities: {
+              atomicBatch: {
+                supported: true,
+              },
+            },
+          }),
         });
 
         toast.info("Waiting for confirmation...");
 
-        const receipt = await publicClient?.waitForTransactionReceipt({
-          hash: txHash,
-        });
-
-        if (receipt?.status === "reverted") {
-          throw new Error("Text records update failed");
-        }
-
         toast.success("Profile updated successfully!");
 
-        return {
-          txHash,
-          receipt,
-        };
+        return result;
       } catch (error) {
         const errorMsg =
           error instanceof Error ? error.message : parseContractError(error);
