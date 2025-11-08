@@ -7,6 +7,7 @@ import { ArtistPicker } from "./artist-picker";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 /**
  * Detect streaming platform from URL
@@ -84,9 +85,9 @@ export function StartBroadcastForm() {
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Stream URL Input */}
         <div>
-          <label className="mb-2 block font-medium text-sm text-zinc-300">
+          <Label className="mb-2 block font-medium text-sm text-zinc-300">
             Stream URL *
-          </label>
+          </Label>
           <Input
             className={`border-zinc-700 ${urlError ? "border-red-500" : ""}`}
             disabled={updateBroadcast.isPending}
@@ -110,9 +111,9 @@ export function StartBroadcastForm() {
 
         {/* Guest Artists Picker */}
         <div>
-          <label className="mb-2 block font-medium text-sm text-zinc-300">
+          <Label className="mb-2 block font-medium text-sm text-zinc-300">
             Tag Collaborators (Optional)
-          </label>
+          </Label>
           <p className="mb-3 text-xs text-zinc-500">
             Tag other artists you're streaming with
           </p>

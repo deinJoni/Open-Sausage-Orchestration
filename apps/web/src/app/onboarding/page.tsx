@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
   ADDRESS_SUFFIX_LENGTH,
   type AllValidKeys,
   ENS,
+  FILE_UPLOAD,
 } from "@/lib/constants";
 import type { SocialLink } from "@/types/artist";
 
@@ -291,9 +293,23 @@ export default function OnboardingPage() {
                     id="avatar-upload"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file) {
-                        setAvatar(file);
+                      if (!file) {
+                        return;
                       }
+
+                      // Validate file type
+                      if (!file.type.startsWith("image/")) {
+                        toast.error("Please upload an image file");
+                        return;
+                      }
+
+                      // Validate file size (4MB)
+                      if (file.size > FILE_UPLOAD.MAX_AVATAR_SIZE_BYTES) {
+                        toast.error("Image must be less than 4MB");
+                        return;
+                      }
+
+                      setAvatar(file);
                     }}
                     type="file"
                   />
@@ -310,16 +326,16 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex min-w-0 flex-col items-stretch gap-3 sm:flex-row sm:items-center">
               <Button
-                className="w-full"
+                className="flex-1"
                 onClick={() => setStep("basic")}
                 variant="outline"
               >
                 ← Back
               </Button>
               <Button
-                className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+                className="flex-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
                 onClick={() => setStep("socials")}
               >
                 Next →
@@ -381,16 +397,16 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex min-w-0 flex-col items-stretch gap-3 sm:flex-row sm:items-center">
               <Button
-                className="w-full"
+                className="flex-1"
                 onClick={() => setStep("avatar")}
                 variant="outline"
               >
                 ← Back
               </Button>
               <Button
-                className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+                className="flex-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
                 disabled={createProfile.mutation.isPending}
                 onClick={handleSubmit}
               >

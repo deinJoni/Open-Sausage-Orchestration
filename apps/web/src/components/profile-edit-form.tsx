@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { useUpdateProfile } from "@/hooks/use-update-profile";
-import { type AllValidKeys, SOCIAL_KEYS } from "@/lib/constants";
+import { type AllValidKeys, FILE_UPLOAD, SOCIAL_KEYS } from "@/lib/constants";
 import { ipfsToHttp } from "@/lib/utils";
 
 type ProfileEditFormProps = {
@@ -78,6 +78,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   );
 
   // Check if form has changes
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
   const hasChanges = useMemo(() => {
     if (description !== (descriptionRecord?.value || "")) {
       return true;
@@ -127,9 +128,9 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       return;
     }
 
-    // Validate file size (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Image must be less than 10MB");
+    // Validate file size (4MB)
+    if (file.size > FILE_UPLOAD.MAX_AVATAR_SIZE_BYTES) {
+      toast.error("Image must be less than 4MB");
       return;
     }
 
@@ -149,6 +150,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
     }));
   };
 
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 

@@ -112,8 +112,9 @@ const THIRTY = 30;
 export const ADDRESS_PREFIX_LENGTH = 6;
 export const ADDRESS_SUFFIX_LENGTH = 4;
 // File upload configuration
+const FOUR = 4;
 export const FILE_UPLOAD = {
-  MAX_AVATAR_SIZE_BYTES: 10 * THOUSAND * THOUSAND, // 10MB
+  MAX_AVATAR_SIZE_BYTES: FOUR * THOUSAND * THOUSAND, // 4MB
   ALLOWED_IMAGE_MIME_TYPES: [
     "image/jpeg",
     "image/png",

@@ -13,10 +13,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Check file size (max 10MB for avatars)
+    // Check file size (max 4MB for avatars)
     if (file.size > FILE_UPLOAD.MAX_AVATAR_SIZE_BYTES) {
       return NextResponse.json(
-        { error: "File too large. Maximum size is 10MB" },
+        { error: "File too large. Maximum size is 4MB" },
         { status: 400 }
       );
     }
