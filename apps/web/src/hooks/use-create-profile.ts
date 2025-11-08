@@ -73,6 +73,10 @@ export function useCreateProfile() {
           });
         }
 
+        // timeout for 2 seconds
+        const TIMEOUT_MS = 2000;
+        await new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+
         // Step 3: Update text records (bio, avatar, socials)
         await updateTextRecords.mutateAsync({
           ensName: input.ensName,

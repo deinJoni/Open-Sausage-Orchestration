@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { BroadcastControl } from "@/components/broadcast-control";
+import { PortoConnectButton } from "@/components/porto-connect-button";
 import { ProfileEditForm } from "@/components/profile-edit-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -28,7 +29,7 @@ export default function MePage() {
           <p className="mb-6 text-zinc-400">
             Connect your wallet to view and manage your profile
           </p>
-          <appkit-button size="md" />
+          <PortoConnectButton />
         </Card>
       </div>
     );
