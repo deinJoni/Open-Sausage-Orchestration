@@ -66,7 +66,7 @@ function deriveStreamPlatform(
  * Returns GQty subdomain data with streaming info
  */
 export function useArtistProfile(ensName?: string) {
-  const { subdomain, $state } = useGqtyQuery();
+  const { subdomain, $state } = useGqtyQuery({ suspense: false });
 
   if (!ensName) {
     return {

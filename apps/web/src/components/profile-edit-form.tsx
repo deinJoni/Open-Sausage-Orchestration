@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -200,23 +201,20 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
   return (
     <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
-      <h2 className="mb-6 font-bold text-white text-xl">Edit Profile</h2>
-
-      {/* Debug Info */}
-      {process.env.NODE_ENV === "development" && (
-        <div className="mb-4 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-3 text-sm">
-          <p className="mb-1 font-semibold text-yellow-300">Debug Info:</p>
-          <p className="text-yellow-200">
-            ENS Name: {profile.ensName || "null"}
-          </p>
-          <p className="text-yellow-200">
-            Has Changes: {hasChanges ? "Yes" : "No"}
-          </p>
-          <p className="text-yellow-200">
-            Existing Records: {existingRecords.length}
-          </p>
+      <div className="mb-6">
+        <div className="mb-3 flex flex-row items-center gap-3">
+          {profile.ensName && (
+            <p className="text-xl font-bold text-zinc-400">{profile.ensName}</p>
+          )}
         </div>
-      )}
+        {profile.ensName && (
+          <Button asChild size="sm" variant="outline">
+            <Link href={`/artist/${profile.ensName}`}>
+              View Public Profile
+            </Link>
+          </Button>
+        )}
+      </div>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Avatar */}

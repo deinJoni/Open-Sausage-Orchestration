@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { ProfileEditForm } from "@/components/profile-edit-form";
-import { ProfilePreview } from "@/components/profile-preview";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
 
 /**
@@ -17,6 +17,16 @@ import { useOwnedProfile } from "@/hooks/use-owned-profile";
 export default function MePage() {
   const { isConnected } = useAccount();
   const ownedProfile = useOwnedProfile();
+
+  // Debug logging
+  console.log("MePage render:", {
+    isConnected,
+    isLoading: ownedProfile.isLoading,
+    hasProfile: ownedProfile.hasProfile,
+    data: ownedProfile.data,
+    ensName: ownedProfile.data?.ensName,
+    textRecords: ownedProfile.data?.textRecords,
+  });
 
   // No wallet connected
   if (!isConnected) {
@@ -33,11 +43,41 @@ export default function MePage() {
     );
   }
 
-  // Loading state
+  // Loading state with skeleton matching the actual UI
   if (ownedProfile.isLoading) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center px-4">
-        <p className="text-zinc-400">Loading profile...</p>
+      <div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
+        <Skeleton className="mb-8 h-10 w-64" />
+        
+        <div className="grid gap-6">
+          {/* Edit Form Skeleton */}
+          <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
+            <div className="mb-6">
+              <div className="mb-3">
+                <Skeleton className="h-7 w-48" />
+              </div>
+              <Skeleton className="h-9 w-40" />
+            </div>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-24 w-24 rounded-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -70,9 +110,6 @@ export default function MePage() {
       <h1 className="mb-8 font-bold text-3xl text-white">Your Profile</h1>
 
       <div className="grid gap-6">
-        {/* Profile Preview */}
-        <ProfilePreview ensName={ownedProfile.data?.ensName || ""} />
-
         {/* Edit Form - key prop ensures component remounts when profile changes */}
         {ownedProfile.data && (
           <ProfileEditForm

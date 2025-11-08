@@ -43,12 +43,12 @@ const queryFetcher: QueryFetcher = async function (
 const cache = new Cache(
   undefined,
   /**
-   * Cache is valid for 30 minutes, but starts revalidating after 5 seconds,
-   * allowing soft refetches in background.
+   * Cache is valid for 60 minutes, but starts revalidating after 5 minutes,
+   * reducing query frequency while keeping data relatively fresh.
    */
   {
-    maxAge: 5000,
-    staleWhileRevalidate: 30 * 60 * 1000,
+    maxAge: 5 * 60 * 1000, // 5 minutes before considering stale
+    staleWhileRevalidate: 60 * 60 * 1000, // 1 hour total cache duration
     normalization: true,
   }
 );
@@ -88,7 +88,6 @@ export const {
   prepareReactRender,
   useHydrateCache,
   prepareQuery,
-  // @ts-expect-error - GQty types are not compatible with React 19
 } = createReactClient<GeneratedSchema>(client, {
   defaults: {
     // Enable Suspense, you can override this option for each hook.
