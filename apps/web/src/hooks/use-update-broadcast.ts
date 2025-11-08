@@ -55,7 +55,7 @@ export function useUpdateBroadcast() {
         // Validate broadcast parameters
         validateBroadcastParams(params);
 
-        // Extract label from ensName (e.g., "alice" from "alice.osopit.eth")
+        // Extract label from ensName (e.g., "alice" from "alice.catmisha.eth")
         const label = ownedProfile.data?.ensName.split(".")[0];
 
         // Calculate nodeHash using ENS namehash

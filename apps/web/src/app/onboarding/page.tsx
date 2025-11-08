@@ -14,6 +14,7 @@ import { useHasSubdomainContract } from "@/hooks/use-has-subdomain-contract";
 import {
   ADDRESS_PREFIX_LENGTH,
   ADDRESS_SUFFIX_LENGTH,
+  ENS,
   type AllValidKeys,
 } from "@/lib/constants";
 import type { SocialLink } from "@/types/artist";
@@ -206,7 +207,7 @@ export default function OnboardingPage() {
             <p className="text-xs text-zinc-400">
               You're invited to claim:{" "}
               <span className="font-mono text-purple-300">
-                {ensName}.osopit.eth
+                {ensName}.{ENS.PARENT_DOMAIN}
               </span>
             </p>
           </div>

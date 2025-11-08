@@ -1,5 +1,6 @@
 import { useAccount } from "wagmi";
 import { useQuery as useGqtyQuery } from "@/gqty";
+import { ENS } from "@/lib/constants";
 
 /**
  * Hook to detect which profile the connected wallet owns
@@ -27,7 +28,7 @@ export function useOwnedProfile() {
   const textRecordsData = subdomainData?.textRecords?.();
 
   const ensName = subdomainData?.name
-    ? `${subdomainData.name}.osopit.eth`
+    ? `${subdomainData.name}.${ENS.PARENT_DOMAIN}`
     : null;
 
   // If we have an address but data is still undefined (not null), query is loading

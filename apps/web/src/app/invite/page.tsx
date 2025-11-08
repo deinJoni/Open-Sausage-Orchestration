@@ -16,6 +16,7 @@ import {
   ADDRESS_SUFFIX_LENGTH,
   ADDRESSES,
   DEBOUNCE_TIME,
+  ENS,
   SUBDOMAIN_VALIDATION,
   TIME,
 } from "@/lib/constants";
@@ -304,7 +305,7 @@ export default function InvitePage() {
               <div className="space-y-1 text-xs text-zinc-400">
                 <p>
                   <span className="text-zinc-500">Subdomain:</span> {label}
-                  .osopit.eth
+                  .{ENS.PARENT_DOMAIN}
                 </p>
                 <p>
                   <span className="text-zinc-500">Expires in:</span>{" "}
@@ -327,7 +328,7 @@ export default function InvitePage() {
                   value={label}
                 />
                 <span className="-translate-y-1/2 absolute top-1/2 right-3 text-sm text-zinc-500">
-                  .osopit.eth
+                  .{ENS.PARENT_DOMAIN}
                 </span>
               </div>
               {getAvailabilityMessage()}
