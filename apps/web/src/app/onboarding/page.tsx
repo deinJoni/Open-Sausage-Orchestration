@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateProfile } from "@/hooks/useCreateProfile";
+import { useHasSubdomainContract } from "@/hooks/useHasSubdomainContract";
 import { useOwnedProfile } from "@/hooks/useOwnedProfile";
 import { ADDRESS_PREFIX_LENGTH, ADDRESS_SUFFIX_LENGTH } from "@/lib/constants";
 import type { SocialLink } from "@/types/artist";
@@ -42,10 +43,14 @@ export default function OnboardingPage() {
   const isPorto = connector?.name === "Porto";
 
   const {
-    hasProfile,
+    hasProfile: hasProfileSubgraph,
     ensName: ownedEnsName,
-    isLoading: isCheckingOwnership,
   } = useOwnedProfile();
+
+  const {
+    hasSubdomain: hasProfile,
+    isLoading: isCheckingOwnership,
+  } = useHasSubdomainContract(address);
 
   const [step, setStep] = useState<Step>("basic");
   const createProfile = useCreateProfile();
@@ -102,7 +107,13 @@ export default function OnboardingPage() {
               <p className="mb-2 text-blue-400 text-sm">
                 You already own a subdomain
               </p>
-              <p className="font-mono text-xs text-zinc-300">{ownedEnsName}</p>
+              {ownedEnsName ? (
+                <p className="font-mono text-xs text-zinc-300">{ownedEnsName}</p>
+              ) : (
+                <p className="text-xs text-zinc-400">
+                  (Subdomain detected on-chain)
+                </p>
+              )}
             </div>
             <p className="text-sm text-zinc-400">
               Each wallet can only register one subdomain. You can view or edit
