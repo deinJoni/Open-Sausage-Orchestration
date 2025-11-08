@@ -1,5 +1,16 @@
-import { Card } from "@/components/ui/card";
+"use client";
+
+import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
+import { useUpdateProfile } from "@/hooks/use-update-profile";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
+import { SOCIAL_KEYS, type AllValidKeys } from "@/lib/constants";
+import { ipfsToHttp } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type ProfileEditFormProps = {
   profile: OwnedProfile;
@@ -16,16 +27,307 @@ type ProfileEditFormProps = {
  * - Validation in event handlers
  */
 export function ProfileEditForm({ profile }: ProfileEditFormProps) {
-  // ✅ Initialize state once from props
+  // Debug: Log profile data
+  console.log("ProfileEditForm - profile:", profile);
+  console.log("ProfileEditForm - ensName:", profile.ensName);
+  console.log("ProfileEditForm - textRecords:", profile.textRecords);
+
+  // Get existing text records using constants
+  const existingRecords = profile.textRecords || [];
+  const avatarRecord = existingRecords.find((r) => r?.key === "avatar" as AllValidKeys);
+  const descriptionRecord = existingRecords.find((r) => r?.key === "description" as AllValidKeys);
+  const emailRecord = existingRecords.find((r) => r?.key === "email" as AllValidKeys);
+  const urlRecord = existingRecords.find((r) => r?.key === "url" as AllValidKeys);
+
+  // Form state
+  const [description, setDescription] = useState(descriptionRecord?.value || "");
+  const [email, setEmail] = useState(emailRecord?.value || "");
+  const [url, setUrl] = useState(urlRecord?.value || "");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Social links state - initialize from existing records
+  const [socials, setSocials] = useState<Record<string, string>>(() => {
+    const socialObj: Record<string, string> = {};
+    for (const key of SOCIAL_KEYS) {
+      const record = existingRecords.find((r) => r.key === key);
+      if (record?.value) {
+        socialObj[key] = record.value;
+      }
+    }
+    return socialObj;
+  });
+
+  const updateProfile = useUpdateProfile();
+
+  // Cleanup blob URL on unmount
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) {
+        URL.revokeObjectURL(avatarPreview);
+      }
+    };
+  }, [avatarPreview]);
+
+  // Check if form has changes
+  const hasChanges = useMemo(() => {
+    if (description !== (descriptionRecord?.value || "")) return true;
+    if (email !== (emailRecord?.value || "")) return true;
+    if (url !== (urlRecord?.value || "")) return true;
+    if (avatarFile) return true;
+
+    // Check social links
+    for (const key of SOCIAL_KEYS) {
+      const existingValue = existingRecords.find((r) => r.key === key)?.value || "";
+      const currentValue = socials[key] || "";
+      if (existingValue !== currentValue) return true;
+    }
+
+    return false;
+  }, [description, email, url, avatarFile, socials, existingRecords, descriptionRecord, emailRecord, urlRecord]);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image must be less than 10MB");
+      return;
+    }
+
+    setAvatarFile(file);
+
+    // Create preview
+    if (avatarPreview) {
+      URL.revokeObjectURL(avatarPreview);
+    }
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const handleSocialChange = (key: string, value: string) => {
+    setSocials((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!profile.ensName) {
+      toast.error("No ENS name found");
+      return;
+    }
+
+    console.log("Submitting profile update for:", profile.ensName);
+
+    // Build text records array using constants (only include non-empty values)
+    const textRecords: Array<{ key: AllValidKeys; value: string }> = [];
+
+    if (description.trim()) {
+      textRecords.push({ key: "description" as AllValidKeys, value: description.trim() });
+    }
+    if (email.trim()) {
+      textRecords.push({ key: "email" as AllValidKeys, value: email.trim() });
+    }
+    if (url.trim()) {
+      textRecords.push({ key: "url" as AllValidKeys, value: url.trim() });
+    }
+
+    // Add social links (only non-empty) - these are already validated as SOCIAL_KEYS
+    for (const [key, value] of Object.entries(socials)) {
+      if (value.trim()) {
+        textRecords.push({ key: key as AllValidKeys, value: value.trim() });
+      }
+    }
+
+    console.log("Text records to update:", textRecords);
+
+    try {
+      await updateProfile.mutateAsync({
+        ensName: profile.ensName,
+        avatar: avatarFile || undefined,
+        textRecords: textRecords,
+      });
+
+      // Reset form state after successful save
+      setAvatarFile(null);
+      setAvatarPreview(null);
+
+      console.log("Profile updated successfully!");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      // Error toast is handled by the mutation
+    }
+  };
+
+  const currentAvatarSrc = avatarPreview || (avatarRecord?.value ? ipfsToHttp(avatarRecord.value) : null);
 
   return (
     <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
       <h2 className="mb-6 font-bold text-white text-xl">Edit Profile</h2>
 
-      {JSON.stringify(profile.ensName)}
-      {JSON.stringify(profile.textRecords?.map((record) => record.key))}
-      {JSON.stringify(profile.textRecords?.map((record) => record.value))}
-      {JSON.stringify(profile.user?.subdomain?.name)}
+      {/* Debug Info */}
+      {process.env.NODE_ENV === "development" && (
+        <div className="mb-4 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-3 text-sm">
+          <p className="mb-1 font-semibold text-yellow-300">Debug Info:</p>
+          <p className="text-yellow-200">ENS Name: {profile.ensName || "null"}</p>
+          <p className="text-yellow-200">Has Changes: {hasChanges ? "Yes" : "No"}</p>
+          <p className="text-yellow-200">Existing Records: {existingRecords.length}</p>
+        </div>
+      )}
+
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        {/* Avatar */}
+        <div>
+          <Label className="text-zinc-300">Avatar</Label>
+          <div className="mt-2 flex items-center gap-4">
+            {currentAvatarSrc ? (
+              <Image
+                alt="Avatar preview"
+                className="h-24 w-24 rounded-full border-4 border-zinc-700"
+                height={96}
+                src={currentAvatarSrc}
+                width={96}
+              />
+            ) : (
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-zinc-700 bg-zinc-800 text-3xl">
+                👤
+              </div>
+            )}
+            <div>
+              <input
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+                ref={fileInputRef}
+                type="file"
+              />
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                {avatarFile ? "Change Image" : "Upload Image"}
+              </Button>
+              {avatarFile && (
+                <p className="mt-1 text-sm text-zinc-400">{avatarFile.name}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Description/Bio */}
+        <div>
+          <Label className="text-zinc-300" htmlFor="description">
+            Bio / Description
+          </Label>
+          <Input
+            className="mt-2 border-zinc-700 bg-zinc-800 text-white"
+            id="description"
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Tell us about yourself..."
+            value={description}
+          />
+        </div>
+
+        {/* Email */}
+        <div>
+          <Label className="text-zinc-300" htmlFor="email">
+            Email (Optional)
+          </Label>
+          <Input
+            className="mt-2 border-zinc-700 bg-zinc-800 text-white"
+            id="email"
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="your@email.com"
+            type="email"
+            value={email}
+          />
+        </div>
+
+        {/* Website URL */}
+        <div>
+          <Label className="text-zinc-300" htmlFor="url">
+            Website (Optional)
+          </Label>
+          <Input
+            className="mt-2 border-zinc-700 bg-zinc-800 text-white"
+            id="url"
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://your-website.com"
+            type="url"
+            value={url}
+          />
+        </div>
+
+        {/* Social Links */}
+        <div>
+          <Label className="mb-3 text-zinc-300">Social Links (Optional)</Label>
+          <div className="space-y-3">
+            {(["com.twitter", "com.instagram", "com.youtube", "com.spotify", "com.soundcloud"] as const).map((key) => (
+              <div key={key}>
+                <Label className="text-sm text-zinc-400" htmlFor={key}>
+                  {key.replace("com.", "").charAt(0).toUpperCase() + key.replace("com.", "").slice(1)}
+                </Label>
+                <Input
+                  className="mt-1 border-zinc-700 bg-zinc-800 text-white"
+                  id={key}
+                  onChange={(e) => handleSocialChange(key, e.target.value)}
+                  placeholder={`https://${key.replace("com.", "")}.com/yourusername`}
+                  type="url"
+                  value={socials[key] || ""}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex gap-3">
+          <Button
+            className="bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+            disabled={!hasChanges || updateProfile.isPending}
+            type="submit"
+          >
+            {updateProfile.isPending ? "Saving..." : "Save Changes"}
+          </Button>
+          {hasChanges && (
+            <Button
+              onClick={() => {
+                setDescription(descriptionRecord?.value || "");
+                setEmail(emailRecord?.value || "");
+                setUrl(urlRecord?.value || "");
+                setAvatarFile(null);
+                setAvatarPreview(null);
+                setSocials(() => {
+                  const socialObj: Record<string, string> = {};
+                  for (const key of SOCIAL_KEYS) {
+                    const record = existingRecords.find((r) => r.key === key);
+                    if (record?.value) {
+                      socialObj[key] = record.value;
+                    }
+                  }
+                  return socialObj;
+                });
+              }}
+              type="button"
+              variant="ghost"
+            >
+              Cancel
+            </Button>
+          )}
+        </div>
+      </form>
     </Card>
   );
 }

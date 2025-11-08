@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
+import { ipfsToHttp } from "@/lib/utils";
 import { DonationModal } from "./donation-modal";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -55,11 +56,11 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
             alt={artist.subdomain ?? ""}
             className="h-12 w-12 rounded-full border-2 border-zinc-700"
             height={48}
-            src={
+            src={ipfsToHttp(
               artist.user?.subdomain
                 ?.textRecords?.()
-                ?.find((record) => record.key === "avatar")?.value ?? "Avatar"
-            }
+                ?.find((record) => record.key === "avatar")?.value ?? ""
+            )}
             width={48}
           />
           <div className="flex-1">

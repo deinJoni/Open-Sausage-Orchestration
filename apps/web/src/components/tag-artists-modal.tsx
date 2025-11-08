@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useAllArtists } from "@/hooks/use-all-artists";
+import { ipfsToHttp } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
@@ -76,15 +77,15 @@ export function TagArtistsModal({ onConfirm, onCancel }: TagArtistsModalProps) {
                 onClick={() => toggleArtist(artist.subdomain?.name ?? "")}
                 type="button"
               >
-                <Image
-                  alt={artist.subdomain?.name ?? ""}
-                  className="h-10 w-10 rounded-full"
-                  src={
-                    artist.subdomain
-                      ?.textRecords?.()
-                      ?.find((record) => record.key === "avatar")?.value ??
-                    "Avatar"
-                  }
+              <Image
+                alt={artist.subdomain?.name ?? ""}
+                className="h-10 w-10 rounded-full"
+                src={ipfsToHttp(
+                  artist.subdomain
+                    ?.textRecords?.()
+                    ?.find((record) => record.key === "avatar")?.value ??
+                  ""
+                )}
                 />
                 <div className="flex-1">
                   <div className="font-medium text-white">

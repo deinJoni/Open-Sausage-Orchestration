@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import type { ActiveBroadcasts } from "@/hooks/use-active-broadcast";
+import { ipfsToHttp } from "@/lib/utils";
 import { ArtistQuickActions } from "./artist-quick-actions";
 import { StreamEmbed } from "./stream-embed";
 import { Button } from "./ui/button";
@@ -89,18 +90,18 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
               className="flex items-center gap-4 transition-opacity hover:opacity-80"
               type="button"
             >
-              <Image
-                alt={currentBroadcast.subdomain?.name ?? ""}
-                className="h-12 w-12 rounded-full border-2 border-red-500"
-                height={48}
-                src={
-                  currentBroadcast.subdomain
-                    ?.textRecords?.()
-                    ?.find((record) => record.key === "avatar")?.value ??
-                  "Avatar"
-                }
-                width={48}
-              />
+            <Image
+              alt={currentBroadcast.subdomain?.name ?? ""}
+              className="h-12 w-12 rounded-full border-2 border-red-500"
+              height={48}
+              src={ipfsToHttp(
+                currentBroadcast.subdomain
+                  ?.textRecords?.()
+                  ?.find((record) => record.key === "avatar")?.value ??
+                ""
+              )}
+              width={48}
+            />
               <div className="flex-1 text-left">
                 <p className="font-semibold text-white">
                   {currentBroadcast.subdomain?.name ?? ""}

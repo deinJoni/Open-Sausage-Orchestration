@@ -18,3 +18,23 @@ export function calculateNodeHash(label: string) {
   const fullName = `${label}.${ENS.PARENT_DOMAIN}`;
   return namehash(fullName);
 }
+
+/**
+ * Convert IPFS URL to HTTP gateway URL
+ * @param url - The URL which may be an IPFS URL (ipfs://QmHash) or HTTP URL
+ * @returns HTTP gateway URL for IPFS content, the original URL, or a placeholder for empty values
+ * @example
+ * ipfsToHttp("ipfs://QmHash...") // returns "https://ipfs.io/ipfs/QmHash..."
+ * ipfsToHttp("https://example.com/image.jpg") // returns "https://example.com/image.jpg"
+ * ipfsToHttp("") // returns "https://avatars.jakerunzer.com/placeholder"
+ */
+export function ipfsToHttp(url: string | undefined | null): string {
+  if (!url || url.trim() === "") {
+    return "https://avatars.jakerunzer.com/placeholder";
+  }
+  if (url.startsWith("ipfs://")) {
+    const hash = url.replace("ipfs://", "");
+    return `https://ipfs.io/ipfs/${hash}`;
+  }
+  return url;
+}
