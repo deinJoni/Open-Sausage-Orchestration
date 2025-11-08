@@ -7,7 +7,8 @@ import { useQuery as useGqtyQuery } from "@/gqty";
  */
 export function useOwnedProfile() {
   const { address } = useAccount();
-  const query = useGqtyQuery();
+  // Disable suspense to get proper loading states
+  const { user, $state } = useGqtyQuery({ suspense: false });
 
   if (!address) {
     return {
@@ -18,11 +19,12 @@ export function useOwnedProfile() {
     };
   }
 
-  const userData = query.user({
+  // Query user data - GQty will track this and trigger re-renders
+  const userData = user({
     id: address.toLowerCase(),
   });
 
-  // Access subdomain and textRecords
+  // Access subdomain and textRecords to trigger GQty tracking
   const subdomainData = userData?.subdomain;
   const textRecordsData = subdomainData?.textRecords?.();
 
@@ -30,8 +32,14 @@ export function useOwnedProfile() {
     ? `${subdomainData.name}.osopit.eth`
     : null;
 
-  // If we have an address but data is still undefined (not null), query is loading
-  const isLoading = userData === undefined;
+  console.log("useOwnedProfile:", {
+    address,
+    isLoading: $state.isLoading,
+    userData,
+    subdomainData,
+    textRecordsData,
+    ensName,
+  });
 
   return {
     data: {
@@ -40,10 +48,9 @@ export function useOwnedProfile() {
       textRecords: textRecordsData,
       ensName,
     },
-    isLoading,
-
+    isLoading: $state.isLoading,
     hasProfile: !!userData,
-    error: null,
+    error: $state.error,
   };
 }
 
