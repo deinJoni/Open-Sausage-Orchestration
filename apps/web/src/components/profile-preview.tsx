@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useArtistProfile } from "@/hooks/use-artist-profile";
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useArtistProfile } from "@/hooks/use-artist-profile";
 import { ipfsToHttp } from "@/lib/utils";
 
 type ProfilePreviewProps = {
@@ -39,8 +39,12 @@ export function ProfilePreview({ ensName }: ProfilePreviewProps) {
     );
   }
 
-  const avatarRecord = artist.textRecords?.()?.find((record) => record.key === "avatar");
-  const descriptionRecord = artist.textRecords?.()?.find((record) => record.key === "description");
+  const avatarRecord = artist
+    .textRecords?.()
+    ?.find((record) => record.key === "avatar");
+  const descriptionRecord = artist
+    .textRecords?.()
+    ?.find((record) => record.key === "description");
 
   return (
     <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">

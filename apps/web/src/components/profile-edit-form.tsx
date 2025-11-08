@@ -3,14 +3,14 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useUpdateProfile } from "@/hooks/use-update-profile";
-import type { OwnedProfile } from "@/hooks/use-owned-profile";
-import { SOCIAL_KEYS, type AllValidKeys } from "@/lib/constants";
-import { ipfsToHttp } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { OwnedProfile } from "@/hooks/use-owned-profile";
+import { useUpdateProfile } from "@/hooks/use-update-profile";
+import { type AllValidKeys, SOCIAL_KEYS } from "@/lib/constants";
+import { ipfsToHttp } from "@/lib/utils";
 
 type ProfileEditFormProps = {
   profile: OwnedProfile;
@@ -27,20 +27,25 @@ type ProfileEditFormProps = {
  * - Validation in event handlers
  */
 export function ProfileEditForm({ profile }: ProfileEditFormProps) {
-  // Debug: Log profile data
-  console.log("ProfileEditForm - profile:", profile);
-  console.log("ProfileEditForm - ensName:", profile.ensName);
-  console.log("ProfileEditForm - textRecords:", profile.textRecords);
-
   // Get existing text records using constants
   const existingRecords = profile.textRecords || [];
-  const avatarRecord = existingRecords.find((r) => r?.key === "avatar" as AllValidKeys);
-  const descriptionRecord = existingRecords.find((r) => r?.key === "description" as AllValidKeys);
-  const emailRecord = existingRecords.find((r) => r?.key === "email" as AllValidKeys);
-  const urlRecord = existingRecords.find((r) => r?.key === "url" as AllValidKeys);
+  const avatarRecord = existingRecords.find(
+    (r) => r?.key === ("avatar" as AllValidKeys)
+  );
+  const descriptionRecord = existingRecords.find(
+    (r) => r?.key === ("description" as AllValidKeys)
+  );
+  const emailRecord = existingRecords.find(
+    (r) => r?.key === ("email" as AllValidKeys)
+  );
+  const urlRecord = existingRecords.find(
+    (r) => r?.key === ("url" as AllValidKeys)
+  );
 
   // Form state
-  const [description, setDescription] = useState(descriptionRecord?.value || "");
+  const [description, setDescription] = useState(
+    descriptionRecord?.value || ""
+  );
   const [email, setEmail] = useState(emailRecord?.value || "");
   const [url, setUrl] = useState(urlRecord?.value || "");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -62,34 +67,58 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   const updateProfile = useUpdateProfile();
 
   // Cleanup blob URL on unmount
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (avatarPreview) {
         URL.revokeObjectURL(avatarPreview);
       }
-    };
-  }, [avatarPreview]);
+    },
+    [avatarPreview]
+  );
 
   // Check if form has changes
   const hasChanges = useMemo(() => {
-    if (description !== (descriptionRecord?.value || "")) return true;
-    if (email !== (emailRecord?.value || "")) return true;
-    if (url !== (urlRecord?.value || "")) return true;
-    if (avatarFile) return true;
+    if (description !== (descriptionRecord?.value || "")) {
+      return true;
+    }
+    if (email !== (emailRecord?.value || "")) {
+      return true;
+    }
+    if (url !== (urlRecord?.value || "")) {
+      return true;
+    }
+    if (avatarFile) {
+      return true;
+    }
 
     // Check social links
     for (const key of SOCIAL_KEYS) {
-      const existingValue = existingRecords.find((r) => r.key === key)?.value || "";
+      const existingValue =
+        existingRecords.find((r) => r.key === key)?.value || "";
       const currentValue = socials[key] || "";
-      if (existingValue !== currentValue) return true;
+      if (existingValue !== currentValue) {
+        return true;
+      }
     }
 
     return false;
-  }, [description, email, url, avatarFile, socials, existingRecords, descriptionRecord, emailRecord, urlRecord]);
+  }, [
+    description,
+    email,
+    url,
+    avatarFile,
+    socials,
+    existingRecords,
+    descriptionRecord,
+    emailRecord,
+    urlRecord,
+  ]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
@@ -127,13 +156,14 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       return;
     }
 
-    console.log("Submitting profile update for:", profile.ensName);
-
     // Build text records array using constants (only include non-empty values)
     const textRecords: Array<{ key: AllValidKeys; value: string }> = [];
 
     if (description.trim()) {
-      textRecords.push({ key: "description" as AllValidKeys, value: description.trim() });
+      textRecords.push({
+        key: "description" as AllValidKeys,
+        value: description.trim(),
+      });
     }
     if (email.trim()) {
       textRecords.push({ key: "email" as AllValidKeys, value: email.trim() });
@@ -149,27 +179,24 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       }
     }
 
-    console.log("Text records to update:", textRecords);
-
     try {
       await updateProfile.mutateAsync({
         ensName: profile.ensName,
         avatar: avatarFile || undefined,
-        textRecords: textRecords,
+        textRecords,
       });
 
       // Reset form state after successful save
       setAvatarFile(null);
       setAvatarPreview(null);
-
-      console.log("Profile updated successfully!");
-    } catch (error) {
-      console.error("Failed to update profile:", error);
+    } catch (_error) {
       // Error toast is handled by the mutation
     }
   };
 
-  const currentAvatarSrc = avatarPreview || (avatarRecord?.value ? ipfsToHttp(avatarRecord.value) : null);
+  const currentAvatarSrc =
+    avatarPreview ||
+    (avatarRecord?.value ? ipfsToHttp(avatarRecord.value) : null);
 
   return (
     <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
@@ -179,9 +206,15 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       {process.env.NODE_ENV === "development" && (
         <div className="mb-4 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-3 text-sm">
           <p className="mb-1 font-semibold text-yellow-300">Debug Info:</p>
-          <p className="text-yellow-200">ENS Name: {profile.ensName || "null"}</p>
-          <p className="text-yellow-200">Has Changes: {hasChanges ? "Yes" : "No"}</p>
-          <p className="text-yellow-200">Existing Records: {existingRecords.length}</p>
+          <p className="text-yellow-200">
+            ENS Name: {profile.ensName || "null"}
+          </p>
+          <p className="text-yellow-200">
+            Has Changes: {hasChanges ? "Yes" : "No"}
+          </p>
+          <p className="text-yellow-200">
+            Existing Records: {existingRecords.length}
+          </p>
         </div>
       )}
 
@@ -274,10 +307,19 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
         <div>
           <Label className="mb-3 text-zinc-300">Social Links (Optional)</Label>
           <div className="space-y-3">
-            {(["com.twitter", "com.instagram", "com.youtube", "com.spotify", "com.soundcloud"] as const).map((key) => (
+            {(
+              [
+                "com.twitter",
+                "com.instagram",
+                "com.youtube",
+                "com.spotify",
+                "com.soundcloud",
+              ] as const
+            ).map((key) => (
               <div key={key}>
                 <Label className="text-sm text-zinc-400" htmlFor={key}>
-                  {key.replace("com.", "").charAt(0).toUpperCase() + key.replace("com.", "").slice(1)}
+                  {key.replace("com.", "").charAt(0).toUpperCase() +
+                    key.replace("com.", "").slice(1)}
                 </Label>
                 <Input
                   className="mt-1 border-zinc-700 bg-zinc-800 text-white"

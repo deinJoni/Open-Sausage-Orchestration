@@ -77,15 +77,14 @@ export function TagArtistsModal({ onConfirm, onCancel }: TagArtistsModalProps) {
                 onClick={() => toggleArtist(artist.subdomain?.name ?? "")}
                 type="button"
               >
-              <Image
-                alt={artist.subdomain?.name ?? ""}
-                className="h-10 w-10 rounded-full"
-                src={ipfsToHttp(
-                  artist.subdomain
-                    ?.textRecords?.()
-                    ?.find((record) => record.key === "avatar")?.value ??
-                  ""
-                )}
+                <Image
+                  alt={artist.subdomain?.name ?? ""}
+                  className="h-10 w-10 rounded-full"
+                  src={ipfsToHttp(
+                    artist.subdomain
+                      ?.textRecords?.()
+                      ?.find((record) => record.key === "avatar")?.value ?? ""
+                  )}
                 />
                 <div className="flex-1">
                   <div className="font-medium text-white">

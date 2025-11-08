@@ -53,7 +53,7 @@ export function useUpdateProfile() {
       // Step 2: Update text records via multicall
       await updateTextRecords.mutateAsync({
         ensName: input.ensName,
-        textRecords: textRecords,
+        textRecords,
       });
 
       // Success toast is handled by updateTextRecords
