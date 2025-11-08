@@ -41,6 +41,7 @@ export function useOwnedProfile() {
       ensName,
     },
     isLoading,
+
     hasProfile: !!userData,
     error: null,
   };

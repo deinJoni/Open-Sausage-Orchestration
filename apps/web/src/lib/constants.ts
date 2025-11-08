@@ -58,6 +58,8 @@ export const SOCIAL_KEYS = [
   "com.linkedin",
   "com.pinterest",
   "com.reddit",
+  "com.spotify",
+  "com.soundcloud",
 ] as const;
 
 // Web3 social keys
@@ -157,3 +159,5 @@ export const ERROR_MESSAGES = {
 } as const;
 
 export const ARTISTS_GRID_SIZE = 6;
+
+export const DEBOUNCE_TIME = 300;

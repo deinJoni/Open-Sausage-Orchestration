@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAllArtists } from "@/hooks/useAllArtists";
-import { useSubgraphQueryTest } from "@/hooks/useSubgraphQueryTest";
+import { useAllArtists } from "@/hooks/use-all-artists";
 import { ARTISTS_GRID_SIZE } from "@/lib/constants";
 
 type FilterType = "all" | "live" | "offline";
@@ -19,20 +18,18 @@ export default function ArtistsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
 
-  const nameLabelsQuery = useSubgraphQueryTest();
-
   const filteredArtists =
     allArtists?.filter((artist) => {
       // Apply search filter
-      const matchesSearch = artist.ensName
-        .toLowerCase()
+      const matchesSearch = artist.subdomain?.name
+        ?.toLowerCase()
         .includes(searchQuery.toLowerCase());
 
       // Apply status filter
       const matchesFilter =
         filter === "all" ||
-        (filter === "live" && artist.isStreaming) ||
-        (filter === "offline" && !artist.isStreaming);
+        (filter === "live" && artist.activeBroadcast?.isLive) ||
+        (filter === "offline" && !artist.activeBroadcast?.isLive);
 
       return matchesSearch && matchesFilter;
     }) || [];
@@ -72,26 +69,36 @@ export default function ArtistsPage() {
   const renderArtistsGrid = () => (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {filteredArtists.map((artist) => {
-        const avatarBorderColor = artist.isStreaming
+        const avatarBorderColor = artist.activeBroadcast?.isLive
           ? "border-red-500"
           : "border-zinc-700";
 
         return (
           <Card
             className="group border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur transition-all hover:border-purple-500/50"
-            key={artist.ensName}
+            key={artist.subdomain?.name ?? ""}
           >
-            <Link href={`/artist/${artist.ensName}`}>
+            <Link href={`/artist/${artist.subdomain?.name ?? ""}`}>
               <div className="mb-4 flex justify-center">
                 <div className="relative">
                   <Image
-                    alt={artist.ensName}
+                    alt={
+                      artist.subdomain
+                        ?.textRecords?.()
+                        ?.find((record) => record.key === "avatar")?.value ??
+                      "Avatar"
+                    }
                     className={`h-24 w-24 rounded-full border-2 transition-transform group-hover:scale-105 ${avatarBorderColor}`}
                     height={96}
-                    src={artist.avatar}
+                    src={
+                      artist.subdomain
+                        ?.textRecords?.()
+                        ?.find((record) => record.key === "avatar")?.value ??
+                      "Avatar"
+                    }
                     width={96}
                   />
-                  {artist.isStreaming && (
+                  {artist.activeBroadcast?.isLive && (
                     <span className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-red-500">
                       <span className="h-3 w-3 animate-pulse rounded-full bg-white" />
                     </span>
@@ -101,9 +108,9 @@ export default function ArtistsPage() {
 
               <div className="mb-4 flex items-center justify-center gap-2">
                 <h3 className="text-center font-semibold text-white">
-                  {artist.ensName}
+                  {artist.subdomain?.name ?? ""}
                 </h3>
-                {artist.isStreaming && (
+                {artist.activeBroadcast?.isLive && (
                   <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-red-400 text-xs">
                     LIVE
                   </span>
@@ -111,41 +118,44 @@ export default function ArtistsPage() {
               </div>
 
               <p className="mb-4 line-clamp-2 text-center text-sm text-zinc-400">
-                {artist.bio}
+                {artist.subdomain
+                  ?.textRecords?.()
+                  ?.find((record) => record.key === "description")?.value ??
+                  "Description"}
               </p>
             </Link>
 
-            {artist.taggedArtists.length > 0 && (
-              <div className="mt-4 border-zinc-800 border-t pt-3">
-                <p className="mb-2 text-center text-xs text-zinc-500">
-                  Streaming with:
-                </p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {artist.taggedArtists.map((taggedArtist) => (
+            <div className="mt-4 border-zinc-800 border-t pt-3">
+              <p className="mb-2 text-center text-xs text-zinc-500">
+                Streaming with:
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {artist.activeBroadcast
+                  ?.broadcastWith?.()
+                  ?.map((taggedArtist) => (
                     <ArtistQuickActions
-                      ensName={taggedArtist}
-                      key={taggedArtist}
+                      ensName={taggedArtist.subdomain?.name ?? ""}
+                      key={taggedArtist.subdomain?.name ?? ""}
                     >
                       <button
                         className="flex items-center gap-1.5 rounded-full bg-purple-500/20 px-2.5 py-1.5 transition-all hover:bg-purple-500/30"
                         type="button"
                       >
                         <Image
-                          alt={taggedArtist}
+                          alt={taggedArtist.subdomain?.name ?? ""}
                           className="h-4 w-4 rounded-full border border-purple-400"
                           height={16}
                           src={`https://avatars.jakerunzer.com/${taggedArtist}`}
                           width={16}
                         />
                         <span className="text-purple-300 text-xs">
-                          {taggedArtist}
+                          {taggedArtist.subdomain?.name ?? ""}
                         </span>
                       </button>
                     </ArtistQuickActions>
                   ))}
-                </div>
               </div>
-            )}
+            </div>
           </Card>
         );
       })}
@@ -165,27 +175,37 @@ export default function ArtistsPage() {
         <p className="text-zinc-400">Discover and support talented artists</p>
       </div>
 
-      {nameLabelsQuery?.map((nameLabel) => (
+      {filteredArtists.map((artist) => (
         <div
           className="mb-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-4"
-          key={nameLabel.key}
+          key={artist.subdomain?.name ?? ""}
         >
           <div className="mb-2">
             <span className="text-sm text-zinc-400">Key:</span>
-            <span className="ml-2 text-white">{nameLabel.key}</span>
+            <span className="ml-2 text-white">
+              {artist.subdomain
+                ?.textRecords?.()
+                ?.find((record) => record.key === "avatar")?.key ?? "Avatar"}
+            </span>
           </div>
           <div className="mb-2">
             <span className="text-sm text-zinc-400">Value:</span>
-            <span className="ml-2 text-white">{nameLabel.value}</span>
+            <span className="ml-2 text-white">
+              {artist.subdomain
+                ?.textRecords?.()
+                ?.find((record) => record.key === "avatar")?.value ?? "Avatar"}
+            </span>
           </div>
           <div className="mb-2">
             <span className="text-sm text-zinc-400">Subdomain:</span>
-            <span className="ml-2 text-white">{nameLabel.subdomain?.name}</span>
+            <span className="ml-2 text-white">
+              {artist.subdomain?.name ?? ""}
+            </span>
           </div>
           <div>
             <span className="text-sm text-zinc-400">Owner:</span>
             <span className="ml-2 font-mono text-white text-xs">
-              {nameLabel.subdomain?.owner?.address}
+              {artist.subdomain?.owner?.address ?? ""}
             </span>
           </div>
         </div>

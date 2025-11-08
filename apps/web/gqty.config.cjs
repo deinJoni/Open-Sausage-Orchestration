@@ -1,3 +1,4 @@
+"use strict";
 /**
  * @type {import("@gqty/cli").GQtyConfig}
  */

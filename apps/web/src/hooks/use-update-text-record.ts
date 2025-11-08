@@ -1,16 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { encodeFunctionData, encodePacked, keccak256 } from "viem";
-import {
-  useAccount,
-  useCapabilities,
-  useChainId,
-  usePublicClient,
-  useSendCalls,
-} from "wagmi";
-import { L2RegistryABI } from "@/lib/abi/L2Registry";
+import { encodeFunctionData } from "viem";
+import { useAccount, useCapabilities, useChainId, useSendCalls } from "wagmi";
+import { L2RegistryABI } from "@/lib/abi/l2-registry";
 import type { AllValidKeys } from "@/lib/constants";
 import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
+import { calculateNodeHash } from "@/lib/utils";
 
 type TextRecordsInput = {
   ensName: string;
@@ -48,7 +43,6 @@ type TextRecordsInput = {
 export function useUpdateTextRecords() {
   const { address } = useAccount();
   const { sendCallsAsync } = useSendCalls();
-  const publicClient = usePublicClient();
   const { data: capabilities } = useCapabilities();
   const chainId = useChainId();
 
@@ -67,27 +61,11 @@ export function useUpdateTextRecords() {
 
       toast.info("Updating profile data...");
 
-      // Get baseNode from registry
-      const baseNode = (await publicClient?.readContract({
-        address: L2_REGISTRY_ADDRESS,
-        abi: L2RegistryABI,
-        functionName: "baseNode",
-      })) as `0x${string}`;
-
-      if (!baseNode) {
-        throw new Error("Failed to fetch baseNode from registry");
-      }
-
       // Extract label from ensName (e.g., "alice" from "alice.osopit.eth")
       const label = input.ensName.split(".")[0];
 
-      // Calculate label hash
-      const labelHash = keccak256(encodePacked(["string"], [label]));
-
-      // Calculate node: keccak256(abi.encodePacked(baseNode, labelHash))
-      const nodeHash = keccak256(
-        encodePacked(["bytes32", "bytes32"], [baseNode, labelHash])
-      );
+      // Calculate nodeHash using ENS namehash
+      const nodeHash = calculateNodeHash(label);
 
       // iterate over all keys
 

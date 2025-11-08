@@ -44,3 +44,7 @@ export function useArtistProfile(ensName?: string) {
     error: $state.error,
   };
 }
+
+export type ArtistProfile = NonNullable<
+  Awaited<ReturnType<typeof useArtistProfile>>["data"]
+>;

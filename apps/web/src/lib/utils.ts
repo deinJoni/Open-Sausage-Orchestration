@@ -14,7 +14,7 @@ export function cn(...inputs: ClassValue[]) {
  * @example
  * calculateNodeHash("kristjan") // returns namehash of "kristjan.catmisha.eth"
  */
-export function calculateNodeHash(label: string): string {
+export function calculateNodeHash(label: string) {
   const fullName = `${label}.${ENS.PARENT_DOMAIN}`;
   return namehash(fullName);
 }

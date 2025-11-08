@@ -1,5 +1,5 @@
 import { useReadContract } from "wagmi";
-import { L2RegistryABI } from "@/lib/abi/L2Registry";
+import { L2RegistryABI } from "@/lib/abi/l2-registry";
 import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
 
 /**

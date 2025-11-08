@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import type { OwnedProfile } from "@/hooks/useOwnedProfile";
+import type { OwnedProfile } from "@/hooks/use-owned-profile";
 
 type ProfileEditFormProps = {
   profile: OwnedProfile;

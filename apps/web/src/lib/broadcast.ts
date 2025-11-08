@@ -4,9 +4,9 @@ import { isAddress } from "viem";
  * Broadcast parameters for starting/ending a broadcast
  */
 export type BroadcastParams = {
-	isLive: boolean;
-	broadcastUrl: string;
-	guestWalletAddresses: string[]; // Array of Ethereum addresses (0x...)
+  isLive: boolean;
+  broadcastUrl: string;
+  guestWalletAddresses: string[]; // Array of Ethereum addresses (0x...)
 };
 
 /**
@@ -25,9 +25,13 @@ export type BroadcastParams = {
  * // Returns: "true|https://twitch.tv/user|0x123...|0x456..."
  */
 export function constructBroadcastPayload(params: BroadcastParams): string {
-	const isLiveStr = params.isLive ? "true" : "false";
-	const parts = [isLiveStr, params.broadcastUrl, ...params.guestWalletAddresses];
-	return parts.join("|");
+  const isLiveStr = params.isLive ? "true" : "false";
+  const parts = [
+    isLiveStr,
+    params.broadcastUrl,
+    ...params.guestWalletAddresses,
+  ];
+  return parts.join("|");
 }
 
 /**
@@ -41,24 +45,25 @@ export function constructBroadcastPayload(params: BroadcastParams): string {
  * // Returns: { isLive: true, broadcastUrl: "https://twitch.tv/user", guestWalletAddresses: ["0x123...", "0x456..."] }
  */
 export function parseBroadcastPayload(value: string): BroadcastParams {
-	const parts = value.split("|");
+  const parts = value.split("|");
 
-	const isLive = parts.length > 0 ? parts[0] === "true" : false;
-	const broadcastUrl = parts.length > 1 ? parts[1] : "";
+  const isLive = parts.length > 0 ? parts[0] === "true" : false;
+  const broadcastUrl = parts.length > 1 ? parts[1] : "";
 
-	const guestWalletAddresses: string[] = [];
-	for (let i = 2; i < parts.length; i++) {
-		const address = parts[i];
-		if (address.length > 0) {
-			guestWalletAddresses.push(address);
-		}
-	}
+  const guestWalletAddresses: string[] = [];
+  // biome-ignore lint/nursery/noIncrementDecrement: <IDK how to do this without a loop>
+  for (let i = 2; i < parts.length; i++) {
+    const address = parts[i];
+    if (address.length > 0) {
+      guestWalletAddresses.push(address);
+    }
+  }
 
-	return {
-		isLive,
-		broadcastUrl,
-		guestWalletAddresses,
-	};
+  return {
+    isLive,
+    broadcastUrl,
+    guestWalletAddresses,
+  };
 }
 
 /**
@@ -68,16 +73,16 @@ export function parseBroadcastPayload(value: string): BroadcastParams {
  * @returns true if valid URL, false otherwise
  */
 export function isValidBroadcastUrl(url: string): boolean {
-	if (!url || url.length === 0) {
-		return false;
-	}
+  if (!url || url.length === 0) {
+    return false;
+  }
 
-	try {
-		const parsedUrl = new URL(url);
-		return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
-	} catch {
-		return false;
-	}
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -87,17 +92,17 @@ export function isValidBroadcastUrl(url: string): boolean {
  * @returns true if all addresses are valid, false otherwise
  */
 export function areValidWalletAddresses(addresses: string[]): boolean {
-	if (addresses.length === 0) {
-		return true; // Empty array is valid (no guests)
-	}
+  if (addresses.length === 0) {
+    return true; // Empty array is valid (no guests)
+  }
 
-	for (const address of addresses) {
-		if (!isAddress(address)) {
-			return false;
-		}
-	}
+  for (const address of addresses) {
+    if (!isAddress(address)) {
+      return false;
+    }
+  }
 
-	return true;
+  return true;
 }
 
 /**
@@ -107,11 +112,11 @@ export function areValidWalletAddresses(addresses: string[]): boolean {
  * @throws Error if parameters are invalid
  */
 export function validateBroadcastParams(params: BroadcastParams): void {
-	if (params.isLive && !isValidBroadcastUrl(params.broadcastUrl)) {
-		throw new Error("Invalid broadcast URL format");
-	}
+  if (params.isLive && !isValidBroadcastUrl(params.broadcastUrl)) {
+    throw new Error("Invalid broadcast URL format");
+  }
 
-	if (!areValidWalletAddresses(params.guestWalletAddresses)) {
-		throw new Error("Invalid guest wallet address");
-	}
+  if (!areValidWalletAddresses(params.guestWalletAddresses)) {
+    throw new Error("Invalid guest wallet address");
+  }
 }

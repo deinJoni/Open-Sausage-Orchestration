@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import type { AllValidKeys } from "@/lib/constants";
-import { useUpdateTextRecords } from "./useUpdateTextRecords";
-import { useUploadAvatar } from "./useUploadAvatar";
+import { useUpdateTextRecords } from "./use-update-text-record";
+import { useUploadAvatar } from "./use-upload-avatar";
 
 type UpdateProfileInput = {
   avatar?: File;

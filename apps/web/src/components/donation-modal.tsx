@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSendTip } from "@/hooks/useSendTip";
+import { useSendTip } from "@/hooks/use-send-tip";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";

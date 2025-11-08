@@ -14,7 +14,7 @@ const ERROR_SELECTORS = {
 /**
  * Porto error format (EIP-5792)
  */
-interface PortoError {
+type PortoError = {
   callInfo?: {
     callIndex: number;
     contractAddress: string;
@@ -23,7 +23,7 @@ interface PortoError {
   message?: string;
   title?: string;
   type?: string;
-}
+};
 
 /**
  * Parse contract errors into user-friendly messages
@@ -31,15 +31,17 @@ interface PortoError {
  * @param error - Error from contract interaction
  * @returns User-friendly error message
  */
+
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
 export function parseContractError(error: unknown): string {
   // Handle Porto error format (EIP-5792)
   if (typeof error === "object" && error !== null) {
     const portoError = error as PortoError;
-    
+
     // Extract revert data from Porto error
     if (portoError.callInfo?.revertData) {
       const revertData = portoError.callInfo.revertData;
-      
+
       // Empty revert data (0x) means contract reverted without a message
       // This often happens due to:
       // 1. Gas issues
@@ -49,7 +51,7 @@ export function parseContractError(error: unknown): string {
       if (revertData === "0x" || !revertData) {
         return "Transaction failed. This could be due to insufficient gas, a failed contract check, or invalid parameters. Please verify your inputs and try again.";
       }
-      
+
       // Check for custom error selectors in revert data
       for (const [errorName, selector] of Object.entries(ERROR_SELECTORS)) {
         if (revertData.includes(selector)) {
@@ -64,6 +66,8 @@ export function parseContractError(error: unknown): string {
               return ERROR_MESSAGES.UNAUTHORIZED;
             case "NOT_AVAILABLE":
               return ERROR_MESSAGES.NAME_TAKEN;
+            default:
+              return ERROR_MESSAGES.GENERIC_ERROR;
           }
         }
       }

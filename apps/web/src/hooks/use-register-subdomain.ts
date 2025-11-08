@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAccount, useCapabilities, useSendCalls } from "wagmi";
-import { L2RegistrarABI } from "@/lib/abi/L2Registrar";
+import { L2RegistrarABI } from "@/lib/abi/l2-registrar";
 import { L2_REGISTRAR_ADDRESS } from "@/lib/contracts";
-import { parseContractError } from "@/lib/parseContractError";
+import { parseContractError } from "@/lib/parse-contract-error";
 
 type InviteData = {
   label: string;

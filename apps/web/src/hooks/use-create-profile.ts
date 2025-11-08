@@ -2,9 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import type { AllValidKeys } from "@/lib/constants";
-import { useRegisterSubdomain } from "./useRegisterSubdomain";
-import { useUpdateTextRecords } from "./useUpdateTextRecords";
-import { useUploadAvatar } from "./useUploadAvatar";
+import { useRegisterSubdomain } from "./use-register-subdomain";
+import { useUpdateTextRecords } from "./use-update-text-record";
+import { useUploadAvatar } from "./use-upload-avatar";
 
 type InviteData = {
   label: string;

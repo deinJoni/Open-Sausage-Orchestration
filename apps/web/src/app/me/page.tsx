@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { ProfileEditForm } from "@/components/ProfileEditForm";
-import { ProfilePreview } from "@/components/ProfilePreview";
+import { ProfileEditForm } from "@/components/profile-edit-form";
+import { ProfilePreview } from "@/components/profile-preview";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useOwnedProfile } from "@/hooks/useOwnedProfile";
+import { useOwnedProfile } from "@/hooks/use-owned-profile";
 
 /**
  * Profile management page (/me)
@@ -71,10 +71,7 @@ export default function MePage() {
 
       <div className="grid gap-6">
         {/* Profile Preview */}
-        <ProfilePreview
-          ensName={ownedProfile.data?.ensName || ""}
-          profile={ownedProfile.data?.user}
-        />
+        <ProfilePreview ensName={ownedProfile.data?.ensName || ""} />
 
         {/* Edit Form - key prop ensures component remounts when profile changes */}
         {ownedProfile.data && (

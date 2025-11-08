@@ -28,38 +28,40 @@ async function handleWithCors(
   handler: typeof route.fetch
 ): Promise<Response> {
   const response = await handler(request);
-  
+
   // Create a new response with CORS headers
   const newResponse = new Response(response.body, response);
-  Object.entries(corsHeaders).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(corsHeaders)) {
     newResponse.headers.set(key, value);
-  });
-  
+  }
+
   // Add Private Network Access header for Chrome security
   newResponse.headers.set("Access-Control-Allow-Private-Network", "true");
-  
+
   return newResponse;
 }
 
 // Handle OPTIONS preflight requests
-export async function OPTIONS(request: Request): Promise<Response> {
+export function OPTIONS(request: Request) {
   const headers: Record<string, string> = { ...corsHeaders };
-  
+
   // Handle Private Network Access (Chrome security feature for localhost access)
   if (request.headers.get("Access-Control-Request-Private-Network")) {
     headers["Access-Control-Allow-Private-Network"] = "true";
   }
-  
+
   return new Response(null, {
     status: 204,
     headers,
   });
 }
 
-export async function GET(request: Request): Promise<Response> {
+export function GET(request: Request): Promise<Response> {
   return handleWithCors(request, route.fetch);
 }
 
-export async function POST(request: Request): Promise<Response> {
+export function POST(request: Request): Promise<Response> {
   return handleWithCors(request, route.fetch);
 }
+
+// TODO check maybe we dom't nneed these...

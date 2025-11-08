@@ -1,16 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { encodeFunctionData, encodePacked, keccak256 } from "viem";
+import { encodeFunctionData } from "viem";
 import { useAccount, usePublicClient, useWriteContract } from "wagmi";
-import { L2RegistryABI } from "@/lib/abi/L2Registry";
+import { L2RegistryABI } from "@/lib/abi/l2-registry";
 import type { BroadcastParams } from "@/lib/broadcast";
 import {
   constructBroadcastPayload,
   validateBroadcastParams,
 } from "@/lib/broadcast";
 import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
-import { parseContractError } from "@/lib/parseContractError";
-import { useOwnedProfile } from "./useOwnedProfile";
+import { parseContractError } from "@/lib/parse-contract-error";
+import { calculateNodeHash } from "@/lib/utils";
+import { useOwnedProfile } from "./use-owned-profile";
 
 /**
  * Hook to update broadcast status via ENS setText
@@ -39,7 +40,6 @@ export function useUpdateBroadcast() {
   const ownedProfile = useOwnedProfile();
 
   const mutation = useMutation({
-    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
     mutationFn: async (params: BroadcastParams) => {
       if (!address) {
         toast.error("Please connect your wallet first");
@@ -55,27 +55,11 @@ export function useUpdateBroadcast() {
         // Validate broadcast parameters
         validateBroadcastParams(params);
 
-        // Get baseNode from registry
-        const baseNode = await publicClient?.readContract({
-          address: L2_REGISTRY_ADDRESS,
-          abi: L2RegistryABI,
-          functionName: "baseNode",
-        });
-
-        if (!baseNode) {
-          throw new Error("Failed to fetch baseNode from registry");
-        }
-
         // Extract label from ensName (e.g., "alice" from "alice.osopit.eth")
         const label = ownedProfile.data?.ensName.split(".")[0];
 
-        // Calculate label hash
-        const labelHash = keccak256(encodePacked(["string"], [label]));
-
-        // Calculate node: keccak256(abi.encodePacked(baseNode, labelHash))
-        const nodeHash = keccak256(
-          encodePacked(["bytes32", "bytes32"], [baseNode, labelHash])
-        );
+        // Calculate nodeHash using ENS namehash
+        const nodeHash = calculateNodeHash(label);
 
         // Construct broadcast payload
         const payload = constructBroadcastPayload(params);

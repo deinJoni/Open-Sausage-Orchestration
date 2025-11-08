@@ -2,17 +2,20 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCreateProfile } from "@/hooks/useCreateProfile";
-import { useHasSubdomainContract } from "@/hooks/useHasSubdomainContract";
-import { useOwnedProfile } from "@/hooks/useOwnedProfile";
-import { ADDRESS_PREFIX_LENGTH, ADDRESS_SUFFIX_LENGTH } from "@/lib/constants";
+import { useCreateProfile } from "@/hooks/use-create-profile";
+import { useHasSubdomainContract } from "@/hooks/use-has-subdomain-contract";
+import {
+  ADDRESS_PREFIX_LENGTH,
+  ADDRESS_SUFFIX_LENGTH,
+  type AllValidKeys,
+} from "@/lib/constants";
 import type { SocialLink } from "@/types/artist";
 
 type Step = "basic" | "avatar" | "socials";
@@ -25,32 +28,21 @@ type InviteData = {
   signature: string;
 };
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT CODE IS LONG>
 export default function OnboardingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteCode = searchParams?.get("invite");
 
-  let decoded: InviteData | null = null;
-  if (inviteCode) {
-    try {
-      decoded = JSON.parse(atob(inviteCode)) as InviteData;
-    } catch (error) {
-      console.error("Failed to decode invite code:", error);
-    }
-  }
+  const decoded: InviteData | null = inviteCode
+    ? (JSON.parse(atob(inviteCode)) as InviteData)
+    : null;
 
   const { address, connector } = useAccount();
   const isPorto = connector?.name === "Porto";
 
-  const {
-    hasProfile: hasProfileSubgraph,
-    ensName: ownedEnsName,
-  } = useOwnedProfile();
-
-  const {
-    hasSubdomain: hasProfile,
-    isLoading: isCheckingOwnership,
-  } = useHasSubdomainContract(address);
+  const { hasSubdomain: hasProfile, isLoading: isCheckingOwnership } =
+    useHasSubdomainContract(address);
 
   const [step, setStep] = useState<Step>("basic");
   const createProfile = useCreateProfile();
@@ -58,17 +50,46 @@ export default function OnboardingPage() {
   // Form state
   const [ensName, setEnsName] = useState(decoded?.label || "");
   const [bio, setBio] = useState("");
-  const [avatar, setAvatar] = useState<File | string>("");
+  const [avatar, setAvatar] = useState<File>();
   const [socials, setSocials] = useState<SocialLink[]>([]);
 
   const inviteData = decoded;
 
+  // Transform UI state to text records format
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
+  const textRecords = useMemo<{ key: AllValidKeys; value: string }[]>(() => {
+    const records: { key: AllValidKeys; value: string }[] = [];
+
+    // Add bio as description
+    if (bio) {
+      records.push({ key: "description", value: bio });
+    }
+
+    // Transform socials to individual ENS keys
+    for (const social of socials) {
+      if (social.platform === "twitter") {
+        records.push({ key: "com.twitter", value: social.url });
+      } else if (social.platform === "github") {
+        records.push({ key: "com.github", value: social.url });
+      } else if (social.platform === "discord") {
+        records.push({ key: "com.discord", value: social.url });
+      } else if (social.platform === "telegram") {
+        records.push({ key: "com.telegram", value: social.url });
+      } else if (social.platform === "farcaster") {
+        records.push({ key: "social.farcaster", value: social.url });
+      } else if (social.platform === "lens") {
+        records.push({ key: "social.lens", value: social.url });
+      }
+    }
+
+    return records;
+  }, [bio, socials]);
+
   const handleSubmit = async () => {
     await createProfile.mutation.mutateAsync({
       ensName,
-      bio,
       avatar,
-      socials,
+      textRecords,
       inviteData,
     });
 
@@ -107,8 +128,8 @@ export default function OnboardingPage() {
               <p className="mb-2 text-blue-400 text-sm">
                 You already own a subdomain
               </p>
-              {ownedEnsName ? (
-                <p className="font-mono text-xs text-zinc-300">{ownedEnsName}</p>
+              {ensName ? (
+                <p className="font-mono text-xs text-zinc-300">{ensName}</p>
               ) : (
                 <p className="text-xs text-zinc-400">
                   (Subdomain detected on-chain)
