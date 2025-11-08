@@ -37,7 +37,7 @@ type RegisterSubdomainInput = {
  */
 export function useRegisterSubdomain() {
   const { address, chainId } = useAccount();
-  const { sendCalls } = useSendCalls();
+  const { sendCallsAsync } = useSendCalls();
   const { data: capabilities } = useCapabilities();
 
   const mutation = useMutation({
@@ -59,7 +59,7 @@ export function useRegisterSubdomain() {
         const atomicBatchSupported =
           capabilities?.[chainId]?.atomicBatch?.supported;
 
-        const result = await sendCalls({
+        const result = await sendCallsAsync({
           calls: [
             {
               abi: L2RegistrarABI,

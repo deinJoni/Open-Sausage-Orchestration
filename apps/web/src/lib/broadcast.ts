@@ -120,3 +120,27 @@ export function validateBroadcastParams(params: BroadcastParams): void {
     throw new Error("Invalid guest wallet address");
   }
 }
+
+/**
+ * Detect streaming platform from URL
+ *
+ * @param url - The broadcast URL to analyze
+ * @returns Platform name or null if not recognized
+ */
+export function detectStreamPlatform(
+  url: string
+): "youtube" | "twitch" | null {
+  if (!url) return null;
+
+  const lowerUrl = url.toLowerCase();
+
+  if (lowerUrl.includes("youtube.com") || lowerUrl.includes("youtu.be")) {
+    return "youtube";
+  }
+
+  if (lowerUrl.includes("twitch.tv")) {
+    return "twitch";
+  }
+
+  return null;
+}
