@@ -88,7 +88,6 @@ export const {
   prepareReactRender,
   useHydrateCache,
   prepareQuery,
-  // @ts-expect-error - GQty types are not fully compatible with React 19
 } = createReactClient<GeneratedSchema>(client, {
   defaults: {
     // Enable Suspense, you can override this option for each hook.
