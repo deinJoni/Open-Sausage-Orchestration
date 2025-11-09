@@ -28,9 +28,15 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
 
     setCurrent(api.selectedScrollSnap());
 
-    api.on("select", () => {
+    const handleSelect = () => {
       setCurrent(api.selectedScrollSnap());
-    });
+    };
+
+    api.on("select", handleSelect);
+
+    return () => {
+      api.off("select", handleSelect);
+    };
   }, [api]);
 
   if (!broadcasts || broadcasts.length === 0) {
@@ -51,7 +57,7 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
         setApi={setApi}
       >
         <CarouselContent>
-          {broadcasts.map((broadcast) => {
+          {broadcasts.map((broadcast, index) => {
             const avatar = getTextRecord(
               broadcast.subdomain?.textRecords?.(),
               "avatar"
@@ -61,7 +67,9 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
               "description"
             );
             return (
-              <CarouselItem key={broadcast.subdomain?.name}>
+              <CarouselItem
+                key={broadcast.subdomain?.name ?? `broadcast-${index}`}
+              >
                 <div className="relative">
                   {/* Stream Embed */}
                   {broadcast.activeBroadcast?.broadcastUrl ? (
@@ -127,14 +135,15 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
       {/* Navigation Dots */}
       {broadcasts.length > 1 && (
         <div className="mt-4 flex justify-center gap-2">
-          {broadcasts.map((_, index) => (
+          {broadcasts.map((broadcast, index) => (
             <button
+              aria-label={`Go to stream ${index + 1} of ${broadcasts.length}`}
               className={`h-2 w-2 rounded-full transition-all ${
                 index === current
                   ? "w-8 bg-brand"
-                  : "bg-surface-elevated hover:bg-surface-elevated"
+                  : "bg-surface-elevated hover:bg-muted-foreground"
               }`}
-              key={`dot-${broadcasts[index]?.subdomain?.name ?? index}`}
+              key={`dot-${broadcast.subdomain?.name ?? index}`}
               onClick={() => api?.scrollTo(index)}
               type="button"
             />
