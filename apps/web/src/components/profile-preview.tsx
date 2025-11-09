@@ -39,13 +39,7 @@ export function ProfilePreview({ profile }: ProfilePreviewProps) {
             {subdomain || "Anonymous"}
           </h3>
           {description && <p className="text-foreground">{description}</p>}
-          {profile.ensName && (
-            <Button asChild size="sm" variant="outline">
-              <Link href={`/artist/${profile.ensName}`}>
-                View Public Profile
-              </Link>
-            </Button>
-          )}
+        
         </div>
       </div>
     </Card>
