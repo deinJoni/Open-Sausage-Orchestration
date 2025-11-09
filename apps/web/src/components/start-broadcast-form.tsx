@@ -59,12 +59,12 @@ export function StartBroadcastForm() {
 
   return (
     <Card className="border-border bg-card p-6 backdrop-blur">
-      <h2 className="mb-6 font-bold text-white text-xl">🎥 Start Streaming</h2>
+      <h2 className="mb-6 font-bold text-foreground text-xl">🎥 Start Streaming</h2>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Stream URL Input */}
         <div>
-          <Label className="mb-2 block font-medium text-foreground text-sm">
+          <Label className="mb-2 block font-medium text-foreground text-md">
             Stream URL *
           </Label>
           <Input
@@ -78,7 +78,7 @@ export function StartBroadcastForm() {
 
           {/* Platform Indicator */}
           {platform && !urlError && (
-            <p className="mt-2 flex items-center gap-2 text-sm text-success">
+            <p className="mt-2 flex items-center gap-2 text-md text-success">
               <span>✓</span>
               <span className="capitalize">{platform} detected</span>
             </p>
@@ -86,13 +86,13 @@ export function StartBroadcastForm() {
 
           {/* Error Message */}
           {urlError && (
-            <p className="mt-2 text-destructive text-sm">{urlError}</p>
+            <p className="mt-2 text-destructive text-md">{urlError}</p>
           )}
         </div>
 
         {/* Guest Artists Picker */}
         <div>
-          <Label className="mb-2 block font-medium text-foreground text-sm">
+          <Label className="mb-2 block font-medium text-foreground text-md">
             Tag Collaborators (Optional)
           </Label>
           <p className="mb-3 text-muted-foreground text-xs">
@@ -110,7 +110,6 @@ export function StartBroadcastForm() {
           className="w-full"
           disabled={!isValid || updateBroadcast.isPending}
           type="submit"
-          variant="gradient"
         >
           {updateBroadcast.isPending ? "Starting..." : "Start Streaming 🔴"}
         </Button>

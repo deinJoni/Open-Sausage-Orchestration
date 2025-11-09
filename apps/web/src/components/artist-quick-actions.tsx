@@ -1,20 +1,21 @@
 "use client";
 
-import Image from "next/image";
+import { Gift } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
-import { getTextRecord, ipfsToHttp } from "@/lib/utils";
-import { DonationModal } from "./donation-modal";
+import { getTextRecord } from "@/lib/utils";
+import { ArtistAvatar } from "./artist-avatar";
+import { DonationPopover } from "./donation-modal";
 import { Button } from "./ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "./ui/drawer";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Skeleton } from "./ui/skeleton";
 
 type ArtistQuickActionsProps = {
@@ -24,7 +25,6 @@ type ArtistQuickActionsProps = {
 
 function ArtistPreviewContent({ ensName }: { ensName: string }) {
   const { data: artist, isLoading } = useArtistProfile(ensName);
-  const [showDonationModal, setShowDonationModal] = useState(false);
 
   if (isLoading) {
     return (
@@ -43,7 +43,7 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
   if (!artist) {
     return (
       <div className="w-72 p-4 text-center">
-        <p className="text-muted-foreground text-sm">Artist not found</p>
+        <p className="text-md text-muted-foreground">Artist not found</p>
       </div>
     );
   }
@@ -58,56 +58,46 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
   );
 
   return (
-    <>
-      <div className="w-72">
-        <div className="mb-4 flex items-center gap-3">
-          <Image
-            alt={artist.subdomain ?? ""}
-            className="h-12 w-12 rounded-full border-2 border-border"
-            height={48}
-            src={ipfsToHttp(avatar)}
-            width={48}
-          />
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <h4 className="font-semibold text-white">
-                {artist.subdomain ?? ""}
-              </h4>
-              {artist.user?.activeBroadcast?.isLive && (
-                <span className="rounded-full bg-live/20 px-2 py-0.5 text-live text-xs">
-                  LIVE
-                </span>
-              )}
-            </div>
+    <div className="w-72">
+      <div className="mb-4 flex items-center gap-3">
+        <ArtistAvatar
+          avatarUrl={avatar}
+          className="border-2 border-border"
+          name={artist.subdomain ?? ""}
+          size="md"
+        />
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h4 className="font-semibold text-foreground">
+              {artist.subdomain ?? ""}
+            </h4>
+            {artist.user?.activeBroadcast?.isLive && (
+              <span className="rounded-full bg-live/20 px-2 py-0.5 text-live text-xs">
+                LIVE
+              </span>
+            )}
           </div>
-        </div>
-
-        <p className="mb-4 line-clamp-3 text-muted-foreground text-sm">
-          {description || "Description"}
-        </p>
-
-        <div className="flex gap-2">
-          <Button asChild className="flex-1" size="sm" variant="outline">
-            <Link href={`/artist/${artist.subdomain ?? ""}`}>View Profile</Link>
-          </Button>
-          <Button
-            className="flex-1"
-            onClick={() => setShowDonationModal(true)}
-            size="sm"
-            variant="gradient"
-          >
-            Send Gift 💜
-          </Button>
         </div>
       </div>
 
-      {showDonationModal && (
-        <DonationModal
-          artistEnsName={artist.subdomain ?? ""}
-          onClose={() => setShowDonationModal(false)}
-        />
-      )}
-    </>
+      <p className="mb-4 line-clamp-3 text-md text-muted-foreground">
+        {description || "Description"}
+      </p>
+
+      <div className="flex gap-2">
+        <Button asChild className="flex-1" size="sm" variant="outline">
+          <Link href={`/artist/${artist.subdomain ?? ""}`}>View Profile</Link>
+        </Button>
+        <DonationPopover
+          ensName={artist.subdomain ?? ""}
+          walletAddress={artist.user?.address}
+        >
+          <Button size="sm">
+            <Gift className="h-3 w-3" />
+          </Button>
+        </DonationPopover>
+      </div>
+    </div>
   );
 }
 
@@ -129,20 +119,20 @@ export function ArtistQuickActions({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Mobile: use Sheet (drawer)
+  // Mobile: use Drawer
   if (isMobile) {
     return (
-      <Sheet>
-        <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent className="border-border bg-card">
-          <SheetHeader>
-            <SheetTitle className="text-white">Artist Profile</SheetTitle>
-          </SheetHeader>
-          <div className="mt-4">
+      <Drawer>
+        <DrawerTrigger asChild>{children}</DrawerTrigger>
+        <DrawerContent className="border-border bg-card">
+          <DrawerHeader>
+            <DrawerTitle className="text-foreground">Artist Profile</DrawerTitle>
+          </DrawerHeader>
+          <div className="mt-4 px-4 pb-4">
             <ArtistPreviewContent ensName={ensName} />
           </div>
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
     );
   }
 

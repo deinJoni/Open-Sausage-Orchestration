@@ -1,5 +1,6 @@
 "use client";
 
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { AppKitProvider } from "./appkit-provider";
 import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "./ui/sonner";
@@ -25,7 +26,7 @@ export default function Providers({
           "dark-sunset",
         ]}
       >
-        {children}
+        <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster richColors />
       </ThemeProvider>
     </AppKitProvider>

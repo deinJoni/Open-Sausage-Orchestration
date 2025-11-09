@@ -1,15 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { Cuer } from "cuer";
+import { CheckCheck, Copy } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useSendTip } from "@/hooks/use-send-tip";
 import { Button } from "./ui/button";
-import { Card } from "./ui/card";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "./ui/drawer";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
-type DonationModalProps = {
+type DonationContentProps = {
   artistEnsName: string;
-  onClose: () => void;
+  walletAddress?: string;
+  onSuccess?: () => void;
 };
 
 const ONE_CENT = 0.01;
@@ -31,103 +42,195 @@ const PRESET_AMOUNTS = [
   ONE_HUNDRED_DOLLARS,
 ];
 
-export function DonationModal({ artistEnsName, onClose }: DonationModalProps) {
+function DonationContent({
+  artistEnsName,
+  walletAddress,
+  onSuccess,
+}: DonationContentProps) {
   const [amount, setAmount] = useState("0.01");
   const [customAmount, setCustomAmount] = useState("");
+  const [copied, setCopied] = useState(false);
   const { mutate, isPending } = useSendTip();
 
   const selectedAmount = customAmount || amount;
 
   const handleSend = async () => {
     await mutate(artistEnsName, selectedAmount);
-    onClose();
+    onSuccess?.();
   };
 
+  const handleCopyAddress = async () => {
+    if (walletAddress) {
+      try {
+        await navigator.clipboard.writeText(walletAddress);
+        setCopied(true);
+        toast.success("Wallet address copied to clipboard!");
+        setTimeout(() => setCopied(false), 2000);
+      } catch (error) {
+        toast.error("Failed to copy address");
+      }
+    }
+  };
+
+  const truncateAddress = (address: string) =>
+    `${address.slice(0, 6)}...${address.slice(-4)}`;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-      <Card className="w-full max-w-md border-border bg-card p-6">
-        <div className="mb-6">
-          <h3 className="mb-2 font-bold text-white text-xl">
-            💜 Send a Gift to {artistEnsName}
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            Support this artist with an ETH tip
-          </p>
-        </div>
+    <div className="w-80">
+      <div className="mb-4">
+        <h3 className="mb-2 font-bold text-lg">
+          Send a Gift to {artistEnsName}
+        </h3>
+      </div>
 
-        <div className="mb-6">
-          <Label>Select Amount (ETH)</Label>
-          <div className="mt-3 grid grid-cols-4 gap-2">
-            {PRESET_AMOUNTS.map((presetAmount) => (
-              <button
-                className={`rounded-lg border py-3 font-medium transition-colors ${
-                  amount === presetAmount.toString() && !customAmount
-                    ? "border-brand bg-brand/20 text-brand"
-                    : "border-border text-muted-foreground hover:border-border"
-                }`}
-                key={presetAmount}
-                onClick={() => {
-                  setAmount(presetAmount.toString());
-                  setCustomAmount("");
-                }}
-                type="button"
-              >
-                {presetAmount}
-              </button>
-            ))}
+      {walletAddress && (
+        <div className="mb-6 rounded-lg border border-border bg-card/50 p-4">
+          <Label className="mb-2 block">Artist Wallet Address</Label>
+          <div className="mb-4 flex items-center gap-2">
+            <code className="flex-1 rounded bg-muted px-3 py-2 font-mono text-sm text-foreground">
+              {truncateAddress(walletAddress)}
+            </code>
+            <Button onClick={handleCopyAddress} size="sm" variant="outline">
+              {copied ? (
+                <CheckCheck className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </Button>
           </div>
-
-          <div className="mt-4">
-            <Label htmlFor="custom">Custom Amount</Label>
-            <Input
-              className="mt-2"
-              id="custom"
-              min="0"
-              onChange={(e) => setCustomAmount(e.target.value)}
-              placeholder="0.0"
-              step="0.001"
-              type="number"
-              value={customAmount}
-            />
-          </div>
-
-          <div className="mt-4 rounded-lg border border-border bg-card p-4">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Amount:</span>
-              <span className="font-mono font-semibold text-white">
-                {selectedAmount} ETH
-              </span>
+          <div className="flex justify-center">
+            {/* Keep bg-white for QR code - required for reliable scanning */}
+            <div className="rounded-lg bg-white p-3">
+              <Cuer color="black" size={180} value={walletAddress} />
             </div>
           </div>
         </div>
+      )}
 
-        <div className="flex gap-3">
-          <Button
-            className="flex-1"
-            disabled={isPending}
-            onClick={onClose}
-            variant="outline"
-          >
-            Cancel
-          </Button>
-          <Button
-            className="flex-1"
-            disabled={
-              isPending ||
-              !selectedAmount ||
-              Number.parseFloat(selectedAmount) <= 0
-            }
-            onClick={handleSend}
-            variant="gradient"
-          >
-            {isPending ? "Sending..." : "Send Gift 💜"}
-          </Button>
+      <div className="mb-6">
+        <div className="mt-3 grid grid-cols-4 gap-2">
+          {PRESET_AMOUNTS.map((presetAmount) => (
+            <button
+              className={`rounded-lg border py-3 font-medium transition-colors ${
+                amount === presetAmount.toString() && !customAmount
+                  ? "border-brand bg-brand/20 text-brand"
+                  : "border-border text-muted-foreground hover:border-border"
+              }`}
+              key={presetAmount}
+              onClick={() => {
+                setAmount(presetAmount.toString());
+                setCustomAmount("");
+              }}
+              type="button"
+            >
+              {presetAmount}
+            </button>
+          ))}
         </div>
 
-        <p className="mt-4 text-center text-muted-foreground text-xs">
-          This will send ETH directly to the artist's wallet
-        </p>
-      </Card>
+        <div className="mt-4">
+          <Label htmlFor="custom">Custom Amount</Label>
+          <Input
+            className="mt-2"
+            id="custom"
+            min="0"
+            onChange={(e) => setCustomAmount(e.target.value)}
+            placeholder="0.0"
+            step="0.001"
+            type="number"
+            value={customAmount}
+          />
+        </div>
+
+        <div className="mt-4 rounded-lg border border-border bg-card p-4">
+          <div className="flex justify-between text-md">
+            <span className="text-muted-foreground">Amount:</span>
+            <span className="font-mono font-semibold text-foreground">
+              {selectedAmount} ETH
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <Button
+        className="w-full"
+        disabled={
+          isPending || !selectedAmount || Number.parseFloat(selectedAmount) <= 0
+        }
+        onClick={handleSend}
+      >
+        {isPending ? "Sending..." : "Send Gift 💜"}
+      </Button>
+
+      <p className="mt-3 text-center text-muted-foreground text-xs">
+        This will send ETH directly to the artist's wallet
+      </p>
     </div>
+  );
+}
+
+const MOBILE_WIDTH = 768;
+
+type DonationPopoverProps = {
+  ensName: string;
+  walletAddress?: string;
+  children: React.ReactNode;
+};
+
+export function DonationPopover({
+  ensName,
+  walletAddress,
+  children,
+}: DonationPopoverProps) {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_WIDTH);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const handleSuccess = () => {
+    setIsOpen(false);
+  };
+
+  // Mobile: use Drawer
+  if (isMobile) {
+    return (
+      <Drawer onOpenChange={setIsOpen} open={isOpen}>
+        <DrawerTrigger asChild>{children}</DrawerTrigger>
+        <DrawerContent className="border-border bg-card">
+          <DrawerHeader>
+            <DrawerTitle className="text-foreground">Send a Gift</DrawerTitle>
+          </DrawerHeader>
+          <div className="mt-4 px-4 pb-4">
+            <DonationContent
+              artistEnsName={ensName}
+              onSuccess={handleSuccess}
+              walletAddress={walletAddress}
+            />
+          </div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  // Desktop: use Popover
+  return (
+    <Popover onOpenChange={setIsOpen} open={isOpen}>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent className="border-border bg-card p-4">
+        <DonationContent
+          artistEnsName={ensName}
+          onSuccess={handleSuccess}
+          walletAddress={walletAddress}
+        />
+      </PopoverContent>
+    </Popover>
   );
 }

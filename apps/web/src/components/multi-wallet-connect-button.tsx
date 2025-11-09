@@ -73,7 +73,7 @@ export function MultiWalletConnectButton({
       </PopoverTrigger>
       <PopoverContent className="w-64">
         <div className="space-y-2">
-          <h4 className="font-semibold text-sm">Choose a wallet</h4>
+          <h4 className="font-semibold text-md">Choose a wallet</h4>
           <div className="space-y-2">
             {availableConnectors.map((connector) => (
               <Button

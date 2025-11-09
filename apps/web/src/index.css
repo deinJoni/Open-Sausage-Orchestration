@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where([data-theme^="dark-"], [data-theme^="dark-"] *));
 
 @theme {
   --font-sans:
@@ -15,11 +15,15 @@ html {
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-background text-foreground;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+[data-theme^="light-"] {
+  color-scheme: light;
+}
+
+[data-theme^="dark-"] {
+  color-scheme: dark;
 }
 
 :root {

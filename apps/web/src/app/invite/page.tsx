@@ -180,12 +180,12 @@ export default function InvitePage() {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
         <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-          <h1 className="mb-4 font-bold text-2xl text-white">
+          <h1 className="mb-4 font-bold text-2xl text-foreground">
             Switch Wallet Required
           </h1>
           <div className="mb-6 space-y-4">
             <div className="rounded-lg border border-warning/20 bg-warning/10 p-4">
-              <p className="mb-2 text-sm text-warning">
+              <p className="mb-2 text-md text-warning">
                 ⚠️ You're connected with Porto wallet
               </p>
               <p className="text-muted-foreground text-xs">
@@ -194,7 +194,7 @@ export default function InvitePage() {
                 (MetaMask, WalletConnect, etc.)
               </p>
             </div>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-md text-muted-foreground">
               Connected: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
               {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
             </p>
@@ -219,7 +219,7 @@ export default function InvitePage() {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
         <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-          <h1 className="mb-4 font-bold text-2xl text-white">
+          <h1 className="mb-4 font-bold text-2xl text-foreground">
             Generate Invites
           </h1>
           <p className="mb-6 text-muted-foreground">
@@ -243,11 +243,11 @@ export default function InvitePage() {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
         <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-          <h1 className="mb-4 font-bold text-2xl text-white">Unauthorized</h1>
+          <h1 className="mb-4 font-bold text-2xl text-foreground">Unauthorized</h1>
           <p className="mb-4 text-muted-foreground">
             Your wallet is not authorized to generate invites.
           </p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-md text-muted-foreground">
             Connected as: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
             {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
           </p>
@@ -259,7 +259,7 @@ export default function InvitePage() {
   return (
     <div className="mx-auto min-h-screen max-w-2xl px-4 py-12">
       <div className="mb-8 text-center">
-        <h1 className="mb-2 font-bold text-3xl text-white">Generate Invites</h1>
+        <h1 className="mb-2 font-bold text-3xl text-foreground">Generate Invites</h1>
         <p className="text-muted-foreground">
           Create invite codes for new artists to join osopit
         </p>
@@ -269,7 +269,7 @@ export default function InvitePage() {
         {generatedInvite ? (
           <div className="space-y-6">
             <div className="rounded-lg border border-success/20 bg-success/10 p-4">
-              <p className="mb-2 font-medium text-sm text-success">
+              <p className="mb-2 font-medium text-md text-success">
                 ✓ Invite Generated Successfully
               </p>
               <p className="text-muted-foreground text-xs">
@@ -285,11 +285,7 @@ export default function InvitePage() {
             </div>
 
             <div className="flex gap-3">
-              <Button
-                className="flex-1"
-                onClick={handleCopyInvite}
-                variant="gradient"
-              >
+              <Button className="flex-1" onClick={handleCopyInvite}>
                 Copy URL
               </Button>
               <Button
@@ -302,7 +298,7 @@ export default function InvitePage() {
             </div>
 
             <div className="rounded-lg border border-border bg-card p-4">
-              <p className="mb-2 font-medium text-foreground text-sm">
+              <p className="mb-2 font-medium text-foreground text-md">
                 Invite Details
               </p>
               <div className="space-y-1 text-muted-foreground text-xs">
@@ -330,7 +326,7 @@ export default function InvitePage() {
                   type="text"
                   value={label}
                 />
-                <span className="-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground text-sm">
+                <span className="-translate-y-1/2 absolute top-1/2 right-3 text-md text-muted-foreground">
                   .{ENS.PARENT_DOMAIN}
                 </span>
               </div>
@@ -340,7 +336,7 @@ export default function InvitePage() {
             <div>
               <Label htmlFor="expiration">Expiration</Label>
               <select
-                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-sm text-white focus:border-brand focus:outline-none"
+                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-md text-foreground focus:border-brand focus:outline-none"
                 id="expiration"
                 onChange={(e) => setExpirationDays(e.target.value)}
                 value={expirationDays}
@@ -364,7 +360,6 @@ export default function InvitePage() {
                 isAvailable === false
               }
               onClick={handleGenerateInvite}
-              variant="gradient"
             >
               {generateInvite.isPending ? "Generating..." : "Generate Invite"}
             </Button>

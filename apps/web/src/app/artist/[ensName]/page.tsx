@@ -1,10 +1,10 @@
 "use client";
 
+import { Gift } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { DonationModal } from "@/components/donation-modal";
+import { DonationPopover } from "@/components/donation-modal";
 import { StreamEmbed } from "@/components/stream-embed";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,7 +33,6 @@ export default function ArtistProfilePage() {
   const params = useParams();
   const ensName = params.ensName as string;
   const { data: artist, isLoading } = useArtistProfile(ensName);
-  const [showDonationModal, setShowDonationModal] = useState(false);
 
   if (isLoading) {
     return (
@@ -56,7 +55,7 @@ export default function ArtistProfilePage() {
     return (
       <div className="mx-auto max-w-4xl px-4 py-12 text-center">
         <div className="mb-4 text-5xl">🤔</div>
-        <h2 className="mb-2 font-bold text-2xl text-white">Artist not found</h2>
+        <h2 className="mb-2 font-bold text-2xl text-foreground">Artist not found</h2>
         <p className="mb-6 text-muted-foreground">
           This artist profile doesn't exist or hasn't been created yet.
         </p>
@@ -75,7 +74,7 @@ export default function ArtistProfilePage() {
       {/* Back Button */}
       <div className="mb-6">
         <Button asChild size="sm" variant="ghost">
-          <Link href="/artists">← Back to Artists</Link>
+          <Link href="/">← Back to Home</Link>
         </Button>
       </div>
 
@@ -86,6 +85,7 @@ export default function ArtistProfilePage() {
             artistName={artist.subdomain || ensName}
             streamPlatform={artist.streamPlatform}
             streamUrl={artist.streamUrl}
+            walletAddress={artist.user?.address}
             taggedArtists={artist.taggedArtists || []}
           />
         </div>
@@ -119,7 +119,7 @@ export default function ArtistProfilePage() {
         {/* Name + Bio + Action */}
         <div className="flex-1 space-y-4">
           <div>
-            <h1 className="mb-2 font-bold text-4xl text-white">
+            <h1 className="mb-2 font-bold text-4xl text-foreground">
               {artist.subdomain || ensName}
             </h1>
             {description && (
@@ -127,19 +127,20 @@ export default function ArtistProfilePage() {
             )}
           </div>
 
-          <Button
-            onClick={() => setShowDonationModal(true)}
-            size="lg"
-            variant="gradient"
+          <DonationPopover
+            ensName={artist.subdomain ?? ""}
+            walletAddress={artist.user?.address}
           >
-            💜 Send Gift
-          </Button>
+            <Button size="lg">
+              <Gift className="h-3 w-3" />
+            </Button>
+          </DonationPopover>
         </div>
       </div>
 
       {/* Social Links */}
       <div>
-        <h3 className="mb-4 font-semibold text-white text-xl">
+        <h3 className="mb-4 font-semibold text-foreground text-xl">
           🔗 Connect & Listen
         </h3>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -158,7 +159,7 @@ export default function ArtistProfilePage() {
                   {SOCIAL_ICONS[SocialKey.parse(record.key)] || "🔗"}
                 </span>
                 <div className="flex-1 overflow-hidden">
-                  <div className="font-medium text-white capitalize">
+                  <div className="font-medium text-foreground capitalize">
                     {record.key}
                   </div>
                   <div className="truncate text-muted-foreground text-xs">
@@ -170,14 +171,6 @@ export default function ArtistProfilePage() {
             ))}
         </div>
       </div>
-
-      {/* Donation Modal */}
-      {showDonationModal && (
-        <DonationModal
-          artistEnsName={artist.subdomain ?? ""}
-          onClose={() => setShowDonationModal(false)}
-        />
-      )}
     </div>
   );
 }

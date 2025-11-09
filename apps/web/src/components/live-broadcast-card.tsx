@@ -1,14 +1,14 @@
 "use client";
 
 import { ExternalLink, Youtube } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
 import { TIME } from "@/lib/constants";
-import { getTextRecord, ipfsToHttp } from "@/lib/utils";
+import { AvatarGroup } from "./avatar-group";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
+import { TooltipProvider } from "./ui/tooltip";
 
 type LiveBroadcastCardProps = {
   profile: OwnedProfile;
@@ -94,88 +94,57 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
   };
 
   return (
-    <Card className="relative overflow-hidden border-live/30 bg-card p-6 backdrop-blur before:absolute before:inset-0 before:bg-gradient-to-br before:from-live/10 before:to-brand/10">
-      <div className="relative z-10 space-y-4">
-        {/* Live Badge + Duration */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 items-center gap-2 rounded-full bg-live px-3 py-1 font-semibold text-white text-xs">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
-              LIVE
-            </span>
-            <span className="text-muted-foreground text-sm">{duration}</span>
-          </div>
-        </div>
-
-        {/* Platform + URL */}
-        <div>
-          <div className="mb-2 flex items-center gap-2 text-muted-foreground text-sm">
-            {platform.icon}
-            <span>{platform.name}</span>
-          </div>
-          <a
-            className="group flex items-center gap-2 text-brand hover:text-brand"
-            href={activeBroadcast.broadcastUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <span className="truncate text-sm">
-              {activeBroadcast.broadcastUrl}
-            </span>
-            <ExternalLink className="h-3 w-3 flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-          </a>
-        </div>
-
-        {/* Tagged Artists */}
-        {taggedArtists.length > 0 && (
-          <div>
-            <p className="mb-2 text-muted-foreground text-xs">
-              Streaming with:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {taggedArtists.map((artist) => {
-                const name = artist.subdomain?.name || "";
-                const avatar = getTextRecord(
-                  artist.subdomain?.textRecords?.(),
-                  "avatar"
-                );
-
-                return (
-                  <div
-                    className="flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1"
-                    key={artist.id}
-                  >
-                    {avatar ? (
-                      <Image
-                        alt={name}
-                        className="h-4 w-4 rounded-full"
-                        height={16}
-                        src={ipfsToHttp(avatar)}
-                        width={16}
-                      />
-                    ) : (
-                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-surface-elevated text-xs">
-                        👤
-                      </div>
-                    )}
-                    <span className="text-brand text-xs">{name}</span>
-                  </div>
-                );
-              })}
+    <TooltipProvider>
+      <Card className="relative overflow-hidden border-live/30 bg-card p-6 backdrop-blur before:absolute before:inset-0 before:bg-live/10">
+        <div className="relative z-10 space-y-4">
+          {/* Live Badge + Duration */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 items-center gap-2 rounded-full bg-live px-3 py-1 font-semibold text-live-foreground text-xs">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
+                LIVE
+              </span>
+              <span className="text-md text-muted-foreground">{duration}</span>
             </div>
           </div>
-        )}
 
-        {/* End Stream Button */}
-        <Button
-          className="w-full border-border hover:border-live/50 hover:bg-live/10"
-          disabled={updateBroadcast.isPending}
-          onClick={handleEndStream}
-          variant="outline"
-        >
-          {updateBroadcast.isPending ? "Ending..." : "End Stream"}
-        </Button>
-      </div>
-    </Card>
+          {/* Platform + URL */}
+          <div>
+            <div className="mb-2 flex items-center gap-2 text-md text-muted-foreground">
+              {platform.icon}
+              <span>{platform.name}</span>
+            </div>
+            <a
+              className="group flex items-center gap-2 text-brand hover:text-brand"
+              href={activeBroadcast.broadcastUrl}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span className="truncate text-md">
+                {activeBroadcast.broadcastUrl}
+              </span>
+              <ExternalLink className="h-3 w-3 flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+            </a>
+          </div>
+
+          {/* End Stream Button */}
+          <Button
+            className="w-full border-border hover:border-live/50 hover:bg-live/10"
+            disabled={updateBroadcast.isPending}
+            onClick={handleEndStream}
+            variant="outline"
+          >
+            {updateBroadcast.isPending ? "Ending..." : "End Stream"}
+          </Button>
+
+          {/* Tagged Artists */}
+          {taggedArtists.length > 0 && (
+            <div className="flex justify-center">
+              <AvatarGroup artists={taggedArtists} size="sm" />
+            </div>
+          )}
+        </div>
+      </Card>
+    </TooltipProvider>
   );
 }

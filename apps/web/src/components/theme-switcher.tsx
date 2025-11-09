@@ -30,7 +30,7 @@ export function ThemeSwitcher() {
         <div className="space-y-4">
           {/* Mode Toggle */}
           <div>
-            <p className="mb-2 font-medium text-sm">Mode</p>
+            <p className="mb-2 font-medium text-md">Mode</p>
             <div className="grid grid-cols-2 gap-2">
               <button
                 className={`flex items-center justify-center gap-2 rounded-md border p-2 text-left transition-colors hover:bg-accent ${
@@ -40,7 +40,7 @@ export function ThemeSwitcher() {
                 type="button"
               >
                 <Sun className="size-4" />
-                <span className="text-sm">Light</span>
+                <span className="text-md">Light</span>
               </button>
               <button
                 className={`flex items-center justify-center gap-2 rounded-md border p-2 text-left transition-colors hover:bg-accent ${
@@ -50,14 +50,14 @@ export function ThemeSwitcher() {
                 type="button"
               >
                 <Moon className="size-4" />
-                <span className="text-sm">Dark</span>
+                <span className="text-md">Dark</span>
               </button>
             </div>
           </div>
 
           {/* Color Theme Picker */}
           <div>
-            <p className="mb-2 font-medium text-sm">Color</p>
+            <p className="mb-2 font-medium text-md">Color</p>
             <div className="space-y-1">
               {Object.entries(colorThemes).map(([key, value]) => (
                 <button
@@ -67,11 +67,11 @@ export function ThemeSwitcher() {
                   type="button"
                 >
                   <div
-                    className="size-5 shrink-0 rounded-full bg-gradient-to-r from-brand to-brand-secondary"
+                    className="size-5 shrink-0 rounded-full bg-brand"
                     data-theme={`${mode}-${key}`}
                   />
                   <div className="flex-1">
-                    <div className="font-medium text-sm">{value.name}</div>
+                    <div className="font-medium text-md">{value.name}</div>
                     <div className="text-muted-foreground text-xs">
                       {value.description}
                     </div>

@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { ArtistAvatar } from "@/components/artist-avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { useUpdateProfile } from "@/hooks/use-update-profile";
 import { type AllValidKeys, FILE_UPLOAD, SOCIAL_KEYS } from "@/lib/constants";
-import { getTextRecord, ipfsToHttp } from "@/lib/utils";
+import { getTextRecord } from "@/lib/utils";
 
 type ProfileEditFormProps = {
   profile: OwnedProfile;
@@ -210,19 +210,12 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
         <div>
           <Label className="text-foreground">Avatar</Label>
           <div className="mt-2 flex items-center gap-4">
-            {currentAvatarSrc ? (
-              <Image
-                alt="Avatar preview"
-                className="h-24 w-24 rounded-full border-4 border-border"
-                height={96}
-                src={currentAvatarSrc}
-                width={96}
-              />
-            ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-border bg-surface-elevated text-3xl">
-                👤
-              </div>
-            )}
+            <ArtistAvatar
+              avatarUrl={currentAvatarSrc}
+              className="border-4 border-border"
+              name={profile.subdomain?.name || profile.ensName || "Profile"}
+              size="lg"
+            />
             <div>
               <input
                 accept="image/*"
@@ -240,7 +233,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
                 {avatarFile ? "Change Image" : "Upload Image"}
               </Button>
               {avatarFile && (
-                <p className="mt-1 text-muted-foreground text-sm">
+                <p className="mt-1 text-md text-muted-foreground">
                   {avatarFile.name}
                 </p>
               )}
@@ -254,7 +247,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
             Bio / Description
           </Label>
           <Input
-            className="mt-2 border-border bg-surface-elevated text-white"
+            className="mt-2 border-border bg-surface-elevated text-foreground"
             id="description"
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Tell us about yourself..."
@@ -268,7 +261,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
             Email (Optional)
           </Label>
           <Input
-            className="mt-2 border-border bg-surface-elevated text-white"
+            className="mt-2 border-border bg-surface-elevated text-foreground"
             id="email"
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
@@ -283,7 +276,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
             Website (Optional)
           </Label>
           <Input
-            className="mt-2 border-border bg-surface-elevated text-white"
+            className="mt-2 border-border bg-surface-elevated text-foreground"
             id="url"
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://your-website.com"
@@ -308,12 +301,12 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
               ] as const
             ).map((key) => (
               <div key={key}>
-                <Label className="text-muted-foreground text-sm" htmlFor={key}>
+                <Label className="text-md text-muted-foreground" htmlFor={key}>
                   {key.replace("com.", "").charAt(0).toUpperCase() +
                     key.replace("com.", "").slice(1)}
                 </Label>
                 <Input
-                  className="mt-1 border-border bg-surface-elevated text-white"
+                  className="mt-1 border-border bg-surface-elevated text-foreground"
                   id={key}
                   onChange={(e) => handleSocialChange(key, e.target.value)}
                   placeholder={`https://${key.replace("com.", "")}.com/yourusername`}
@@ -330,7 +323,6 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
           <Button
             disabled={!hasChanges || updateProfile.isPending}
             type="submit"
-            variant="gradient"
           >
             {updateProfile.isPending ? "Saving..." : "Save Changes"}
           </Button>

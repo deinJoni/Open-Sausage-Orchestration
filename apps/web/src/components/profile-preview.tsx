@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
+import { ArtistAvatar } from "@/components/artist-avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
-import { getTextRecord, ipfsToHttp } from "@/lib/utils";
+import { getTextRecord } from "@/lib/utils";
 
 type ProfilePreviewProps = {
   profile: OwnedProfile;
@@ -25,24 +25,17 @@ export function ProfilePreview({ profile }: ProfilePreviewProps) {
       <div className="flex items-start gap-4">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          {avatar ? (
-            <Image
-              alt={subdomain || "Profile"}
-              className="h-24 w-24 rounded-full border-4 border-border"
-              height={96}
-              src={ipfsToHttp(avatar)}
-              width={96}
-            />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-border bg-surface-elevated text-3xl">
-              👤
-            </div>
-          )}
+          <ArtistAvatar
+            avatarUrl={avatar}
+            className="border-4 border-border"
+            name={subdomain || "Profile"}
+            size="lg"
+          />
         </div>
 
         {/* Profile Info */}
         <div className="flex-1 space-y-2">
-          <h3 className="font-bold text-white text-xl">
+          <h3 className="font-bold text-foreground text-xl">
             {subdomain || "Anonymous"}
           </h3>
           {description && <p className="text-foreground">{description}</p>}

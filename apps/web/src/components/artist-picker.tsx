@@ -1,10 +1,10 @@
 "use client";
 
 import { X } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { useAllArtists } from "@/hooks/use-all-artists";
-import { getTextRecord, ipfsToHttp } from "@/lib/utils";
+import { getTextRecord } from "@/lib/utils";
+import { ArtistAvatar } from "./artist-avatar";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 
@@ -80,20 +80,12 @@ export function ArtistPicker({
                 className="flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1.5"
                 key={address}
               >
-                {avatar ? (
-                  <Image
-                    alt={name}
-                    className="h-5 w-5 rounded-full"
-                    height={20}
-                    src={ipfsToHttp(avatar)}
-                    width={20}
-                  />
-                ) : (
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-elevated text-xs">
-                    👤
-                  </div>
-                )}
-                <span className="text-brand text-sm">{name}</span>
+                <ArtistAvatar
+                  avatarUrl={avatar}
+                  name={name}
+                  size="xs"
+                />
+                <span className="text-brand text-md">{name}</span>
                 <button
                   className="text-brand hover:text-brand"
                   onClick={() => handleRemove(address)}
@@ -142,20 +134,12 @@ export function ArtistPicker({
                     onClick={() => handleSelect(address)}
                     type="button"
                   >
-                    {avatar ? (
-                      <Image
-                        alt={name}
-                        className="h-8 w-8 rounded-full"
-                        height={32}
-                        src={ipfsToHttp(avatar)}
-                        width={32}
-                      />
-                    ) : (
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-elevated">
-                        👤
-                      </div>
-                    )}
-                    <span className="text-sm text-white">{name}</span>
+                    <ArtistAvatar
+                      avatarUrl={avatar}
+                      name={name}
+                      size="sm"
+                    />
+                    <span className="text-md text-foreground">{name}</span>
                   </button>
                 );
               })}

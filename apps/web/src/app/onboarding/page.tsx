@@ -167,7 +167,7 @@ export default function OnboardingPage() {
           </h1>
           <div className="mb-6 space-y-4">
             <div className="rounded-lg border border-info/20 bg-info/10 p-4">
-              <p className="mb-2 text-info-foreground text-sm">
+              <p className="mb-2 text-info-foreground text-md">
                 You already own a subdomain
               </p>
               {ensName ? (
@@ -178,7 +178,7 @@ export default function OnboardingPage() {
                 </p>
               )}
             </div>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-md text-muted-foreground">
               Each wallet can only register one subdomain. You can view or edit
               your existing profile.
             </p>
@@ -201,6 +201,21 @@ export default function OnboardingPage() {
     );
   }
 
+  // Helper function to get step indicator color
+  const getStepIndicatorColor = (
+    currentStep: Step,
+    targetStep: Step,
+    isCompleted: boolean
+  ): string => {
+    if (currentStep === targetStep) {
+      return "bg-brand";
+    }
+    if (targetStep === "claim" && isCompleted) {
+      return "bg-success";
+    }
+    return "bg-muted";
+  };
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       <div className="mb-8 text-center">
@@ -216,13 +231,11 @@ export default function OnboardingPage() {
       {/* Progress indicator */}
       <div className="mb-8 flex justify-center gap-2">
         <div
-          className={`h-2 w-12 rounded ${
-            step === "claim"
-              ? "bg-brand"
-              : isRegistered
-                ? "bg-success"
-                : "bg-muted"
-          }`}
+          className={`h-2 w-12 rounded ${getStepIndicatorColor(
+            step,
+            "claim",
+            isRegistered
+          )}`}
         />
         <div
           className={`h-2 w-12 rounded ${step === "basic" ? "bg-brand" : "bg-surface-elevated"}`}
@@ -238,7 +251,7 @@ export default function OnboardingPage() {
       <Card className="border-border bg-card p-8 backdrop-blur">
         {!address && (
           <div className="mb-6 space-y-3 rounded-lg border border-info/20 bg-info/10 p-4">
-            <p className="text-center font-medium text-info-foreground text-sm">
+            <p className="text-center font-medium text-info-foreground text-md">
               ⚡ Connect with Porto Wallet
             </p>
             <p className="text-center text-info-foreground/80 text-xs">
@@ -251,7 +264,7 @@ export default function OnboardingPage() {
 
         {inviteData && (
           <div className="mb-6 rounded-lg border border-brand/20 bg-brand/10 p-4">
-            <p className="mb-1 font-medium text-brand text-sm">
+            <p className="mb-1 font-medium text-brand text-md">
               ✨ Invited by {inviteData.inviter.slice(0, ADDRESS_PREFIX_LENGTH)}
               ...
               {inviteData.inviter.slice(-ADDRESS_SUFFIX_LENGTH)}
@@ -278,7 +291,7 @@ export default function OnboardingPage() {
                 type="text"
                 value={ensName}
               />
-              <p className="mt-1 font-mono text-muted-foreground text-sm">
+              <p className="mt-1 font-mono text-md text-muted-foreground">
                 {ensName}.{ENS.PARENT_DOMAIN}
               </p>
               {inviteData ? (
@@ -293,7 +306,7 @@ export default function OnboardingPage() {
             </div>
 
             <div className="rounded-lg border border-info/20 bg-info/10 p-4">
-              <p className="mb-2 font-medium text-info-foreground text-sm">
+              <p className="mb-2 font-medium text-info-foreground text-md">
                 📝 First, let's claim your name
               </p>
               <p className="text-info-foreground/80 text-xs">
@@ -318,7 +331,7 @@ export default function OnboardingPage() {
         {step === "basic" && (
           <div className="space-y-6">
             <div className="rounded-lg border border-success/20 bg-success/10 p-4">
-              <p className="mb-1 font-medium text-sm text-success-foreground">
+              <p className="mb-1 font-medium text-md text-success-foreground">
                 ✅ Name Claimed: {ensName}.{ENS.PARENT_DOMAIN}
               </p>
               <p className="text-success-foreground/80 text-xs">
@@ -340,7 +353,7 @@ export default function OnboardingPage() {
             <div>
               <Label htmlFor="bio">Bio</Label>
               <textarea
-                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-foreground text-sm placeholder:text-muted-foreground focus:border-brand focus:outline-none"
+                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-foreground text-md placeholder:text-muted-foreground focus:border-brand focus:outline-none"
                 id="bio"
                 maxLength={160}
                 onChange={(e) => setBio(e.target.value)}
@@ -443,7 +456,7 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div>
               <Label>Social Links</Label>
-              <p className="mb-4 text-muted-foreground text-sm">
+              <p className="mb-4 text-md text-muted-foreground">
                 Connect your platforms (you can skip this for now)
               </p>
 
