@@ -88,6 +88,7 @@ export const {
   prepareReactRender,
   useHydrateCache,
   prepareQuery,
+  // @ts-expect-error - GQty types are not compatible with the latest version
 } = createReactClient<GeneratedSchema>(client, {
   defaults: {
     // Enable Suspense, you can override this option for each hook.

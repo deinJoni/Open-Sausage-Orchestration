@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { useAllArtists } from "@/hooks/use-all-artists";
-import { resolveIPFS } from "@/lib/ipfs";
+import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 
@@ -70,13 +70,14 @@ export function ArtistPicker({
           {selectedArtists.map((artist) => {
             const address = artist.subdomain?.owner?.address || "";
             const name = artist.subdomain?.name || "";
-            const avatar = artist.subdomain
-              ?.textRecords?.()
-              ?.find((r) => r.key === "avatar")?.value;
+            const avatar = getTextRecord(
+              artist.subdomain?.textRecords?.(),
+              "avatar"
+            );
 
             return (
               <div
-                className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1.5"
+                className="flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1.5"
                 key={address}
               >
                 {avatar ? (
@@ -84,17 +85,17 @@ export function ArtistPicker({
                     alt={name}
                     className="h-5 w-5 rounded-full"
                     height={20}
-                    src={resolveIPFS(avatar)}
+                    src={ipfsToHttp(avatar)}
                     width={20}
                   />
                 ) : (
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-zinc-800 text-xs">
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-elevated text-xs">
                     👤
                   </div>
                 )}
-                <span className="text-purple-300 text-sm">{name}</span>
+                <span className="text-brand text-sm">{name}</span>
                 <button
-                  className="text-purple-400 hover:text-purple-300"
+                  className="text-brand hover:text-brand"
                   onClick={() => handleRemove(address)}
                   type="button"
                 >
@@ -110,7 +111,7 @@ export function ArtistPicker({
       {selectedAddresses.length < maxSelections && (
         <div className="relative">
           <Input
-            className="border-zinc-700"
+            className="border-border"
             onBlur={() =>
               setTimeout(() => setShowDropdown(false), DROPDOWN_BLUR_DELAY_MS)
             }
@@ -125,17 +126,18 @@ export function ArtistPicker({
 
           {/* Dropdown */}
           {showDropdown && filteredArtists.length > 0 && (
-            <Card className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto border-zinc-800 bg-zinc-900 p-2">
+            <Card className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto border-border bg-card p-2">
               {filteredArtists.slice(0, 10).map((artist) => {
                 const address = artist.subdomain?.owner?.address || "";
                 const name = artist.subdomain?.name || "";
-                const avatar = artist.subdomain
-                  ?.textRecords?.()
-                  ?.find((r) => r.key === "avatar")?.value;
+                const avatar = getTextRecord(
+                  artist.subdomain?.textRecords?.(),
+                  "avatar"
+                );
 
                 return (
                   <button
-                    className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-zinc-800"
+                    className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-surface-elevated"
                     key={address}
                     onClick={() => handleSelect(address)}
                     type="button"
@@ -145,11 +147,11 @@ export function ArtistPicker({
                         alt={name}
                         className="h-8 w-8 rounded-full"
                         height={32}
-                        src={resolveIPFS(avatar)}
+                        src={ipfsToHttp(avatar)}
                         width={32}
                       />
                     ) : (
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-elevated">
                         👤
                       </div>
                     )}
@@ -163,7 +165,7 @@ export function ArtistPicker({
       )}
 
       {selectedAddresses.length >= maxSelections && (
-        <p className="text-xs text-zinc-500">
+        <p className="text-muted-foreground text-xs">
           Maximum {maxSelections} collaborators
         </p>
       )}

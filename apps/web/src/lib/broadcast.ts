@@ -35,38 +35,6 @@ export function constructBroadcastPayload(params: BroadcastParams): string {
 }
 
 /**
- * Parses a pipe-delimited broadcast payload from ENS text record
- *
- * @param value - The raw ENS text record value
- * @returns Parsed broadcast parameters
- *
- * @example
- * parseBroadcastPayload("true|https://twitch.tv/user|0x123...|0x456...")
- * // Returns: { isLive: true, broadcastUrl: "https://twitch.tv/user", guestWalletAddresses: ["0x123...", "0x456..."] }
- */
-export function parseBroadcastPayload(value: string): BroadcastParams {
-  const parts = value.split("|");
-
-  const isLive = parts.length > 0 ? parts[0] === "true" : false;
-  const broadcastUrl = parts.length > 1 ? parts[1] : "";
-
-  const guestWalletAddresses: string[] = [];
-  // biome-ignore lint/nursery/noIncrementDecrement: <IDK how to do this without a loop>
-  for (let i = 2; i < parts.length; i++) {
-    const address = parts[i];
-    if (address.length > 0) {
-      guestWalletAddresses.push(address);
-    }
-  }
-
-  return {
-    isLive,
-    broadcastUrl,
-    guestWalletAddresses,
-  };
-}
-
-/**
  * Validates a broadcast URL format
  *
  * @param url - The URL to validate

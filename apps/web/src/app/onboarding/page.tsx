@@ -112,7 +112,7 @@ export default function OnboardingPage() {
   if (isCheckingOwnership) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <p className="text-zinc-400">Checking profile...</p>
+        <p className="text-muted-foreground">Checking profile...</p>
       </div>
     );
   }
@@ -120,7 +120,7 @@ export default function OnboardingPage() {
   if (hasProfile) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+        <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
           <h1 className="mb-4 font-bold text-2xl text-white">
             Profile Already Exists
           </h1>
@@ -130,27 +130,28 @@ export default function OnboardingPage() {
                 You already own a subdomain
               </p>
               {ensName ? (
-                <p className="font-mono text-xs text-zinc-300">{ensName}</p>
+                <p className="font-mono text-foreground text-xs">{ensName}</p>
               ) : (
-                <p className="text-xs text-zinc-400">
+                <p className="text-muted-foreground text-xs">
                   (Subdomain detected on-chain)
                 </p>
               )}
             </div>
-            <p className="text-sm text-zinc-400">
+            <p className="text-muted-foreground text-sm">
               Each wallet can only register one subdomain. You can view or edit
               your existing profile.
             </p>
-            <p className="text-xs text-zinc-500">
+            <p className="text-muted-foreground text-xs">
               Connected: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
               {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
             </p>
           </div>
           <div className="space-y-3">
             <Button
-              className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+              className="w-full"
               onClick={() => router.push("/")}
               size="lg"
+              variant="gradient"
             >
               Go to Home
             </Button>
@@ -166,7 +167,7 @@ export default function OnboardingPage() {
         <h1 className="mb-2 font-bold text-3xl text-white">
           Create Your Artist Profile
         </h1>
-        <p className="text-zinc-400">
+        <p className="text-muted-foreground">
           Set up your profile and start receiving tips
           {address}
         </p>
@@ -175,17 +176,17 @@ export default function OnboardingPage() {
       {/* Progress indicator */}
       <div className="mb-8 flex justify-center gap-2">
         <div
-          className={`h-2 w-16 rounded ${step === "basic" ? "bg-purple-500" : "bg-zinc-700"}`}
+          className={`h-2 w-16 rounded ${step === "basic" ? "bg-brand" : "bg-surface-elevated"}`}
         />
         <div
-          className={`h-2 w-16 rounded ${step === "avatar" ? "bg-purple-500" : "bg-zinc-700"}`}
+          className={`h-2 w-16 rounded ${step === "avatar" ? "bg-brand" : "bg-surface-elevated"}`}
         />
         <div
-          className={`h-2 w-16 rounded ${step === "socials" ? "bg-purple-500" : "bg-zinc-700"}`}
+          className={`h-2 w-16 rounded ${step === "socials" ? "bg-brand" : "bg-surface-elevated"}`}
         />
       </div>
 
-      <Card className="border-zinc-800 bg-zinc-900/50 p-8 backdrop-blur">
+      <Card className="border-border bg-card p-8 backdrop-blur">
         {!address && (
           <div className="mb-6 space-y-3 rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
             <p className="text-center font-medium text-blue-400 text-sm">
@@ -200,15 +201,15 @@ export default function OnboardingPage() {
         )}
 
         {inviteData && (
-          <div className="mb-6 rounded-lg border border-purple-500/20 bg-purple-500/10 p-4">
-            <p className="mb-1 font-medium text-purple-400 text-sm">
+          <div className="mb-6 rounded-lg border border-brand/20 bg-brand/10 p-4">
+            <p className="mb-1 font-medium text-brand text-sm">
               ✨ Invited by {inviteData.inviter.slice(0, ADDRESS_PREFIX_LENGTH)}
               ...
               {inviteData.inviter.slice(-ADDRESS_SUFFIX_LENGTH)}
             </p>
-            <p className="text-xs text-zinc-400">
+            <p className="text-muted-foreground text-xs">
               You're invited to claim:{" "}
-              <span className="font-mono text-purple-300">
+              <span className="font-mono text-brand">
                 {ensName}.{ENS.PARENT_DOMAIN}
               </span>
             </p>
@@ -233,7 +234,7 @@ export default function OnboardingPage() {
                   This name is reserved for you via invite
                 </p>
               ) : (
-                <p className="mt-1 text-xs text-zinc-500">
+                <p className="mt-1 text-muted-foreground text-xs">
                   Your unique identifier on the platform
                 </p>
               )}
@@ -242,7 +243,7 @@ export default function OnboardingPage() {
             <div>
               <Label htmlFor="bio">Bio</Label>
               <textarea
-                className="mt-2 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:border-purple-500 focus:outline-none"
+                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus:border-brand focus:outline-none"
                 id="bio"
                 maxLength={160}
                 onChange={(e) => setBio(e.target.value)}
@@ -250,15 +251,16 @@ export default function OnboardingPage() {
                 rows={4}
                 value={bio}
               />
-              <p className="mt-1 text-right text-xs text-zinc-500">
+              <p className="mt-1 text-right text-muted-foreground text-xs">
                 {bio.length}/160
               </p>
             </div>
 
             <Button
-              className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+              className="w-full"
               disabled={!(ensName && bio)}
               onClick={() => setStep("avatar")}
+              variant="gradient"
             >
               Next →
             </Button>
@@ -271,7 +273,7 @@ export default function OnboardingPage() {
               <Label>Profile Picture</Label>
               <div className="mt-4 flex flex-col items-center gap-4">
                 {avatar && (
-                  <div className="h-32 w-32 overflow-hidden rounded-full border-2 border-purple-500">
+                  <div className="h-32 w-32 overflow-hidden rounded-full border-2 border-brand">
                     <Image
                       alt="Avatar preview"
                       className="h-full w-full object-cover"
@@ -320,7 +322,7 @@ export default function OnboardingPage() {
                   </label>
                 </div>
 
-                <p className="text-center text-xs text-zinc-500">
+                <p className="text-center text-muted-foreground text-xs">
                   Upload a square image (recommended 400x400px)
                 </p>
               </div>
@@ -335,8 +337,9 @@ export default function OnboardingPage() {
                 ← Back
               </Button>
               <Button
-                className="flex-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+                className="flex-1"
                 onClick={() => setStep("socials")}
+                variant="gradient"
               >
                 Next →
               </Button>
@@ -348,7 +351,7 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div>
               <Label>Social Links</Label>
-              <p className="mb-4 text-sm text-zinc-500">
+              <p className="mb-4 text-muted-foreground text-sm">
                 Connect your platforms (you can skip this for now)
               </p>
 
@@ -406,9 +409,10 @@ export default function OnboardingPage() {
                 ← Back
               </Button>
               <Button
-                className="flex-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+                className="flex-1"
                 disabled={createProfile.mutation.isPending}
                 onClick={handleSubmit}
+                variant="gradient"
               >
                 {createProfile.mutation.isPending
                   ? "Creating Profile..."

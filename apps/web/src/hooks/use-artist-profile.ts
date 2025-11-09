@@ -1,6 +1,7 @@
 import { useQuery as useGqtyQuery } from "@/gqty";
 import { _SubgraphErrorPolicy_ } from "@/gqty/schema.generated";
-import { calculateNodeHash } from "@/lib/utils";
+import { detectStreamPlatform } from "@/lib/broadcast";
+import { calculateNodeHash, getTextRecord } from "@/lib/utils";
 
 /**
  * Extract subdomain label from full ENS name
@@ -39,29 +40,6 @@ function parseBroadcast(value: string | undefined): {
 }
 
 /**
- * Derive stream platform from broadcast URL
- */
-function deriveStreamPlatform(
-  url: string | undefined
-): "youtube" | "twitch" | undefined {
-  if (!url) {
-    return;
-  }
-
-  const lowerUrl = url.toLowerCase();
-
-  if (lowerUrl.includes("youtube.com") || lowerUrl.includes("youtu.be")) {
-    return "youtube";
-  }
-
-  if (lowerUrl.includes("twitch.tv")) {
-    return "twitch";
-  }
-
-  return;
-}
-
-/**
  * Hook to fetch a single artist profile by ENS name
  * Returns GQty subdomain data with streaming info
  */
@@ -85,10 +63,11 @@ export function useArtistProfile(ensName?: string) {
   });
 
   // Parse broadcast data
-  const broadcastRecord = result
-    ?.textRecords?.()
-    ?.find((record) => record.key === "app.osopit.broadcast");
-  const broadcast = parseBroadcast(broadcastRecord?.value);
+  const broadcastValue = getTextRecord(
+    result?.textRecords?.(),
+    "app.osopit.broadcast"
+  );
+  const broadcast = parseBroadcast(broadcastValue);
 
   const data = {
     user: result?.owner,
@@ -96,7 +75,7 @@ export function useArtistProfile(ensName?: string) {
     textRecords: result?.textRecords,
     isStreaming: broadcast.isLive,
     streamUrl: broadcast.url,
-    streamPlatform: deriveStreamPlatform(broadcast.url),
+    streamPlatform: detectStreamPlatform(broadcast.url ?? "") ?? undefined,
     taggedArtists: broadcast.taggedArtists,
   };
 

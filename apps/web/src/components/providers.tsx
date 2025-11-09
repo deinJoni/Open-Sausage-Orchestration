@@ -1,6 +1,7 @@
 "use client";
 
 import { AppKitProvider } from "./appkit-provider";
+import { ColorThemeProvider } from "./color-theme-provider";
 import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "./ui/sonner";
 
@@ -19,8 +20,10 @@ export default function Providers({
         disableTransitionOnChange
         enableSystem
       >
-        {children}
-        <Toaster richColors />
+        <ColorThemeProvider>
+          {children}
+          <Toaster richColors />
+        </ColorThemeProvider>
       </ThemeProvider>
     </AppKitProvider>
   );

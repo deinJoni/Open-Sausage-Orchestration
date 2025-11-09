@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { useUpdateProfile } from "@/hooks/use-update-profile";
 import { type AllValidKeys, FILE_UPLOAD, SOCIAL_KEYS } from "@/lib/constants";
-import { ipfsToHttp } from "@/lib/utils";
+import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 
 type ProfileEditFormProps = {
   profile: OwnedProfile;
@@ -30,25 +30,15 @@ type ProfileEditFormProps = {
 export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   // Get existing text records using constants
   const existingRecords = profile.textRecords || [];
-  const avatarRecord = existingRecords.find(
-    (r) => r?.key === ("avatar" as AllValidKeys)
-  );
-  const descriptionRecord = existingRecords.find(
-    (r) => r?.key === ("description" as AllValidKeys)
-  );
-  const emailRecord = existingRecords.find(
-    (r) => r?.key === ("email" as AllValidKeys)
-  );
-  const urlRecord = existingRecords.find(
-    (r) => r?.key === ("url" as AllValidKeys)
-  );
+  const avatarValue = getTextRecord(existingRecords, "avatar");
+  const descriptionValue = getTextRecord(existingRecords, "description");
+  const emailValue = getTextRecord(existingRecords, "email");
+  const urlValue = getTextRecord(existingRecords, "url");
 
   // Form state
-  const [description, setDescription] = useState(
-    descriptionRecord?.value || ""
-  );
-  const [email, setEmail] = useState(emailRecord?.value || "");
-  const [url, setUrl] = useState(urlRecord?.value || "");
+  const [description, setDescription] = useState(descriptionValue);
+  const [email, setEmail] = useState(emailValue);
+  const [url, setUrl] = useState(urlValue);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -57,9 +47,9 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   const [socials, setSocials] = useState<Record<string, string>>(() => {
     const socialObj: Record<string, string> = {};
     for (const key of SOCIAL_KEYS) {
-      const record = existingRecords.find((r) => r.key === key);
-      if (record?.value) {
-        socialObj[key] = record.value;
+      const value = getTextRecord(existingRecords, key);
+      if (value) {
+        socialObj[key] = value;
       }
     }
     return socialObj;
@@ -78,15 +68,14 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   );
 
   // Check if form has changes
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
   const hasChanges = useMemo(() => {
-    if (description !== (descriptionRecord?.value || "")) {
+    if (description !== descriptionValue) {
       return true;
     }
-    if (email !== (emailRecord?.value || "")) {
+    if (email !== emailValue) {
       return true;
     }
-    if (url !== (urlRecord?.value || "")) {
+    if (url !== urlValue) {
       return true;
     }
     if (avatarFile) {
@@ -95,8 +84,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
     // Check social links
     for (const key of SOCIAL_KEYS) {
-      const existingValue =
-        existingRecords.find((r) => r.key === key)?.value || "";
+      const existingValue = getTextRecord(existingRecords, key);
       const currentValue = socials[key] || "";
       if (existingValue !== currentValue) {
         return true;
@@ -111,9 +99,9 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
     avatarFile,
     socials,
     existingRecords,
-    descriptionRecord,
-    emailRecord,
-    urlRecord,
+    descriptionValue,
+    emailValue,
+    urlValue,
   ]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,15 +186,16 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   };
 
   const currentAvatarSrc =
-    avatarPreview ||
-    (avatarRecord?.value ? ipfsToHttp(avatarRecord.value) : null);
+    avatarPreview || (avatarValue ? ipfsToHttp(avatarValue) : null);
 
   return (
-    <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
+    <Card className="border-border bg-card p-6 backdrop-blur">
       <div className="mb-6">
         <div className="mb-3 flex flex-row items-center gap-3">
           {profile.ensName && (
-            <p className="font-bold text-xl text-zinc-400">{profile.ensName}</p>
+            <p className="font-bold text-muted-foreground text-xl">
+              {profile.ensName}
+            </p>
           )}
         </div>
         {profile.ensName && (
@@ -219,18 +208,18 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Avatar */}
         <div>
-          <Label className="text-zinc-300">Avatar</Label>
+          <Label className="text-foreground">Avatar</Label>
           <div className="mt-2 flex items-center gap-4">
             {currentAvatarSrc ? (
               <Image
                 alt="Avatar preview"
-                className="h-24 w-24 rounded-full border-4 border-zinc-700"
+                className="h-24 w-24 rounded-full border-4 border-border"
                 height={96}
                 src={currentAvatarSrc}
                 width={96}
               />
             ) : (
-              <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-zinc-700 bg-zinc-800 text-3xl">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-border bg-surface-elevated text-3xl">
                 👤
               </div>
             )}
@@ -251,7 +240,9 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
                 {avatarFile ? "Change Image" : "Upload Image"}
               </Button>
               {avatarFile && (
-                <p className="mt-1 text-sm text-zinc-400">{avatarFile.name}</p>
+                <p className="mt-1 text-muted-foreground text-sm">
+                  {avatarFile.name}
+                </p>
               )}
             </div>
           </div>
@@ -259,11 +250,11 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
         {/* Description/Bio */}
         <div>
-          <Label className="text-zinc-300" htmlFor="description">
+          <Label className="text-foreground" htmlFor="description">
             Bio / Description
           </Label>
           <Input
-            className="mt-2 border-zinc-700 bg-zinc-800 text-white"
+            className="mt-2 border-border bg-surface-elevated text-white"
             id="description"
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Tell us about yourself..."
@@ -273,11 +264,11 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
         {/* Email */}
         <div>
-          <Label className="text-zinc-300" htmlFor="email">
+          <Label className="text-foreground" htmlFor="email">
             Email (Optional)
           </Label>
           <Input
-            className="mt-2 border-zinc-700 bg-zinc-800 text-white"
+            className="mt-2 border-border bg-surface-elevated text-white"
             id="email"
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
@@ -288,11 +279,11 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
         {/* Website URL */}
         <div>
-          <Label className="text-zinc-300" htmlFor="url">
+          <Label className="text-foreground" htmlFor="url">
             Website (Optional)
           </Label>
           <Input
-            className="mt-2 border-zinc-700 bg-zinc-800 text-white"
+            className="mt-2 border-border bg-surface-elevated text-white"
             id="url"
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://your-website.com"
@@ -303,7 +294,9 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
         {/* Social Links */}
         <div>
-          <Label className="mb-3 text-zinc-300">Social Links (Optional)</Label>
+          <Label className="mb-3 text-foreground">
+            Social Links (Optional)
+          </Label>
           <div className="space-y-3">
             {(
               [
@@ -315,12 +308,12 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
               ] as const
             ).map((key) => (
               <div key={key}>
-                <Label className="text-sm text-zinc-400" htmlFor={key}>
+                <Label className="text-muted-foreground text-sm" htmlFor={key}>
                   {key.replace("com.", "").charAt(0).toUpperCase() +
                     key.replace("com.", "").slice(1)}
                 </Label>
                 <Input
-                  className="mt-1 border-zinc-700 bg-zinc-800 text-white"
+                  className="mt-1 border-border bg-surface-elevated text-white"
                   id={key}
                   onChange={(e) => handleSocialChange(key, e.target.value)}
                   placeholder={`https://${key.replace("com.", "")}.com/yourusername`}
@@ -335,26 +328,26 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
         {/* Submit Button */}
         <div className="flex gap-3">
           <Button
-            className="bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
             disabled={!hasChanges || updateProfile.isPending}
             type="submit"
+            variant="gradient"
           >
             {updateProfile.isPending ? "Saving..." : "Save Changes"}
           </Button>
           {hasChanges && (
             <Button
               onClick={() => {
-                setDescription(descriptionRecord?.value || "");
-                setEmail(emailRecord?.value || "");
-                setUrl(urlRecord?.value || "");
+                setDescription(descriptionValue);
+                setEmail(emailValue);
+                setUrl(urlValue);
                 setAvatarFile(null);
                 setAvatarPreview(null);
                 setSocials(() => {
                   const socialObj: Record<string, string> = {};
                   for (const key of SOCIAL_KEYS) {
-                    const record = existingRecords.find((r) => r.key === key);
-                    if (record?.value) {
-                      socialObj[key] = record.value;
+                    const value = getTextRecord(existingRecords, key);
+                    if (value) {
+                      socialObj[key] = value;
                     }
                   }
                   return socialObj;

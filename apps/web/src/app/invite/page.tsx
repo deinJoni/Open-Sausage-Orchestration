@@ -94,7 +94,7 @@ export default function InvitePage() {
 
     if (!label || label.length === 0) {
       return (
-        <p className="mt-1 text-xs text-zinc-500">
+        <p className="mt-1 text-muted-foreground text-xs">
           The subname to invite someone to register
         </p>
       );
@@ -110,7 +110,9 @@ export default function InvitePage() {
 
     if (isChecking) {
       return (
-        <p className="mt-1 text-xs text-zinc-400">Checking availability...</p>
+        <p className="mt-1 text-muted-foreground text-xs">
+          Checking availability...
+        </p>
       );
     }
 
@@ -177,7 +179,7 @@ export default function InvitePage() {
   if (isPorto) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+        <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
           <h1 className="mb-4 font-bold text-2xl text-white">
             Switch Wallet Required
           </h1>
@@ -186,13 +188,13 @@ export default function InvitePage() {
               <p className="mb-2 text-sm text-yellow-400">
                 ⚠️ You're connected with Porto wallet
               </p>
-              <p className="text-xs text-zinc-400">
+              <p className="text-muted-foreground text-xs">
                 Porto is for artists only. To generate invites, please
                 disconnect and connect with your authorized inviter wallet
                 (MetaMask, WalletConnect, etc.)
               </p>
             </div>
-            <p className="text-sm text-zinc-500">
+            <p className="text-muted-foreground text-sm">
               Connected: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
               {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
             </p>
@@ -216,11 +218,11 @@ export default function InvitePage() {
   if (!isConnected) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+        <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
           <h1 className="mb-4 font-bold text-2xl text-white">
             Generate Invites
           </h1>
-          <p className="mb-6 text-zinc-400">
+          <p className="mb-6 text-muted-foreground">
             Connect your wallet to generate invite codes
           </p>
           <appkit-button size="md" />
@@ -232,7 +234,7 @@ export default function InvitePage() {
   if (isCheckingInviter) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <p className="text-zinc-400">Checking permissions...</p>
+        <p className="text-muted-foreground">Checking permissions...</p>
       </div>
     );
   }
@@ -240,12 +242,12 @@ export default function InvitePage() {
   if (!isInviter) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+        <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
           <h1 className="mb-4 font-bold text-2xl text-white">Unauthorized</h1>
-          <p className="mb-4 text-zinc-400">
+          <p className="mb-4 text-muted-foreground">
             Your wallet is not authorized to generate invites.
           </p>
-          <p className="text-sm text-zinc-500">
+          <p className="text-muted-foreground text-sm">
             Connected as: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
             {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
           </p>
@@ -258,34 +260,35 @@ export default function InvitePage() {
     <div className="mx-auto min-h-screen max-w-2xl px-4 py-12">
       <div className="mb-8 text-center">
         <h1 className="mb-2 font-bold text-3xl text-white">Generate Invites</h1>
-        <p className="text-zinc-400">
+        <p className="text-muted-foreground">
           Create invite codes for new artists to join osopit
         </p>
       </div>
 
-      <Card className="border-zinc-800 bg-zinc-900/50 p-8 backdrop-blur">
+      <Card className="border-border bg-card p-8 backdrop-blur">
         {generatedInvite ? (
           <div className="space-y-6">
             <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-4">
               <p className="mb-2 font-medium text-green-400 text-sm">
                 ✓ Invite Generated Successfully
               </p>
-              <p className="text-xs text-zinc-400">
+              <p className="text-muted-foreground text-xs">
                 Share this URL with the person you want to invite
               </p>
             </div>
 
             <div>
               <Label>Invite URL</Label>
-              <div className="mt-2 break-all rounded-md border border-zinc-700 bg-zinc-800 p-3 font-mono text-xs text-zinc-300">
+              <div className="mt-2 break-all rounded-md border border-border bg-surface-elevated p-3 font-mono text-foreground text-xs">
                 {generatedInvite}
               </div>
             </div>
 
             <div className="flex gap-3">
               <Button
-                className="flex-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+                className="flex-1"
                 onClick={handleCopyInvite}
+                variant="gradient"
               >
                 Copy URL
               </Button>
@@ -298,17 +301,17 @@ export default function InvitePage() {
               </Button>
             </div>
 
-            <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 p-4">
-              <p className="mb-2 font-medium text-sm text-zinc-300">
+            <div className="rounded-lg border border-border bg-card p-4">
+              <p className="mb-2 font-medium text-foreground text-sm">
                 Invite Details
               </p>
-              <div className="space-y-1 text-xs text-zinc-400">
+              <div className="space-y-1 text-muted-foreground text-xs">
                 <p>
-                  <span className="text-zinc-500">Subdomain:</span> {label}.
-                  {ENS.PARENT_DOMAIN}
+                  <span className="text-muted-foreground">Subdomain:</span>{" "}
+                  {label}.{ENS.PARENT_DOMAIN}
                 </p>
                 <p>
-                  <span className="text-zinc-500">Expires in:</span>{" "}
+                  <span className="text-muted-foreground">Expires in:</span>{" "}
                   {expirationDays} days
                 </p>
               </div>
@@ -327,7 +330,7 @@ export default function InvitePage() {
                   type="text"
                   value={label}
                 />
-                <span className="-translate-y-1/2 absolute top-1/2 right-3 text-sm text-zinc-500">
+                <span className="-translate-y-1/2 absolute top-1/2 right-3 text-muted-foreground text-sm">
                   .{ENS.PARENT_DOMAIN}
                 </span>
               </div>
@@ -337,7 +340,7 @@ export default function InvitePage() {
             <div>
               <Label htmlFor="expiration">Expiration</Label>
               <select
-                className="mt-2 w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:border-purple-500 focus:outline-none"
+                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-sm text-white focus:border-brand focus:outline-none"
                 id="expiration"
                 onChange={(e) => setExpirationDays(e.target.value)}
                 value={expirationDays}
@@ -347,13 +350,13 @@ export default function InvitePage() {
                 <option value="30">30 days</option>
                 <option value="90">90 days</option>
               </select>
-              <p className="mt-1 text-xs text-zinc-500">
+              <p className="mt-1 text-muted-foreground text-xs">
                 How long the invite will be valid
               </p>
             </div>
 
             <Button
-              className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+              className="w-full"
               disabled={
                 !label ||
                 generateInvite.isPending ||
@@ -361,6 +364,7 @@ export default function InvitePage() {
                 isAvailable === false
               }
               onClick={handleGenerateInvite}
+              variant="gradient"
             >
               {generateInvite.isPending ? "Generating..." : "Generate Invite"}
             </Button>

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
-import { ipfsToHttp } from "@/lib/utils";
+import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 import { DonationModal } from "./donation-modal";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -43,10 +43,19 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
   if (!artist) {
     return (
       <div className="w-72 p-4 text-center">
-        <p className="text-sm text-zinc-400">Artist not found</p>
+        <p className="text-muted-foreground text-sm">Artist not found</p>
       </div>
     );
   }
+
+  const avatar = getTextRecord(
+    artist.user?.subdomain?.textRecords?.(),
+    "avatar"
+  );
+  const description = getTextRecord(
+    artist.user?.subdomain?.textRecords?.(),
+    "description"
+  );
 
   return (
     <>
@@ -54,13 +63,9 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
         <div className="mb-4 flex items-center gap-3">
           <Image
             alt={artist.subdomain ?? ""}
-            className="h-12 w-12 rounded-full border-2 border-zinc-700"
+            className="h-12 w-12 rounded-full border-2 border-border"
             height={48}
-            src={ipfsToHttp(
-              artist.user?.subdomain
-                ?.textRecords?.()
-                ?.find((record) => record.key === "avatar")?.value ?? ""
-            )}
+            src={ipfsToHttp(avatar)}
             width={48}
           />
           <div className="flex-1">
@@ -69,7 +74,7 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
                 {artist.subdomain ?? ""}
               </h4>
               {artist.user?.activeBroadcast?.isLive && (
-                <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-red-400 text-xs">
+                <span className="rounded-full bg-live/20 px-2 py-0.5 text-live text-xs">
                   LIVE
                 </span>
               )}
@@ -77,11 +82,8 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
           </div>
         </div>
 
-        <p className="mb-4 line-clamp-3 text-sm text-zinc-400">
-          {artist.user?.subdomain
-            ?.textRecords?.()
-            ?.find((record) => record.key === "description")?.value ??
-            "Description"}
+        <p className="mb-4 line-clamp-3 text-muted-foreground text-sm">
+          {description || "Description"}
         </p>
 
         <div className="flex gap-2">
@@ -89,9 +91,10 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
             <Link href={`/artist/${artist.subdomain ?? ""}`}>View Profile</Link>
           </Button>
           <Button
-            className="flex-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+            className="flex-1"
             onClick={() => setShowDonationModal(true)}
             size="sm"
+            variant="gradient"
           >
             Send Gift 💜
           </Button>
@@ -131,7 +134,7 @@ export function ArtistQuickActions({
     return (
       <Sheet>
         <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent className="border-zinc-800 bg-zinc-900">
+        <SheetContent className="border-border bg-card">
           <SheetHeader>
             <SheetTitle className="text-white">Artist Profile</SheetTitle>
           </SheetHeader>
@@ -147,7 +150,7 @@ export function ArtistQuickActions({
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="border-zinc-800 bg-zinc-900 p-4">
+      <PopoverContent className="border-border bg-card p-4">
         <ArtistPreviewContent ensName={ensName} />
       </PopoverContent>
     </Popover>

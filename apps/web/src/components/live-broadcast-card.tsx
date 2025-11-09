@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
 import { TIME } from "@/lib/constants";
-import { resolveIPFS } from "@/lib/ipfs";
+import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 
@@ -94,27 +94,27 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
   };
 
   return (
-    <Card className="relative overflow-hidden border-red-500/30 bg-zinc-900/50 p-6 backdrop-blur before:absolute before:inset-0 before:bg-gradient-to-br before:from-red-500/10 before:to-purple-500/10">
+    <Card className="relative overflow-hidden border-live/30 bg-card p-6 backdrop-blur before:absolute before:inset-0 before:bg-gradient-to-br before:from-live/10 before:to-brand/10">
       <div className="relative z-10 space-y-4">
         {/* Live Badge + Duration */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-6 items-center gap-2 rounded-full bg-red-500 px-3 py-1 font-semibold text-white text-xs">
+            <span className="flex h-6 items-center gap-2 rounded-full bg-live px-3 py-1 font-semibold text-white text-xs">
               <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
               LIVE
             </span>
-            <span className="text-sm text-zinc-400">{duration}</span>
+            <span className="text-muted-foreground text-sm">{duration}</span>
           </div>
         </div>
 
         {/* Platform + URL */}
         <div>
-          <div className="mb-2 flex items-center gap-2 text-sm text-zinc-400">
+          <div className="mb-2 flex items-center gap-2 text-muted-foreground text-sm">
             {platform.icon}
             <span>{platform.name}</span>
           </div>
           <a
-            className="group flex items-center gap-2 text-purple-400 hover:text-purple-300"
+            className="group flex items-center gap-2 text-brand hover:text-brand"
             href={activeBroadcast.broadcastUrl}
             rel="noopener noreferrer"
             target="_blank"
@@ -129,17 +129,20 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
         {/* Tagged Artists */}
         {taggedArtists.length > 0 && (
           <div>
-            <p className="mb-2 text-xs text-zinc-500">Streaming with:</p>
+            <p className="mb-2 text-muted-foreground text-xs">
+              Streaming with:
+            </p>
             <div className="flex flex-wrap gap-2">
               {taggedArtists.map((artist) => {
                 const name = artist.subdomain?.name || "";
-                const avatar = artist.subdomain
-                  ?.textRecords?.()
-                  ?.find((r) => r.key === "avatar")?.value;
+                const avatar = getTextRecord(
+                  artist.subdomain?.textRecords?.(),
+                  "avatar"
+                );
 
                 return (
                   <div
-                    className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1"
+                    className="flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1"
                     key={artist.id}
                   >
                     {avatar ? (
@@ -147,15 +150,15 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
                         alt={name}
                         className="h-4 w-4 rounded-full"
                         height={16}
-                        src={resolveIPFS(avatar)}
+                        src={ipfsToHttp(avatar)}
                         width={16}
                       />
                     ) : (
-                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-zinc-800 text-xs">
+                      <div className="flex h-4 w-4 items-center justify-center rounded-full bg-surface-elevated text-xs">
                         👤
                       </div>
                     )}
-                    <span className="text-purple-300 text-xs">{name}</span>
+                    <span className="text-brand text-xs">{name}</span>
                   </div>
                 );
               })}
@@ -165,7 +168,7 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
 
         {/* End Stream Button */}
         <Button
-          className="w-full border-zinc-700 hover:border-red-500/50 hover:bg-red-500/10"
+          className="w-full border-border hover:border-live/50 hover:bg-live/10"
           disabled={updateBroadcast.isPending}
           onClick={handleEndStream}
           variant="outline"

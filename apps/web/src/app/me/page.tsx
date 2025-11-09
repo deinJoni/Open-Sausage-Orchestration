@@ -24,9 +24,9 @@ export default function MePage() {
   if (!isConnected) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+        <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
           <h1 className="mb-4 font-bold text-2xl text-white">Your Profile</h1>
-          <p className="mb-6 text-zinc-400">
+          <p className="mb-6 text-muted-foreground">
             Connect your wallet to view and manage your profile
           </p>
           <PortoConnectButton />
@@ -43,7 +43,7 @@ export default function MePage() {
 
         <div className="grid gap-6">
           {/* Edit Form Skeleton */}
-          <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
+          <Card className="border-border bg-card p-6 backdrop-blur">
             <div className="mb-6">
               <div className="mb-3">
                 <Skeleton className="h-7 w-48" />
@@ -78,18 +78,16 @@ export default function MePage() {
   if (!ownedProfile.hasProfile) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <Card className="w-full border-zinc-800 bg-zinc-900/50 p-8 text-center backdrop-blur">
+        <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
           <h1 className="mb-4 font-bold text-2xl text-white">
             No Profile Found
           </h1>
-          <p className="mb-6 text-zinc-400">
+          <p className="mb-6 text-muted-foreground">
             You haven't created an artist profile yet. Get an invite code to get
             started!
           </p>
           <Link href="/onboarding">
-            <Button className="bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600">
-              Create Profile
-            </Button>
+            <Button variant="gradient">Create Profile</Button>
           </Link>
         </Card>
       </div>

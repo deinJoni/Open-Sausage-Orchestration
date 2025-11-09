@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllArtists } from "@/hooks/use-all-artists";
 import { ARTISTS_GRID_SIZE } from "@/lib/constants";
-import { resolveIPFS } from "@/lib/ipfs";
+import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 
 type FilterType = "all" | "live" | "offline";
 
@@ -39,7 +39,7 @@ export default function ArtistsPage() {
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {[...new Array(ARTISTS_GRID_SIZE)].map((_, i) => (
         <Card
-          className="border-zinc-800 bg-zinc-900/50 p-6"
+          className="border-border bg-card p-6"
           key={`artist-skeleton-${String(i)}`}
         >
           <Skeleton className="mx-auto mb-4 h-24 w-24 rounded-full" />
@@ -61,7 +61,7 @@ export default function ArtistsPage() {
         <h3 className="mb-2 font-semibold text-white text-xl">
           No artists found
         </h3>
-        <p className="text-zinc-400">{emptyMessage}</p>
+        <p className="text-muted-foreground">{emptyMessage}</p>
       </div>
     );
   };
@@ -70,40 +70,42 @@ export default function ArtistsPage() {
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {/** biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG> */}
       {filteredArtists.map((artist) => {
+        const avatar = getTextRecord(
+          artist.subdomain?.textRecords?.(),
+          "avatar"
+        );
+        const description = getTextRecord(
+          artist.subdomain?.textRecords?.(),
+          "description"
+        );
         const isLive = artist.activeBroadcast?.isLive;
-        const avatarBorderColor = isLive ? "border-red-500" : "border-zinc-700";
+        const avatarBorderColor = isLive ? "border-live" : "border-border";
         const cardClassName = isLive
-          ? "group relative overflow-hidden border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/20 before:absolute before:inset-0 before:bg-gradient-to-br before:from-purple-500/10 before:to-fuchsia-500/10 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
-          : "group border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur transition-all hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10";
+          ? "group relative overflow-hidden border-border bg-card p-6 backdrop-blur transition-all hover:border-brand/50 hover:shadow-lg hover:shadow-brand/20 before:absolute before:inset-0 before:bg-gradient-to-br before:from-brand/10 before:to-fuchsia-500/10 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+          : "group border-border bg-card p-6 backdrop-blur transition-all hover:border-brand/30 hover:shadow-lg hover:shadow-brand/10";
 
         return (
           <Card className={cardClassName} key={artist.subdomain?.name ?? ""}>
             <Link href={`/artist/${artist.subdomain?.name ?? ""}`}>
               <div className="mb-4 flex justify-center">
                 <div className="relative">
-                  {artist.subdomain
-                    ?.textRecords?.()
-                    ?.find((record) => record.key === "avatar")?.value ? (
+                  {avatar ? (
                     <Image
                       alt={artist.subdomain?.name ?? ""}
                       className={`h-24 w-24 rounded-full border-2 transition-transform group-hover:scale-105 ${avatarBorderColor}`}
                       height={96}
-                      src={resolveIPFS(
-                        artist.subdomain
-                          ?.textRecords?.()
-                          ?.find((record) => record.key === "avatar")?.value
-                      )}
+                      src={ipfsToHttp(avatar)}
                       width={96}
                     />
                   ) : (
                     <div
-                      className={`flex h-24 w-24 items-center justify-center rounded-full border-2 bg-zinc-800 text-4xl transition-transform group-hover:scale-105 ${avatarBorderColor}`}
+                      className={`flex h-24 w-24 items-center justify-center rounded-full border-2 bg-surface-elevated text-4xl transition-transform group-hover:scale-105 ${avatarBorderColor}`}
                     >
                       👤
                     </div>
                   )}
                   {artist.activeBroadcast?.isLive && (
-                    <span className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-red-500">
+                    <span className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-live">
                       <span className="h-3 w-3 animate-pulse rounded-full bg-white" />
                     </span>
                   )}
@@ -115,68 +117,62 @@ export default function ArtistsPage() {
                   {artist.subdomain?.name ?? ""}
                 </h3>
                 {artist.activeBroadcast?.isLive && (
-                  <span className="rounded-full bg-red-500/20 px-2 py-0.5 text-red-400 text-xs">
+                  <span className="rounded-full bg-live/20 px-2 py-0.5 text-live text-xs">
                     LIVE
                   </span>
                 )}
               </div>
 
-              {artist.subdomain
-                ?.textRecords?.()
-                ?.find((record) => record.key === "description")?.value && (
-                <p className="mb-4 line-clamp-2 text-center text-sm text-zinc-400">
-                  {
-                    artist.subdomain
-                      ?.textRecords?.()
-                      ?.find((record) => record.key === "description")?.value
-                  }
+              {description && (
+                <p className="mb-4 line-clamp-2 text-center text-muted-foreground text-sm">
+                  {description}
                 </p>
               )}
             </Link>
 
             {artist.activeBroadcast?.broadcastWith?.() &&
               artist.activeBroadcast.broadcastWith().length > 0 && (
-                <div className="relative z-10 mt-4 border-zinc-800 border-t pt-3">
-                  <p className="mb-2 text-center text-xs text-zinc-500">
+                <div className="relative z-10 mt-4 border-border border-t pt-3">
+                  <p className="mb-2 text-center text-muted-foreground text-xs">
                     Streaming with:
                   </p>
                   <div className="flex flex-wrap justify-center gap-2">
                     {artist.activeBroadcast
                       .broadcastWith()
-                      .map((taggedArtist) => (
-                        <ArtistQuickActions
-                          ensName={taggedArtist.subdomain?.name ?? ""}
-                          key={taggedArtist.subdomain?.name ?? ""}
-                        >
-                          <button
-                            className="flex items-center gap-1.5 rounded-full bg-purple-500/20 px-2.5 py-1.5 transition-all hover:bg-purple-500/30"
-                            type="button"
+                      .map((taggedArtist) => {
+                        const taggedAvatar = getTextRecord(
+                          taggedArtist.subdomain?.textRecords?.(),
+                          "avatar"
+                        );
+                        return (
+                          <ArtistQuickActions
+                            ensName={taggedArtist.subdomain?.name ?? ""}
+                            key={taggedArtist.subdomain?.name ?? ""}
                           >
-                            {taggedArtist.subdomain
-                              ?.textRecords?.()
-                              ?.find((r) => r.key === "avatar")?.value ? (
-                              <Image
-                                alt={taggedArtist.subdomain?.name ?? ""}
-                                className="h-4 w-4 rounded-full border border-purple-400"
-                                height={16}
-                                src={resolveIPFS(
-                                  taggedArtist.subdomain
-                                    ?.textRecords?.()
-                                    ?.find((r) => r.key === "avatar")?.value
-                                )}
-                                width={16}
-                              />
-                            ) : (
-                              <div className="flex h-4 w-4 items-center justify-center rounded-full border border-purple-400 bg-zinc-800 text-[8px]">
-                                👤
-                              </div>
-                            )}
-                            <span className="text-purple-300 text-xs">
-                              {taggedArtist.subdomain?.name ?? ""}
-                            </span>
-                          </button>
-                        </ArtistQuickActions>
-                      ))}
+                            <button
+                              className="flex items-center gap-1.5 rounded-full bg-brand/20 px-2.5 py-1.5 transition-all hover:bg-brand/30"
+                              type="button"
+                            >
+                              {taggedAvatar ? (
+                                <Image
+                                  alt={taggedArtist.subdomain?.name ?? ""}
+                                  className="h-4 w-4 rounded-full border border-brand"
+                                  height={16}
+                                  src={ipfsToHttp(taggedAvatar)}
+                                  width={16}
+                                />
+                              ) : (
+                                <div className="flex h-4 w-4 items-center justify-center rounded-full border border-brand bg-surface-elevated text-[8px]">
+                                  👤
+                                </div>
+                              )}
+                              <span className="text-brand text-xs">
+                                {taggedArtist.subdomain?.name ?? ""}
+                              </span>
+                            </button>
+                          </ArtistQuickActions>
+                        );
+                      })}
                   </div>
                 </div>
               )}
@@ -197,16 +193,16 @@ export default function ArtistsPage() {
       {/* Hero Section */}
       <div className="mb-8 text-center">
         <h1 className="mb-3 font-bold text-5xl text-white">
-          <span className="bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-brand to-fuchsia-400 bg-clip-text text-transparent">
             Discover
           </span>{" "}
           Artists
         </h1>
-        <p className="mb-2 text-lg text-zinc-300">
+        <p className="mb-2 text-foreground text-lg">
           {allArtists?.length || 0} talented artists on the platform
         </p>
         {allArtists && allArtists.length > 0 && (
-          <p className="text-sm text-zinc-500">
+          <p className="text-muted-foreground text-sm">
             {allArtists.filter((a) => a.activeBroadcast?.isLive).length}{" "}
             streaming live now
           </p>
@@ -217,21 +213,21 @@ export default function ArtistsPage() {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-2">
           <Button
-            className={filter === "all" ? "bg-purple-500" : ""}
+            className={filter === "all" ? "bg-brand" : ""}
             onClick={() => setFilter("all")}
             variant={filter === "all" ? "default" : "outline"}
           >
             All
           </Button>
           <Button
-            className={filter === "live" ? "bg-red-500" : ""}
+            className={filter === "live" ? "bg-live" : ""}
             onClick={() => setFilter("live")}
             variant={filter === "live" ? "default" : "outline"}
           >
             🔴 Live Now
           </Button>
           <Button
-            className={filter === "offline" ? "bg-zinc-600" : ""}
+            className={filter === "offline" ? "bg-surface-elevated" : ""}
             onClick={() => setFilter("offline")}
             variant={filter === "offline" ? "default" : "outline"}
           >
@@ -264,24 +260,22 @@ export default function ArtistsPage() {
 
           return (
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm">
-              <div className="rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-2">
-                <span className="text-zinc-400">Total:</span>{" "}
+              <div className="rounded-lg border border-border bg-card px-4 py-2">
+                <span className="text-muted-foreground">Total:</span>{" "}
                 <span className="font-semibold text-white">
                   {filteredArtists.length}
                 </span>
               </div>
               {liveCount > 0 && (
-                <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2">
-                  <span className="text-red-300">🔴 Live:</span>{" "}
-                  <span className="font-semibold text-red-400">
-                    {liveCount}
-                  </span>
+                <div className="rounded-lg border border-live/30 bg-live/10 px-4 py-2">
+                  <span className="text-live">🔴 Live:</span>{" "}
+                  <span className="font-semibold text-live">{liveCount}</span>
                 </div>
               )}
               {offlineCount > 0 && (
-                <div className="rounded-lg border border-zinc-700 bg-zinc-800/50 px-4 py-2">
-                  <span className="text-zinc-400">Offline:</span>{" "}
-                  <span className="font-semibold text-zinc-300">
+                <div className="rounded-lg border border-border bg-card px-4 py-2">
+                  <span className="text-muted-foreground">Offline:</span>{" "}
+                  <span className="font-semibold text-foreground">
                     {offlineCount}
                   </span>
                 </div>

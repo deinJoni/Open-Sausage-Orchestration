@@ -45,12 +45,12 @@ export function DonationModal({ artistEnsName, onClose }: DonationModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-      <Card className="w-full max-w-md border-zinc-800 bg-zinc-900 p-6">
+      <Card className="w-full max-w-md border-border bg-card p-6">
         <div className="mb-6">
           <h3 className="mb-2 font-bold text-white text-xl">
             💜 Send a Gift to {artistEnsName}
           </h3>
-          <p className="text-sm text-zinc-400">
+          <p className="text-muted-foreground text-sm">
             Support this artist with an ETH tip
           </p>
         </div>
@@ -62,8 +62,8 @@ export function DonationModal({ artistEnsName, onClose }: DonationModalProps) {
               <button
                 className={`rounded-lg border py-3 font-medium transition-colors ${
                   amount === presetAmount.toString() && !customAmount
-                    ? "border-purple-500 bg-purple-500/20 text-purple-300"
-                    : "border-zinc-700 text-zinc-400 hover:border-zinc-600"
+                    ? "border-brand bg-brand/20 text-brand"
+                    : "border-border text-muted-foreground hover:border-border"
                 }`}
                 key={presetAmount}
                 onClick={() => {
@@ -91,9 +91,9 @@ export function DonationModal({ artistEnsName, onClose }: DonationModalProps) {
             />
           </div>
 
-          <div className="mt-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
+          <div className="mt-4 rounded-lg border border-border bg-card p-4">
             <div className="flex justify-between text-sm">
-              <span className="text-zinc-500">Amount:</span>
+              <span className="text-muted-foreground">Amount:</span>
               <span className="font-mono font-semibold text-white">
                 {selectedAmount} ETH
               </span>
@@ -111,19 +111,20 @@ export function DonationModal({ artistEnsName, onClose }: DonationModalProps) {
             Cancel
           </Button>
           <Button
-            className="flex-1 bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+            className="flex-1"
             disabled={
               isPending ||
               !selectedAmount ||
               Number.parseFloat(selectedAmount) <= 0
             }
             onClick={handleSend}
+            variant="gradient"
           >
             {isPending ? "Sending..." : "Send Gift 💜"}
           </Button>
         </div>
 
-        <p className="mt-4 text-center text-xs text-zinc-500">
+        <p className="mt-4 text-center text-muted-foreground text-xs">
           This will send ETH directly to the artist's wallet
         </p>
       </Card>

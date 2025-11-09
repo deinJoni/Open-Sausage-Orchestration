@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
 import { SocialKey } from "@/lib/constants";
-import { resolveIPFS } from "@/lib/ipfs";
+import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 
 const SOCIAL_ICONS: Record<SocialKey, string> = {
   "com.spotify": "🎵",
@@ -57,7 +57,7 @@ export default function ArtistProfilePage() {
       <div className="mx-auto max-w-4xl px-4 py-12 text-center">
         <div className="mb-4 text-5xl">🤔</div>
         <h2 className="mb-2 font-bold text-2xl text-white">Artist not found</h2>
-        <p className="mb-6 text-zinc-400">
+        <p className="mb-6 text-muted-foreground">
           This artist profile doesn't exist or hasn't been created yet.
         </p>
         <Button asChild variant="outline">
@@ -66,6 +66,9 @@ export default function ArtistProfilePage() {
       </div>
     );
   }
+
+  const avatar = getTextRecord(artist.textRecords?.(), "avatar");
+  const description = getTextRecord(artist.textRecords?.(), "description");
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -92,26 +95,21 @@ export default function ArtistProfilePage() {
       <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-start">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          {artist.textRecords?.()?.find((record) => record.key === "avatar")
-            ?.value ? (
+          {avatar ? (
             <Image
               alt={artist.subdomain || ensName}
               className={`h-32 w-32 rounded-full border-4 ${
-                artist.isStreaming ? "border-red-500" : "border-zinc-700"
+                artist.isStreaming ? "border-live" : "border-border"
               }`}
               height={128}
-              src={resolveIPFS(
-                artist
-                  .textRecords?.()
-                  ?.find((record) => record.key === "avatar")?.value
-              )}
+              src={ipfsToHttp(avatar)}
               width={128}
             />
           ) : (
             <div
               className={`flex h-32 w-32 items-center justify-center rounded-full border-4 ${
-                artist.isStreaming ? "border-red-500" : "border-zinc-700"
-              } bg-zinc-800 text-4xl`}
+                artist.isStreaming ? "border-live" : "border-border"
+              } bg-surface-elevated text-4xl`}
             >
               👤
             </div>
@@ -124,23 +122,15 @@ export default function ArtistProfilePage() {
             <h1 className="mb-2 font-bold text-4xl text-white">
               {artist.subdomain || ensName}
             </h1>
-            {artist
-              .textRecords?.()
-              ?.find((record) => record.key === "description")?.value && (
-              <p className="text-lg text-zinc-300">
-                {
-                  artist
-                    .textRecords?.()
-                    ?.find((record) => record.key === "description")?.value
-                }
-              </p>
+            {description && (
+              <p className="text-foreground text-lg">{description}</p>
             )}
           </div>
 
           <Button
-            className="bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
             onClick={() => setShowDonationModal(true)}
             size="lg"
+            variant="gradient"
           >
             💜 Send Gift
           </Button>
@@ -158,7 +148,7 @@ export default function ArtistProfilePage() {
             ?.filter((record) => SocialKey.safeParse(record.key).success)
             .map((record) => (
               <a
-                className="flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 transition-colors hover:border-purple-500/50 hover:bg-zinc-900/80"
+                className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:border-brand/50 hover:bg-card/80"
                 href={record.value}
                 key={record.value}
                 rel="noopener noreferrer"
@@ -171,11 +161,11 @@ export default function ArtistProfilePage() {
                   <div className="font-medium text-white capitalize">
                     {record.key}
                   </div>
-                  <div className="truncate text-xs text-zinc-500">
+                  <div className="truncate text-muted-foreground text-xs">
                     {record.value}
                   </div>
                 </div>
-                <span className="text-zinc-500">→</span>
+                <span className="text-muted-foreground">→</span>
               </a>
             ))}
         </div>

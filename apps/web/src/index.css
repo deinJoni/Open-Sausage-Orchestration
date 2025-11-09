@@ -19,7 +19,10 @@ body {
 }
 
 :root {
+  /* Base design tokens */
   --radius: 0.625rem;
+
+  /* Shadcn semantic tokens */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -51,9 +54,32 @@ body {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Brand colors (midnight theme - purple/fuchsia) */
+  --brand: oklch(0.6 0.2 270);
+  --brand-foreground: oklch(0.985 0 0);
+  --brand-secondary: oklch(0.65 0.25 320);
+  --brand-secondary-foreground: oklch(0.985 0 0);
+
+  /* State colors */
+  --live: oklch(0.6 0.25 25);
+  --live-foreground: oklch(0.985 0 0);
+  --success: oklch(0.65 0.2 145);
+  --success-foreground: oklch(0.985 0 0);
+  --info: oklch(0.6 0.2 240);
+  --info-foreground: oklch(0.985 0 0);
+  --warning: oklch(0.75 0.2 85);
+  --warning-foreground: oklch(0.28 0.07 46);
+
+  /* Surface variations */
+  --surface-elevated: oklch(0.97 0 0);
+  --surface-elevated-foreground: oklch(0.145 0 0);
+  --surface-glass: oklch(1 0 0 / 0.5);
+  --surface-glass-foreground: oklch(0.145 0 0);
 }
 
 .dark {
+  /* Shadcn semantic tokens - dark mode */
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -85,13 +111,62 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Brand colors - dark mode (slightly brighter) */
+  --brand: oklch(0.7 0.2 270);
+  --brand-foreground: oklch(0.985 0 0);
+  --brand-secondary: oklch(0.75 0.25 320);
+  --brand-secondary-foreground: oklch(0.985 0 0);
+
+  /* State colors - dark mode */
+  --live: oklch(0.65 0.25 25);
+  --live-foreground: oklch(0.985 0 0);
+  --success: oklch(0.7 0.2 145);
+  --success-foreground: oklch(0.985 0 0);
+  --info: oklch(0.65 0.2 240);
+  --info-foreground: oklch(0.985 0 0);
+  --warning: oklch(0.8 0.2 85);
+  --warning-foreground: oklch(0.2 0.07 46);
+
+  /* Surface variations - dark mode */
+  --surface-elevated: oklch(0.21 0.006 285);
+  --surface-elevated-foreground: oklch(0.985 0 0);
+  --surface-glass: oklch(0.145 0 0 / 0.5);
+  --surface-glass-foreground: oklch(0.985 0 0);
+}
+
+/* Theme variants - midnight is default (same as :root) */
+[data-theme="midnight"] {
+  /* Midnight uses the root colors (purple/fuchsia) - no overrides needed */
+}
+
+[data-theme="midnight"].dark {
+  /* Midnight dark mode uses .dark colors - no overrides needed */
+}
+
+/* Sunset theme - warm oranges and pinks */
+[data-theme="sunset"] {
+  --brand: oklch(0.65 0.2 30);
+  --brand-foreground: oklch(0.985 0 0);
+  --brand-secondary: oklch(0.7 0.22 50);
+  --brand-secondary-foreground: oklch(0.985 0 0);
+}
+
+[data-theme="sunset"].dark {
+  --brand: oklch(0.7 0.22 35);
+  --brand-foreground: oklch(0.985 0 0);
+  --brand-secondary: oklch(0.75 0.24 55);
+  --brand-secondary-foreground: oklch(0.985 0 0);
 }
 
 @theme inline {
+  /* Radius scale */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Shadcn semantic tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -123,6 +198,28 @@ body {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Brand colors */
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-secondary-foreground: var(--brand-secondary-foreground);
+
+  /* State colors */
+  --color-live: var(--live);
+  --color-live-foreground: var(--live-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  /* Surface variations */
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-elevated-foreground: var(--surface-elevated-foreground);
+  --color-surface-glass: var(--surface-glass);
+  --color-surface-glass-foreground: var(--surface-glass-foreground);
 }
 
 @layer base {

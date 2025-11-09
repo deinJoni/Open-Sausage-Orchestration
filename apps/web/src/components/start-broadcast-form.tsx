@@ -2,33 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
-import { isValidBroadcastUrl } from "@/lib/broadcast";
+import { detectStreamPlatform, isValidBroadcastUrl } from "@/lib/broadcast";
 import { ArtistPicker } from "./artist-picker";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-
-/**
- * Detect streaming platform from URL
- */
-function detectPlatform(url: string): "youtube" | "twitch" | null {
-  if (!url) {
-    return null;
-  }
-
-  const lowerUrl = url.toLowerCase();
-
-  if (lowerUrl.includes("youtube.com") || lowerUrl.includes("youtu.be")) {
-    return "youtube";
-  }
-
-  if (lowerUrl.includes("twitch.tv")) {
-    return "twitch";
-  }
-
-  return null;
-}
 
 /**
  * Form for starting a new broadcast
@@ -40,7 +19,7 @@ export function StartBroadcastForm() {
   const [urlError, setUrlError] = useState<string | null>(null);
 
   const updateBroadcast = useUpdateBroadcast();
-  const platform = detectPlatform(streamUrl);
+  const platform = detectStreamPlatform(streamUrl);
 
   // Validate URL on change
   useEffect(() => {
@@ -79,17 +58,17 @@ export function StartBroadcastForm() {
   const isValid = !urlError && streamUrl && platform;
 
   return (
-    <Card className="border-zinc-800 bg-zinc-900/50 p-6 backdrop-blur">
+    <Card className="border-border bg-card p-6 backdrop-blur">
       <h2 className="mb-6 font-bold text-white text-xl">🎥 Start Streaming</h2>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Stream URL Input */}
         <div>
-          <Label className="mb-2 block font-medium text-sm text-zinc-300">
+          <Label className="mb-2 block font-medium text-foreground text-sm">
             Stream URL *
           </Label>
           <Input
-            className={`border-zinc-700 ${urlError ? "border-red-500" : ""}`}
+            className={`border-border ${urlError ? "border-red-500" : ""}`}
             disabled={updateBroadcast.isPending}
             onChange={(e) => setStreamUrl(e.target.value)}
             placeholder="https://youtube.com/live/... or https://twitch.tv/..."
@@ -111,10 +90,10 @@ export function StartBroadcastForm() {
 
         {/* Guest Artists Picker */}
         <div>
-          <Label className="mb-2 block font-medium text-sm text-zinc-300">
+          <Label className="mb-2 block font-medium text-foreground text-sm">
             Tag Collaborators (Optional)
           </Label>
-          <p className="mb-3 text-xs text-zinc-500">
+          <p className="mb-3 text-muted-foreground text-xs">
             Tag other artists you're streaming with
           </p>
           <ArtistPicker
@@ -126,9 +105,10 @@ export function StartBroadcastForm() {
 
         {/* Submit Button */}
         <Button
-          className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 disabled:opacity-50"
+          className="w-full"
           disabled={!isValid || updateBroadcast.isPending}
           type="submit"
+          variant="gradient"
         >
           {updateBroadcast.isPending ? "Starting..." : "Start Streaming 🔴"}
         </Button>

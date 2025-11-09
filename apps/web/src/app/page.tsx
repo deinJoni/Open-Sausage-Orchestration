@@ -11,7 +11,7 @@ export default function Home() {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <p className="text-zinc-400">Loading streams...</p>
+        <p className="text-muted-foreground">Loading streams...</p>
       </div>
     );
   }
@@ -23,7 +23,9 @@ export default function Home() {
         <h1 className="font-bold text-3xl text-white">
           No one's live right now
         </h1>
-        <p className="text-zinc-400">Check back later to watch live streams!</p>
+        <p className="text-muted-foreground">
+          Check back later to watch live streams!
+        </p>
         <Button asChild className="mt-4" variant="outline">
           <Link href="/artists">Browse All Artists</Link>
         </Button>
