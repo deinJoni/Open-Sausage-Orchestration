@@ -3,17 +3,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import type { AllValidKeys } from "@/lib/constants";
-import { useRegisterSubdomain } from "./use-register-subdomain";
 import { useUpdateTextRecords } from "./use-update-text-record";
 import { useUploadAvatar } from "./use-upload-avatar";
-
-type InviteData = {
-  label: string;
-  recipient: string;
-  expiration: number;
-  inviter: string;
-  signature: string;
-};
 
 type CreateProfileInput = {
   ensName: string;
@@ -22,28 +13,30 @@ type CreateProfileInput = {
     key: AllValidKeys;
     value: string;
   }[];
-  inviteData?: InviteData | null;
 };
 
 /**
- * Orchestrator hook for complete profile creation flow
- * Uses atomic hooks internally: useUploadAvatar, useRegisterSubdomain, useUpdateTextRecords
+ * Hook for updating profile details after subdomain registration
+ * Uses atomic hooks internally: useUploadAvatar, useUpdateTextRecords
+ *
+ * Note: This hook assumes subdomain is already registered.
+ * For registration, use useRegisterSubdomain separately.
  *
  * @example
  * const createProfile = useCreateProfile();
  *
  * createProfile.mutation.mutate({
  *   ensName: "alice",
- *   bio: "Artist and creator",
  *   avatar: avatarFile,
- *   socials: [{ platform: "twitter", url: "..." }],
- *   inviteData: { ... }
+ *   textRecords: [
+ *     { key: "description", value: "Artist and creator" },
+ *     { key: "com.twitter", value: "https://twitter.com/alice" }
+ *   ]
  * });
  */
 export function useCreateProfile() {
   const { address } = useAccount();
   const uploadAvatar = useUploadAvatar();
-  const registerSubdomain = useRegisterSubdomain();
   const updateTextRecords = useUpdateTextRecords();
   const router = useRouter();
   const mutation = useMutation({
@@ -65,19 +58,7 @@ export function useCreateProfile() {
           });
         }
 
-        // Step 2: Register subdomain with invite
-        if (input.inviteData) {
-          await registerSubdomain.mutateAsync({
-            label: input.ensName,
-            inviteData: input.inviteData,
-          });
-        }
-
-        // timeout for 2 seconds
-        const TIMEOUT_MS = 2000;
-        await new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
-
-        // Step 3: Update text records (bio, avatar, socials)
+        // Step 2: Update text records (bio, avatar, socials)
         await updateTextRecords.mutateAsync({
           ensName: input.ensName,
           textRecords: input.textRecords,
@@ -95,7 +76,6 @@ export function useCreateProfile() {
     mutation,
     // Expose loading states from individual hooks
     isUploadingAvatar: uploadAvatar.isPending,
-    isRegistering: registerSubdomain.isPending,
     isUpdatingTextRecords: updateTextRecords.isPending,
   };
 }

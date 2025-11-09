@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateProfile } from "@/hooks/use-create-profile";
 import { useHasSubdomainContract } from "@/hooks/use-has-subdomain-contract";
+import { useRegisterSubdomain } from "@/hooks/use-register-subdomain";
 import {
   ADDRESS_PREFIX_LENGTH,
   ADDRESS_SUFFIX_LENGTH,
@@ -21,7 +22,7 @@ import {
 } from "@/lib/constants";
 import type { SocialLink } from "@/types/artist";
 
-type Step = "basic" | "avatar" | "socials";
+type Step = "claim" | "basic" | "avatar" | "socials";
 
 type InviteData = {
   label: string;
@@ -47,7 +48,9 @@ export default function OnboardingPage() {
   const { hasSubdomain: hasProfile, isLoading: isCheckingOwnership } =
     useHasSubdomainContract(address);
 
-  const [step, setStep] = useState<Step>("basic");
+  const [step, setStep] = useState<Step>("claim");
+  const [isRegistered, setIsRegistered] = useState(false);
+  const registerSubdomain = useRegisterSubdomain();
   const createProfile = useCreateProfile();
 
   // Form state
@@ -78,6 +81,16 @@ export default function OnboardingPage() {
         records.push({ key: "com.discord", value: social.url });
       } else if (social.platform === "telegram") {
         records.push({ key: "com.telegram", value: social.url });
+      } else if (social.platform === "spotify") {
+        records.push({ key: "com.spotify", value: social.url });
+      } else if (social.platform === "soundcloud") {
+        records.push({ key: "com.soundcloud", value: social.url });
+      } else if (social.platform === "youtube") {
+        records.push({ key: "com.youtube", value: social.url });
+      } else if (social.platform === "instagram") {
+        records.push({ key: "com.instagram", value: social.url });
+      } else if (social.platform === "twitch") {
+        records.push({ key: "com.twitch", value: social.url });
       } else if (social.platform === "farcaster") {
         records.push({ key: "social.farcaster", value: social.url });
       } else if (social.platform === "lens") {
@@ -88,12 +101,38 @@ export default function OnboardingPage() {
     return records;
   }, [bio, socials]);
 
+  // Handle subdomain registration (Step 1)
+  const handleRegisterSubdomain = async () => {
+    if (!inviteData) {
+      toast.error("No invite data found");
+      return;
+    }
+
+    try {
+      await registerSubdomain.mutateAsync({
+        label: ensName,
+        inviteData,
+      });
+
+      // Wait for registration to be processed
+      const TIMEOUT_MS = 2000;
+      await new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
+
+      setIsRegistered(true);
+      setStep("basic");
+      toast.success("Name claimed successfully! Now let's set up your profile 🎉");
+    } catch (error) {
+      // Error is already handled by the mutation
+      console.error("Registration failed:", error);
+    }
+  };
+
+  // Handle profile details submission (Step 2)
   const handleSubmit = async () => {
     await createProfile.mutation.mutateAsync({
       ensName,
       avatar,
       textRecords,
-      inviteData,
     });
   };
 
@@ -176,13 +215,16 @@ export default function OnboardingPage() {
       {/* Progress indicator */}
       <div className="mb-8 flex justify-center gap-2">
         <div
-          className={`h-2 w-16 rounded ${step === "basic" ? "bg-brand" : "bg-surface-elevated"}`}
+          className={`h-2 w-12 rounded ${step === "claim" ? "bg-purple-500" : isRegistered ? "bg-green-500" : "bg-zinc-700"}`}
         />
         <div
-          className={`h-2 w-16 rounded ${step === "avatar" ? "bg-brand" : "bg-surface-elevated"}`}
+          className={`h-2 w-12 rounded ${step === "basic" ? "bg-brand" : "bg-surface-elevated"}`}
         />
         <div
-          className={`h-2 w-16 rounded ${step === "socials" ? "bg-brand" : "bg-surface-elevated"}`}
+          className={`h-2 w-12 rounded ${step === "avatar" ? "bg-brand" : "bg-surface-elevated"}`}
+        />
+        <div
+          className={`h-2 w-12 rounded ${step === "socials" ? "bg-brand" : "bg-surface-elevated"}`}
         />
       </div>
 
@@ -216,28 +258,76 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {step === "basic" && (
+        {step === "claim" && (
           <div className="space-y-6">
             <div>
-              <Label htmlFor="ensName">ENS Name or Username</Label>
+              <Label htmlFor="ensName">Claim Your ENS Name</Label>
               <Input
                 className="mt-2"
                 disabled={!!inviteData}
                 id="ensName"
                 onChange={(e) => setEnsName(e.target.value)}
-                placeholder="yourname.eth"
+                placeholder="yourname"
                 type="text"
                 value={ensName}
               />
+              <p className="mt-1 font-mono text-sm text-zinc-400">
+                {ensName}.{ENS.PARENT_DOMAIN}
+              </p>
               {inviteData ? (
                 <p className="mt-1 text-xs text-yellow-500">
-                  This name is reserved for you via invite
+                  ✨ This name is reserved for you via invite
                 </p>
               ) : (
                 <p className="mt-1 text-muted-foreground text-xs">
                   Your unique identifier on the platform
                 </p>
               )}
+            </div>
+
+            <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
+              <p className="mb-2 font-medium text-blue-400 text-sm">
+                📝 First, let's claim your name
+              </p>
+              <p className="text-xs text-blue-300/80">
+                You'll sign one transaction to register your subdomain. After that,
+                we'll collect your profile details and you'll sign once more to save
+                them.
+              </p>
+            </div>
+
+            <Button
+              className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
+              disabled={!ensName || !inviteData || registerSubdomain.isPending}
+              onClick={handleRegisterSubdomain}
+            >
+              {registerSubdomain.isPending
+                ? "Claiming Name..."
+                : "Claim Name & Continue 🚀"}
+            </Button>
+          </div>
+        )}
+
+        {step === "basic" && (
+          <div className="space-y-6">
+            <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-4">
+              <p className="mb-1 font-medium text-green-400 text-sm">
+                ✅ Name Claimed: {ensName}.{ENS.PARENT_DOMAIN}
+              </p>
+              <p className="text-xs text-green-300/80">
+                Now let's set up your profile!
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="ensName">Your ENS Name</Label>
+              <Input
+                className="mt-2"
+                disabled={true}
+                id="ensName"
+                type="text"
+                value={`${ensName}.${ENS.PARENT_DOMAIN}`}
+              />
             </div>
 
             <div>
