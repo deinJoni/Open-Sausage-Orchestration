@@ -8,6 +8,8 @@ import { resolveIPFS } from "@/lib/ipfs";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 
+const DROPDOWN_BLUR_DELAY_MS = 200;
+
 type ArtistPickerProps = {
   selectedAddresses: string[];
   onSelectionChange: (addresses: string[]) => void;
@@ -109,7 +111,9 @@ export function ArtistPicker({
         <div className="relative">
           <Input
             className="border-zinc-700"
-            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+            onBlur={() =>
+              setTimeout(() => setShowDropdown(false), DROPDOWN_BLUR_DELAY_MS)
+            }
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setShowDropdown(e.target.value.length > 0);

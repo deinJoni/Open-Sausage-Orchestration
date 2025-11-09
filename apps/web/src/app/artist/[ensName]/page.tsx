@@ -29,7 +29,6 @@ const SOCIAL_ICONS: Record<SocialKey, string> = {
   "com.reddit": "🔗",
 };
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
 export default function ArtistProfilePage() {
   const params = useParams();
   const ensName = params.ensName as string;

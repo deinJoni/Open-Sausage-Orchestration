@@ -146,6 +146,81 @@ export function detectStreamPlatform(url: string): "youtube" | "twitch" | null {
 }
 
 /**
+ * Get parent domain for Twitch embed
+ */
+function getTwitchParentDomain(): string {
+  return typeof window !== "undefined" ? window.location.hostname : "localhost";
+}
+
+/**
+ * Convert YouTube URL to embed format
+ */
+function convertYouTubeToEmbed(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    let videoId = "";
+
+    // Handle youtube.com/watch?v=VIDEO_ID
+    if (urlObj.hostname.includes("youtube.com")) {
+      videoId = urlObj.searchParams.get("v") || "";
+
+      // Handle youtube.com/live/VIDEO_ID
+      if (!videoId && urlObj.pathname.includes("/live/")) {
+        videoId = urlObj.pathname.split("/live/")[1]?.split("/")[0] || "";
+      }
+
+      // Handle youtube.com/embed/VIDEO_ID (already embed format)
+      if (!videoId && urlObj.pathname.includes("/embed/")) {
+        return url;
+      }
+    }
+
+    // Handle youtu.be/VIDEO_ID
+    if (urlObj.hostname.includes("youtu.be")) {
+      videoId = urlObj.pathname.slice(1).split("/")[0];
+    }
+
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+  } catch {
+    // If URL parsing fails, return original
+    return url;
+  }
+
+  return url;
+}
+
+/**
+ * Convert Twitch URL to embed format
+ */
+function convertTwitchToEmbed(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    const pathParts = urlObj.pathname.split("/").filter((p) => p);
+
+    if (pathParts.length === 0) {
+      return url;
+    }
+
+    const firstPart = pathParts[0];
+    const parent = getTwitchParentDomain();
+
+    // Check if it's a video URL
+    if (firstPart === "videos" && pathParts.length > 1) {
+      const videoId = pathParts[1];
+      return `https://player.twitch.tv/?video=${videoId}&parent=${parent}`;
+    }
+
+    // Otherwise treat as channel name
+    return `https://player.twitch.tv/?channel=${firstPart}&parent=${parent}`;
+  } catch {
+    // If URL parsing fails, return original
+    return url;
+  }
+}
+
+/**
  * Convert a streaming URL to its embeddable format
  *
  * @param url - The original broadcast URL
@@ -167,71 +242,11 @@ export function convertToEmbedUrl(url: string): string {
   const platform = detectStreamPlatform(url);
 
   if (platform === "youtube") {
-    try {
-      const urlObj = new URL(url);
-      let videoId = "";
-
-      // Handle youtube.com/watch?v=VIDEO_ID
-      if (urlObj.hostname.includes("youtube.com")) {
-        videoId = urlObj.searchParams.get("v") || "";
-        
-        // Handle youtube.com/live/VIDEO_ID
-        if (!videoId && urlObj.pathname.includes("/live/")) {
-          videoId = urlObj.pathname.split("/live/")[1]?.split("/")[0] || "";
-        }
-        
-        // Handle youtube.com/embed/VIDEO_ID (already embed format)
-        if (!videoId && urlObj.pathname.includes("/embed/")) {
-          return url;
-        }
-      }
-
-      // Handle youtu.be/VIDEO_ID
-      if (urlObj.hostname.includes("youtu.be")) {
-        videoId = urlObj.pathname.slice(1).split("/")[0];
-      }
-
-      if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}`;
-      }
-    } catch {
-      // If URL parsing fails, return original
-      return url;
-    }
+    return convertYouTubeToEmbed(url);
   }
 
   if (platform === "twitch") {
-    try {
-      const urlObj = new URL(url);
-      const pathParts = urlObj.pathname.split("/").filter((p) => p);
-
-      // Handle twitch.tv/username or twitch.tv/videos/VIDEO_ID
-      if (pathParts.length > 0) {
-        const firstPart = pathParts[0];
-
-        // Check if it's a video URL
-        if (firstPart === "videos" && pathParts.length > 1) {
-          const videoId = pathParts[1];
-          // Get the parent domain from window.location or use localhost as fallback
-          const parent =
-            typeof window !== "undefined"
-              ? window.location.hostname
-              : "localhost";
-          return `https://player.twitch.tv/?video=${videoId}&parent=${parent}`;
-        }
-
-        // Otherwise treat as channel name
-        const channel = firstPart;
-        const parent =
-          typeof window !== "undefined"
-            ? window.location.hostname
-            : "localhost";
-        return `https://player.twitch.tv/?channel=${channel}&parent=${parent}`;
-      }
-    } catch {
-      // If URL parsing fails, return original
-      return url;
-    }
+    return convertTwitchToEmbed(url);
   }
 
   // Return original URL if platform not recognized

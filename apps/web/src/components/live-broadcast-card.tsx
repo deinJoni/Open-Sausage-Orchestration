@@ -3,9 +3,9 @@
 import { ExternalLink, Youtube } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useAllArtists } from "@/hooks/use-all-artists";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
+import { TIME } from "@/lib/constants";
 import { resolveIPFS } from "@/lib/ipfs";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -18,12 +18,12 @@ type LiveBroadcastCardProps = {
  * Format duration from timestamp to "Xh Ym" format
  */
 function formatDuration(startedAt: bigint): string {
-  const startMs = Number(startedAt) * 1000;
+  const startMs = Number(startedAt) * TIME.MS_PER_SECOND;
   const now = Date.now();
   const diffMs = now - startMs;
 
-  const hours = Math.floor(diffMs / (1000 * 60 * 60));
-  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  const hours = Math.floor(diffMs / TIME.MS_PER_HOUR);
+  const minutes = Math.floor((diffMs % TIME.MS_PER_HOUR) / TIME.MS_PER_MINUTE);
 
   if (hours > 0) {
     return `${hours}h ${minutes}m`;
@@ -56,7 +56,6 @@ function getPlatform(url: string): { name: string; icon: React.ReactNode } {
 export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
   const [duration, setDuration] = useState("0m");
   const updateBroadcast = useUpdateBroadcast();
-  const { data: allArtists } = useAllArtists();
 
   const activeBroadcast = profile.user?.activeBroadcast;
 
@@ -71,7 +70,7 @@ export function LiveBroadcastCard({ profile }: LiveBroadcastCardProps) {
     };
 
     updateTimer(); // Initial update
-    const interval = setInterval(updateTimer, 60_000); // Update every minute
+    const interval = setInterval(updateTimer, TIME.MS_PER_MINUTE); // Update every minute
 
     return () => clearInterval(interval);
   }, [activeBroadcast?.startedAt]);
