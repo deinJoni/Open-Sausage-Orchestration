@@ -120,7 +120,9 @@ export default function OnboardingPage() {
 
       setIsRegistered(true);
       setStep("basic");
-      toast.success("Name claimed successfully! Now let's set up your profile 🎉");
+      toast.success(
+        "Name claimed successfully! Now let's set up your profile 🎉"
+      );
     } catch (error) {
       // Error is already handled by the mutation
       console.error("Registration failed:", error);
@@ -140,7 +142,7 @@ export default function OnboardingPage() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-12">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 font-bold text-3xl text-white">
+          <h1 className="mb-2 font-bold text-3xl text-foreground">
             <PortoConnectButton />
           </h1>
         </div>
@@ -160,12 +162,12 @@ export default function OnboardingPage() {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
         <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-          <h1 className="mb-4 font-bold text-2xl text-white">
+          <h1 className="mb-4 font-bold text-2xl text-foreground">
             Profile Already Exists
           </h1>
           <div className="mb-6 space-y-4">
-            <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
-              <p className="mb-2 text-blue-400 text-sm">
+            <div className="rounded-lg border border-info/20 bg-info/10 p-4">
+              <p className="mb-2 text-info-foreground text-sm">
                 You already own a subdomain
               </p>
               {ensName ? (
@@ -190,7 +192,6 @@ export default function OnboardingPage() {
               className="w-full"
               onClick={() => router.push("/")}
               size="lg"
-              variant="gradient"
             >
               Go to Home
             </Button>
@@ -203,7 +204,7 @@ export default function OnboardingPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       <div className="mb-8 text-center">
-        <h1 className="mb-2 font-bold text-3xl text-white">
+        <h1 className="mb-2 font-bold text-3xl text-foreground">
           Create Your Artist Profile
         </h1>
         <p className="text-muted-foreground">
@@ -215,7 +216,13 @@ export default function OnboardingPage() {
       {/* Progress indicator */}
       <div className="mb-8 flex justify-center gap-2">
         <div
-          className={`h-2 w-12 rounded ${step === "claim" ? "bg-purple-500" : isRegistered ? "bg-green-500" : "bg-zinc-700"}`}
+          className={`h-2 w-12 rounded ${
+            step === "claim"
+              ? "bg-brand"
+              : isRegistered
+                ? "bg-success"
+                : "bg-muted"
+          }`}
         />
         <div
           className={`h-2 w-12 rounded ${step === "basic" ? "bg-brand" : "bg-surface-elevated"}`}
@@ -230,11 +237,11 @@ export default function OnboardingPage() {
 
       <Card className="border-border bg-card p-8 backdrop-blur">
         {!address && (
-          <div className="mb-6 space-y-3 rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
-            <p className="text-center font-medium text-blue-400 text-sm">
+          <div className="mb-6 space-y-3 rounded-lg border border-info/20 bg-info/10 p-4">
+            <p className="text-center font-medium text-info-foreground text-sm">
               ⚡ Connect with Porto Wallet
             </p>
-            <p className="text-center text-blue-300/80 text-xs">
+            <p className="text-center text-info-foreground/80 text-xs">
               Artists use Porto for a simple, secure onboarding experience.
               Select Porto from the wallet options below.
             </p>
@@ -271,11 +278,11 @@ export default function OnboardingPage() {
                 type="text"
                 value={ensName}
               />
-              <p className="mt-1 font-mono text-sm text-zinc-400">
+              <p className="mt-1 font-mono text-muted-foreground text-sm">
                 {ensName}.{ENS.PARENT_DOMAIN}
               </p>
               {inviteData ? (
-                <p className="mt-1 text-xs text-yellow-500">
+                <p className="mt-1 text-warning text-xs">
                   ✨ This name is reserved for you via invite
                 </p>
               ) : (
@@ -285,20 +292,20 @@ export default function OnboardingPage() {
               )}
             </div>
 
-            <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
-              <p className="mb-2 font-medium text-blue-400 text-sm">
+            <div className="rounded-lg border border-info/20 bg-info/10 p-4">
+              <p className="mb-2 font-medium text-info-foreground text-sm">
                 📝 First, let's claim your name
               </p>
-              <p className="text-xs text-blue-300/80">
-                You'll sign one transaction to register your subdomain. After that,
-                we'll collect your profile details and you'll sign once more to save
-                them.
+              <p className="text-info-foreground/80 text-xs">
+                You'll sign one transaction to register your subdomain. After
+                that, we'll collect your profile details and you'll sign once
+                more to save them.
               </p>
             </div>
 
             <Button
-              className="w-full bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600"
-              disabled={!ensName || !inviteData || registerSubdomain.isPending}
+              className="w-full"
+              disabled={!(ensName && inviteData) || registerSubdomain.isPending}
               onClick={handleRegisterSubdomain}
             >
               {registerSubdomain.isPending
@@ -310,11 +317,11 @@ export default function OnboardingPage() {
 
         {step === "basic" && (
           <div className="space-y-6">
-            <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-4">
-              <p className="mb-1 font-medium text-green-400 text-sm">
+            <div className="rounded-lg border border-success/20 bg-success/10 p-4">
+              <p className="mb-1 font-medium text-sm text-success-foreground">
                 ✅ Name Claimed: {ensName}.{ENS.PARENT_DOMAIN}
               </p>
-              <p className="text-xs text-green-300/80">
+              <p className="text-success-foreground/80 text-xs">
                 Now let's set up your profile!
               </p>
             </div>
@@ -333,7 +340,7 @@ export default function OnboardingPage() {
             <div>
               <Label htmlFor="bio">Bio</Label>
               <textarea
-                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus:border-brand focus:outline-none"
+                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-foreground text-sm placeholder:text-muted-foreground focus:border-brand focus:outline-none"
                 id="bio"
                 maxLength={160}
                 onChange={(e) => setBio(e.target.value)}
@@ -350,7 +357,6 @@ export default function OnboardingPage() {
               className="w-full"
               disabled={!(ensName && bio)}
               onClick={() => setStep("avatar")}
-              variant="gradient"
             >
               Next →
             </Button>
@@ -426,11 +432,7 @@ export default function OnboardingPage() {
               >
                 ← Back
               </Button>
-              <Button
-                className="flex-1"
-                onClick={() => setStep("socials")}
-                variant="gradient"
-              >
+              <Button className="flex-1" onClick={() => setStep("socials")}>
                 Next →
               </Button>
             </div>
@@ -502,7 +504,6 @@ export default function OnboardingPage() {
                 className="flex-1"
                 disabled={createProfile.mutation.isPending}
                 onClick={handleSubmit}
-                variant="gradient"
               >
                 {createProfile.mutation.isPending
                   ? "Creating Profile..."

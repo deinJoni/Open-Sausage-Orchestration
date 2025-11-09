@@ -1,53 +1,49 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
-type Theme = "midnight" | "sunset";
+type Mode = "light" | "dark";
+type ColorTheme = "midnight" | "sunset";
+type CompositeTheme =
+  | "light-midnight"
+  | "dark-midnight"
+  | "light-sunset"
+  | "dark-sunset";
 
-type ColorThemeContextType = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
+type ColorThemeHook = {
+  mode: Mode;
+  color: ColorTheme;
+  theme: CompositeTheme;
+  setMode: (mode: Mode) => void;
+  setColor: (color: ColorTheme) => void;
+  setTheme: (theme: CompositeTheme) => void;
 };
 
-const ColorThemeContext = createContext<ColorThemeContextType | undefined>(
-  undefined
-);
+/**
+ * Hook for managing composite themes (mode + color)
+ * Parses next-themes composite theme strings like "dark-midnight"
+ * Provides independent controls for mode (light/dark) and color (midnight/sunset)
+ */
+export const useColorTheme = (): ColorThemeHook => {
+  const { theme, setTheme } = useTheme();
 
-export function ColorThemeProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [theme, setThemeState] = useState<Theme>("midnight");
+  const compositeTheme = (theme as CompositeTheme) || "light-midnight";
+  const [mode, color] = compositeTheme.split("-") as [Mode, ColorTheme];
 
-  useEffect(() => {
-    const stored = localStorage.getItem("color-theme") as Theme | null;
-    if (stored && (stored === "midnight" || stored === "sunset")) {
-      setThemeState(stored);
-    }
-  }, []);
-
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-    localStorage.setItem("color-theme", newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
+  const setMode = (newMode: Mode) => {
+    setTheme(`${newMode}-${color}`);
   };
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
+  const setColor = (newColor: ColorTheme) => {
+    setTheme(`${mode}-${newColor}`);
+  };
 
-  return (
-    <ColorThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ColorThemeContext.Provider>
-  );
-}
-
-export const useColorTheme = () => {
-  const context = useContext(ColorThemeContext);
-  if (!context) {
-    throw new Error("useColorTheme must be used within ColorThemeProvider");
-  }
-  return context;
+  return {
+    mode,
+    color,
+    theme: compositeTheme,
+    setMode,
+    setColor,
+    setTheme,
+  };
 };

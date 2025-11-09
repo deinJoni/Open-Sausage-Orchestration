@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
   "extends": ["ultracite/core", "ultracite/next"],
   "files": {
     "ignoreUnknown": false,
@@ -9,7 +9,7 @@
       "!**/dist",
       "!**/.turbo",
       "!apps/web/src/gqty",
-      "!packages/osopit-subgraph/src"
+      "!packages/osopit-subgraph"
     ]
   }
 }

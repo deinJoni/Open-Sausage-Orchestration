@@ -89,7 +89,7 @@ export default function InvitePage() {
 
   const getAvailabilityMessage = () => {
     if (validationError) {
-      return <p className="mt-1 text-red-400 text-xs">{validationError}</p>;
+      return <p className="mt-1 text-destructive text-xs">{validationError}</p>;
     }
 
     if (!label || label.length === 0) {
@@ -102,7 +102,7 @@ export default function InvitePage() {
 
     if (availabilityError) {
       return (
-        <p className="mt-1 text-xs text-yellow-400">
+        <p className="mt-1 text-warning text-xs">
           ⚠️ Unable to check availability - subgraph error
         </p>
       );
@@ -118,7 +118,7 @@ export default function InvitePage() {
 
     if (isAvailable === false) {
       return (
-        <p className="mt-1 text-red-400 text-xs">
+        <p className="mt-1 text-destructive text-xs">
           ✗ This subdomain is already taken
         </p>
       );
@@ -126,7 +126,7 @@ export default function InvitePage() {
 
     if (isAvailable === true) {
       return (
-        <p className="mt-1 text-green-400 text-xs">
+        <p className="mt-1 text-success text-xs">
           ✓ This subdomain is available
         </p>
       );
@@ -184,8 +184,8 @@ export default function InvitePage() {
             Switch Wallet Required
           </h1>
           <div className="mb-6 space-y-4">
-            <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-4">
-              <p className="mb-2 text-sm text-yellow-400">
+            <div className="rounded-lg border border-warning/20 bg-warning/10 p-4">
+              <p className="mb-2 text-sm text-warning">
                 ⚠️ You're connected with Porto wallet
               </p>
               <p className="text-muted-foreground text-xs">
@@ -268,8 +268,8 @@ export default function InvitePage() {
       <Card className="border-border bg-card p-8 backdrop-blur">
         {generatedInvite ? (
           <div className="space-y-6">
-            <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-4">
-              <p className="mb-2 font-medium text-green-400 text-sm">
+            <div className="rounded-lg border border-success/20 bg-success/10 p-4">
+              <p className="mb-2 font-medium text-sm text-success">
                 ✓ Invite Generated Successfully
               </p>
               <p className="text-muted-foreground text-xs">

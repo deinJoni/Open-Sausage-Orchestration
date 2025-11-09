@@ -1,10 +1,15 @@
+import {
+  type Address,
+  type BigInt,
+  type Bytes,
+  ethereum,
+} from "@graphprotocol/graph-ts";
 import { newMockEvent } from "matchstick-as/assembly/index";
 import { TextChanged } from "../generated/L2Resolver/ITextResolver";
-import { ethereum, Address, Bytes, BigInt } from "@graphprotocol/graph-ts";
 
 /**
  * Create a mock TextChanged event for testing
- * 
+ *
  * @param node - The ENS node (bytes32)
  * @param indexedKey - The indexed key parameter
  * @param key - The key parameter
@@ -23,9 +28,9 @@ export function createTextChangedEvent(
   txHash: Bytes,
   logIndex: BigInt
 ): TextChanged {
-  let mockEvent = newMockEvent();
+  const mockEvent = newMockEvent();
 
-  let event = new TextChanged(
+  const event = new TextChanged(
     mockEvent.address,
     mockEvent.logIndex,
     mockEvent.transactionLogIndex,
@@ -37,7 +42,7 @@ export function createTextChangedEvent(
   );
 
   // Set event parameters
-  event.parameters = new Array();
+  event.parameters = [];
 
   event.parameters.push(
     new ethereum.EventParam("node", ethereum.Value.fromFixedBytes(node))
@@ -59,4 +64,3 @@ export function createTextChangedEvent(
 
   return event;
 }
-
