@@ -59,7 +59,9 @@ export function StartBroadcastForm() {
 
   return (
     <Card className="border-border bg-card p-6 backdrop-blur">
-      <h2 className="mb-6 font-bold text-foreground text-xl">🎥 Start Streaming</h2>
+      <h2 className="mb-6 font-bold text-foreground text-xl">
+        🎥 Start Streaming
+      </h2>
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         {/* Stream URL Input */}

@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { ArtistAvatar } from "@/components/artist-avatar";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { getTextRecord } from "@/lib/utils";
@@ -39,7 +37,6 @@ export function ProfilePreview({ profile }: ProfilePreviewProps) {
             {subdomain || "Anonymous"}
           </h3>
           {description && <p className="text-foreground">{description}</p>}
-        
         </div>
       </div>
     </Card>

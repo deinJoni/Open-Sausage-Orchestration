@@ -43,30 +43,30 @@ export function getTextRecord(
  * Extract initials from artist name
  */
 export function getInitials(name: string): string {
-	if (!name) return "?";
+  if (!name) return "?";
 
-	// Remove .orchestraid.eth or similar suffixes
-	const cleanName = name.split(".")[0];
+  // Remove .orchestraid.eth or similar suffixes
+  const cleanName = name.split(".")[0];
 
-	// Take first 2 characters
-	return cleanName.slice(0, 2).toUpperCase();
+  // Take first 2 characters
+  return cleanName.slice(0, 2).toUpperCase();
 }
 
 /**
  * Generate consistent color from string
  */
 export function stringToColor(str: string): string {
-	if (!str) return "hsl(0, 0%, 50%)";
+  if (!str) return "hsl(0, 0%, 50%)";
 
-	// Simple hash function
-	let hash = 0;
-	for (let i = 0; i < str.length; i++) {
-		hash = str.charCodeAt(i) + ((hash << 5) - hash);
-	}
+  // Simple hash function
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
 
-	// Generate hue (0-360)
-	const hue = Math.abs(hash) % 360;
+  // Generate hue (0-360)
+  const hue = Math.abs(hash) % 360;
 
-	// Use consistent saturation and lightness for subtle colors
-	return `hsl(${hue}, 60%, 45%)`;
+  // Use consistent saturation and lightness for subtle colors
+  return `hsl(${hue}, 60%, 45%)`;
 }

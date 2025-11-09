@@ -25,7 +25,9 @@ export default function MePage() {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
         <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-          <h1 className="mb-4 font-bold text-2xl text-foreground">Your Profile</h1>
+          <h1 className="mb-4 font-bold text-2xl text-foreground">
+            Your Profile
+          </h1>
           <p className="mb-6 text-muted-foreground">
             Connect your wallet to view and manage your profile
           </p>

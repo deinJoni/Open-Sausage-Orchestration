@@ -1,23 +1,23 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useState } from "react";
-import { useAccount } from "wagmi";
-import { isAddress } from "viem";
 import Image from "next/image";
 import Link from "next/link";
-import { useArtistProfile } from "@/hooks/use-artist-profile";
-import { useOwnedProfile } from "@/hooks/use-owned-profile";
-import { ENS, SocialKey } from "@/lib/constants";
+import { useParams } from "next/navigation";
+import { useState } from "react";
+import { isAddress } from "viem";
+import { useAccount } from "wagmi";
+import { BroadcastControl } from "@/components/broadcast-control";
+import { DonationPopover } from "@/components/donation-modal";
+import { PortoConnectButton } from "@/components/porto-connect-button";
+import { ProfileEditForm } from "@/components/profile-edit-form";
+import { StreamEmbed } from "@/components/stream-embed";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProfileEditForm } from "@/components/profile-edit-form";
-import { BroadcastControl } from "@/components/broadcast-control";
-import { DonationModal } from "@/components/donation-modal";
-import { StreamEmbed } from "@/components/stream-embed";
+import { useArtistProfile } from "@/hooks/use-artist-profile";
+import { useOwnedProfile } from "@/hooks/use-owned-profile";
+import { ENS, SocialKey } from "@/lib/constants";
 import { getTextRecord, ipfsToHttp } from "@/lib/utils";
-import { PortoConnectButton } from "@/components/porto-connect-button";
 
 const SOCIAL_ICONS: Record<SocialKey, string> = {
   "com.spotify": "🎵",
@@ -55,8 +55,12 @@ export default function ProfilePage() {
   const ownedProfile = useOwnedProfile();
 
   // If it's a subdomain name, construct full ENS name and use artist profile hook
-  const fullEnsName = !isEthAddress ? `${identifier}.${ENS.PARENT_DOMAIN}` : null;
-  const { data: artist, isLoading: artistLoading } = useArtistProfile(fullEnsName || "");
+  const fullEnsName = isEthAddress
+    ? null
+    : `${identifier}.${ENS.PARENT_DOMAIN}`;
+  const { data: artist, isLoading: artistLoading } = useArtistProfile(
+    fullEnsName || ""
+  );
 
   // Determine if this is the owner's profile
   const isOwner = isEthAddress
@@ -125,18 +129,19 @@ export default function ProfilePage() {
             <h1 className="mb-4 font-bold text-2xl text-white">
               No Profile Found
             </h1>
-            <p className="mb-4 text-muted-foreground break-all font-mono text-sm">
+            <p className="mb-4 break-all font-mono text-muted-foreground text-sm">
               {identifier}
             </p>
             <p className="mb-6 text-muted-foreground">
-              You need a subdomain to edit your profile. Get an invite code to get started!
+              You need a subdomain to edit your profile. Get an invite code to
+              get started!
             </p>
             <div className="flex justify-center gap-4">
-              <Button variant="outline" disabled>
+              <Button disabled variant="outline">
                 Request Subdomain
               </Button>
               <Link href="/onboarding">
-                <Button variant="gradient">Get Invite Code</Button>
+                <Button>Get Invite Code</Button>
               </Link>
             </div>
           </Card>
@@ -149,10 +154,10 @@ export default function ProfilePage() {
       <div className="mx-auto max-w-4xl px-4 py-12 text-center">
         <Card className="border-border bg-card p-8 backdrop-blur">
           <div className="mb-4 text-5xl">🔒</div>
-          <h2 className="mb-2 font-bold text-2xl text-white">Private Profile</h2>
-          <p className="mb-6 text-muted-foreground">
-            This profile is private.
-          </p>
+          <h2 className="mb-2 font-bold text-2xl text-white">
+            Private Profile
+          </h2>
+          <p className="mb-6 text-muted-foreground">This profile is private.</p>
           <Button asChild variant="outline">
             <Link href="/">Go Home</Link>
           </Button>
@@ -167,7 +172,9 @@ export default function ProfilePage() {
       <div className="mx-auto max-w-4xl px-4 py-12 text-center">
         <Card className="border-border bg-card p-8 backdrop-blur">
           <div className="mb-4 text-5xl">🤔</div>
-          <h2 className="mb-2 font-bold text-2xl text-white">Profile not found</h2>
+          <h2 className="mb-2 font-bold text-2xl text-white">
+            Profile not found
+          </h2>
           <p className="mb-6 text-muted-foreground">
             The profile "{identifier}" doesn't exist or hasn't been created yet.
           </p>
@@ -256,11 +263,7 @@ export default function ProfilePage() {
             )}
           </div>
 
-          <Button
-            onClick={() => setShowDonationModal(true)}
-            size="lg"
-            variant="gradient"
-          >
+          <Button onClick={() => setShowDonationModal(true)} size="lg">
             💜 Send Gift
           </Button>
         </div>
@@ -302,7 +305,7 @@ export default function ProfilePage() {
 
       {/* Donation Modal */}
       {showDonationModal && (
-        <DonationModal
+        <DonationPopover
           artistEnsName={artist.subdomain ?? ""}
           onClose={() => setShowDonationModal(false)}
         />
@@ -310,4 +313,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

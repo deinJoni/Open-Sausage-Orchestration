@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
+import { useOwnedProfile } from "@/hooks/use-owned-profile";
 import { ModeToggle } from "./mode-toggle";
 import { PortoConnectButton } from "./porto-connect-button";
-import { useOwnedProfile } from "@/hooks/use-owned-profile";
-import { useEffect, useState } from "react";
 
 export default function Header() {
   const { isConnected, address } = useAccount();
@@ -13,11 +13,11 @@ export default function Header() {
 
   // Determine profile link based on subdomain or address
   useEffect(() => {
-    if (!isConnected || !address) {
+    if (!(isConnected && address)) {
       setProfileLink(null);
       return;
     }
-    
+
     // If user has a subdomain, use it
     if (ownedProfile?.subdomain?.name) {
       setProfileLink(`/profile/${ownedProfile.subdomain.name}`);
@@ -31,15 +31,18 @@ export default function Header() {
     <div>
       <div className="flex flex-row items-center justify-between px-4 py-3">
         <nav className="flex items-center gap-6">
-          <Link href="/" className="font-bold text-xl">
+          <Link className="font-bold text-xl" href="/">
             osopit
           </Link>
           <div className="flex gap-4 text-sm">
-            <Link href="/" className="hover:text-primary transition-colors">
+            <Link className="transition-colors hover:text-primary" href="/">
               Home
             </Link>
             {isConnected && profileLink && (
-              <Link href={profileLink as `/profile/${string}`} className="hover:text-primary transition-colors">
+              <Link
+                className="transition-colors hover:text-primary"
+                href={profileLink as `/profile/${string}`}
+              >
                 Profile
               </Link>
             )}

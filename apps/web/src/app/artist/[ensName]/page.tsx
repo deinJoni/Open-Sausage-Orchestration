@@ -55,7 +55,9 @@ export default function ArtistProfilePage() {
     return (
       <div className="mx-auto max-w-4xl px-4 py-12 text-center">
         <div className="mb-4 text-5xl">🤔</div>
-        <h2 className="mb-2 font-bold text-2xl text-foreground">Artist not found</h2>
+        <h2 className="mb-2 font-bold text-2xl text-foreground">
+          Artist not found
+        </h2>
         <p className="mb-6 text-muted-foreground">
           This artist profile doesn't exist or hasn't been created yet.
         </p>
@@ -85,8 +87,8 @@ export default function ArtistProfilePage() {
             artistName={artist.subdomain || ensName}
             streamPlatform={artist.streamPlatform}
             streamUrl={artist.streamUrl}
-            walletAddress={artist.user?.address}
             taggedArtists={artist.taggedArtists || []}
+            walletAddress={artist.user?.address}
           />
         </div>
       )}

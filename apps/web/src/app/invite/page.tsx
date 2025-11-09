@@ -243,7 +243,9 @@ export default function InvitePage() {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
         <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-          <h1 className="mb-4 font-bold text-2xl text-foreground">Unauthorized</h1>
+          <h1 className="mb-4 font-bold text-2xl text-foreground">
+            Unauthorized
+          </h1>
           <p className="mb-4 text-muted-foreground">
             Your wallet is not authorized to generate invites.
           </p>
@@ -259,7 +261,9 @@ export default function InvitePage() {
   return (
     <div className="mx-auto min-h-screen max-w-2xl px-4 py-12">
       <div className="mb-8 text-center">
-        <h1 className="mb-2 font-bold text-3xl text-foreground">Generate Invites</h1>
+        <h1 className="mb-2 font-bold text-3xl text-foreground">
+          Generate Invites
+        </h1>
         <p className="text-muted-foreground">
           Create invite codes for new artists to join osopit
         </p>
@@ -336,7 +340,7 @@ export default function InvitePage() {
             <div>
               <Label htmlFor="expiration">Expiration</Label>
               <select
-                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-md text-foreground focus:border-brand focus:outline-none"
+                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-foreground text-md focus:border-brand focus:outline-none"
                 id="expiration"
                 onChange={(e) => setExpirationDays(e.target.value)}
                 value={expirationDays}

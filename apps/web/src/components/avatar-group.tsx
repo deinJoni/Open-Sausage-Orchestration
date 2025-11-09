@@ -1,5 +1,6 @@
 "use client";
 
+import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import {
   getInitials,
   getTextRecord,
@@ -10,16 +11,8 @@ import { ArtistQuickActions } from "./artist-quick-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
-type User = {
-  id: string;
-  subdomain?: {
-    name?: string;
-    textRecords?: () => Array<{ key: string; value: string }> | undefined;
-  };
-};
-
 type AvatarGroupProps = {
-  artists: User[];
+  artists: OwnedProfile["user"][];
   size?: "sm" | "md";
 };
 
@@ -49,16 +42,16 @@ export function AvatarGroup({ artists, size = "sm" }: AvatarGroupProps) {
   return (
     <div className="flex">
       {artists.map((artist, index) => {
-        const name = artist.subdomain?.name || "";
+        const name = artist?.subdomain?.name || "";
         const avatar = getTextRecord(
-          artist.subdomain?.textRecords?.(),
+          artist?.subdomain?.textRecords?.(),
           "avatar"
         );
         const initials = getInitials(name);
         const bgColor = stringToColor(name);
 
         return (
-          <Tooltip key={artist.id}>
+          <Tooltip key={artist?.id}>
             <TooltipTrigger asChild>
               <ArtistQuickActions ensName={name}>
                 <button className={index > 0 ? "-ml-2" : ""} type="button">

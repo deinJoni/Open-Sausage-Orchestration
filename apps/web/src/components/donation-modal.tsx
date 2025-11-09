@@ -87,7 +87,7 @@ function DonationContent({
         <div className="mb-6 rounded-lg border border-border bg-card/50 p-4">
           <Label className="mb-2 block">Artist Wallet Address</Label>
           <div className="mb-4 flex items-center gap-2">
-            <code className="flex-1 rounded bg-muted px-3 py-2 font-mono text-sm text-foreground">
+            <code className="flex-1 rounded bg-muted px-3 py-2 font-mono text-foreground text-sm">
               {truncateAddress(walletAddress)}
             </code>
             <Button onClick={handleCopyAddress} size="sm" variant="outline">

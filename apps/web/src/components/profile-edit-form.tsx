@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ArtistAvatar } from "@/components/artist-avatar";
@@ -11,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { useUpdateProfile } from "@/hooks/use-update-profile";
 import { type AllValidKeys, FILE_UPLOAD, SOCIAL_KEYS } from "@/lib/constants";
-import { getTextRecord } from "@/lib/utils";
+import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 
 type ProfileEditFormProps = {
   profile: OwnedProfile;
@@ -198,7 +197,6 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
             </p>
           )}
         </div>
- 
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit}>

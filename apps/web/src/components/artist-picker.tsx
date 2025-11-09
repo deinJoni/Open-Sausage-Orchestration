@@ -80,11 +80,7 @@ export function ArtistPicker({
                 className="flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1.5"
                 key={address}
               >
-                <ArtistAvatar
-                  avatarUrl={avatar}
-                  name={name}
-                  size="xs"
-                />
+                <ArtistAvatar avatarUrl={avatar} name={name} size="xs" />
                 <span className="text-brand text-md">{name}</span>
                 <button
                   className="text-brand hover:text-brand"
@@ -134,12 +130,8 @@ export function ArtistPicker({
                     onClick={() => handleSelect(address)}
                     type="button"
                   >
-                    <ArtistAvatar
-                      avatarUrl={avatar}
-                      name={name}
-                      size="sm"
-                    />
-                    <span className="text-md text-foreground">{name}</span>
+                    <ArtistAvatar avatarUrl={avatar} name={name} size="sm" />
+                    <span className="text-foreground text-md">{name}</span>
                   </button>
                 );
               })}

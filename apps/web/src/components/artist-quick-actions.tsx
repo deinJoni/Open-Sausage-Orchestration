@@ -126,7 +126,9 @@ export function ArtistQuickActions({
         <DrawerTrigger asChild>{children}</DrawerTrigger>
         <DrawerContent className="border-border bg-card">
           <DrawerHeader>
-            <DrawerTitle className="text-foreground">Artist Profile</DrawerTitle>
+            <DrawerTitle className="text-foreground">
+              Artist Profile
+            </DrawerTitle>
           </DrawerHeader>
           <div className="mt-4 px-4 pb-4">
             <ArtistPreviewContent ensName={ensName} />
