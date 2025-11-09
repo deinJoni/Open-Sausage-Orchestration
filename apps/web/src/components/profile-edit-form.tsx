@@ -198,11 +198,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
             </p>
           )}
         </div>
-        {profile.ensName && (
-          <Button asChild size="sm" variant="outline">
-            <Link href={`/artist/${profile.ensName}`}>View Public Profile</Link>
-          </Button>
-        )}
+ 
       </div>
 
       <form className="space-y-6" onSubmit={handleSubmit}>

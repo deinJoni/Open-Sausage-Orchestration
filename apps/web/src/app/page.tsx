@@ -28,7 +28,7 @@ export default function Home() {
           Check back later to watch live streams!
         </p>
         <Button asChild className="mt-4" variant="outline">
-          <Link href="/artists">Browse All Artists</Link>
+
         </Button>
       </div>
     );
@@ -42,7 +42,7 @@ export default function Home() {
 
       <div className="mt-8 text-center">
         <Button asChild variant="outline">
-          <Link href="/artists">Browse All Artists →</Link>
+
         </Button>
       </div>
     </div>

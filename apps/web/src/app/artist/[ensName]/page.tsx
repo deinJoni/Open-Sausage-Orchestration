@@ -75,7 +75,7 @@ export default function ArtistProfilePage() {
       {/* Back Button */}
       <div className="mb-6">
         <Button asChild size="sm" variant="ghost">
-          <Link href="/artists">← Back to Artists</Link>
+          <Link href="/">← Back to Artists</Link>
         </Button>
       </div>
 
