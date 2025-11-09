@@ -18,6 +18,34 @@ import { ARTISTS_GRID_SIZE } from "@/lib/constants";
 // Type-safe filter parser for nuqs
 const filterParser = parseAsStringLiteral(FILTER_OPTIONS);
 
+const dashboardNavItems = [
+  { label: "Overview", icon: "🏠" },
+  { label: "Wallet", icon: "👛" },
+  { label: "Transfers", icon: "🔁" },
+  { label: "Analytics", icon: "📊" },
+  { label: "Settings", icon: "⚙️" },
+];
+
+const dashboardActivityItems = [
+  {
+    id: "identity",
+    title: "Identity verification",
+    description: "Upload your government ID to unlock higher limits.",
+    tag: "Pending",
+    iconBackground: "bg-[#FACC15]",
+    icon: "🪪",
+  },
+  {
+    id: "beta",
+    title: "Beta Tester badge",
+    description: "Thanks for pioneering the new osopit dashboard experience.",
+    tag: "Active",
+    iconBackground:
+      "bg-gradient-to-r from-[#f97316] via-[#ec4899] to-[#8b5cf6]",
+    icon: "🌈",
+  },
+];
+
 export default function Home() {
   const { data: allArtists, isLoading } = useAllArtists();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -114,7 +142,7 @@ export default function Home() {
   const renderArtistsGrid = () => (
     <motion.div
       animate="show"
-      className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 "
       initial="hidden"
       variants={{
         hidden: { opacity: 0 },
@@ -155,45 +183,63 @@ export default function Home() {
         Skip to artists
       </a>
 
-      {/* Hero Section: Live Streams */}
-      <AnimatePresence mode="wait">
-        {liveArtists.length > 0 && (
-          <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="border-b bg-surface-elevated/50"
-            exit={{ opacity: 0, y: -20 }}
-            initial={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="mx-auto max-w-7xl px-4 py-8">
-              <LivestreamCarousel broadcasts={liveArtists} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <section className="mx-auto pt-5 pb-5 w-full bg-[#f8f4ff]  lg:px-12">
+        <div className="flex flex-col gap-12 lg:flex-row max-w-6xl mx-auto">
+          <div className="flex flex-1 flex-col items-center gap-6 text-center border-none">
+            {/* Hero Section: Live Streams */}
+            <AnimatePresence mode="wait">
+              {liveArtists.length > 0 && (
+                <motion.div
+                  animate={{ opacity: 1, y: 0 }}
+                  className="w-full rounded-md border-[1px] border-black bg-white p-8  text-left shadow-[0_4px_0_rgba(0,0,0,0.55)]"
+                  exit={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <span
+                    className={`rounded-full border-2 mx-4  px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white bg-red-500`}
+                  >
+                    <span className="rounded-full    py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white">
+                      LIVE
+                    </span>
+                  </span>
+                  <div className="mx-auto max-w-7xl px-4 py-8 border-none">
+                    <LivestreamCarousel broadcasts={liveArtists} />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <section className="w-full rounded-md border-[1px] border-black bg-white p-8 pt-4 text-left shadow-[0_4px_0_rgba(0,0,0.55,0.55)]">
+              <h2 className=" px-4  text-2xl font-black text-gray-950">
+                Artist
+              </h2>
 
-      {/* Sticky Filter Bar - always show theme switcher */}
-      <StickyFilterBar
-        filter={filter}
-        liveCount={liveCount}
-        offlineCount={offlineCount}
-        searchQuery={searchQuery}
-        setFilter={setFilter}
-        setSearchQuery={setSearchQuery}
-        showThemeSwitcher={true}
-        themeSwitcher={<ThemeSwitcher />}
-        totalArtists={totalArtists}
-      />
+              {/* Sticky Filter Bar - always show theme switcher */}
+              <StickyFilterBar
+                filter={filter}
+                liveCount={liveCount}
+                offlineCount={offlineCount}
+                searchQuery={searchQuery}
+                setFilter={setFilter}
+                setSearchQuery={setSearchQuery}
+                showThemeSwitcher={true}
+                themeSwitcher={<ThemeSwitcher />}
+                totalArtists={totalArtists}
+              />
 
-      {/* Artist Grid Section */}
-      <div
-        className="mx-auto max-w-7xl px-4 py-8"
-        id="artist-grid"
-        ref={gridRef}
-      >
-        {filteredArtists.length === 0 && renderEmptyState()}
-        {filteredArtists.length > 0 && renderArtistsGrid()}
-      </div>
+              {/* Artist Grid Section */}
+              <div
+                className="mx-auto w-full px-4 "
+                id="artist-grid"
+                ref={gridRef}
+              >
+                {filteredArtists.length === 0 && renderEmptyState()}
+                {filteredArtists.length > 0 && renderArtistsGrid()}
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

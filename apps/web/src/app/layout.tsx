@@ -4,6 +4,7 @@ import "../index.css";
 import { headers } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 import Providers from "@/components/providers";
 
 const geistSans = Geist({
@@ -38,6 +39,7 @@ export default async function RootLayout({
           <Providers cookies={cookies}>
             <Header />
             {children}
+            <Footer />
           </Providers>
         </NuqsAdapter>
       </body>

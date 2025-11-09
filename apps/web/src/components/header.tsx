@@ -28,8 +28,8 @@ export default function Header() {
   }, [isConnected, address, ownedProfile]);
 
   return (
-    <div>
-      <div className="flex flex-row items-center justify-between px-4 py-3">
+    <header className="sticky top-0 z-40 w-full bg-[#f8f4ff] ">
+      <div className="flex flex-row items-center justify-between px-4 py-3 max-w-6xl mx-auto rounded-b-lg bg-white border border-t-0 border-black backdrop-blur  ">
         <nav className="flex items-center gap-6">
           <Link className="font-bold text-xl" href="/">
             osopit
@@ -50,10 +50,9 @@ export default function Header() {
         </nav>
         <div className="flex items-center gap-2">
           <PortoConnectButton />
-          <ModeToggle />
+          {/* <ModeToggle /> */}
         </div>
       </div>
-      <hr />
-    </div>
+    </header>
   );
 }

@@ -5,8 +5,6 @@ import Link from "next/link";
 import type { User } from "@/gqty";
 import { getTextRecord } from "@/lib/utils";
 import { ArtistAvatar } from "./artist-avatar";
-import { AvatarGroup } from "./avatar-group";
-import { Card } from "./ui/card";
 import { TooltipProvider } from "./ui/tooltip";
 
 type ArtistCardProps = {
@@ -15,77 +13,104 @@ type ArtistCardProps = {
 
 export const ArtistCard = ({ artist }: ArtistCardProps) => {
   const avatar = getTextRecord(artist.subdomain?.textRecords?.(), "avatar");
+  const isLive = artist.activeBroadcast?.isLive;
   const description = getTextRecord(
     artist.subdomain?.textRecords?.(),
     "description"
   );
-  const isLive = artist.activeBroadcast?.isLive;
-  const taggedArtists =
-    artist.activeBroadcast?.broadcastWith?.()?.filter(Boolean) || [];
-
-  const cardClassName = isLive
-    ? "group relative overflow-hidden border-border bg-card p-6 backdrop-blur transition-all hover:border-brand/50 hover:shadow-lg hover:shadow-brand/20 before:absolute before:inset-0 before:bg-brand/10 before:opacity-0 hover:before:opacity-100 before:transition-opacity"
-    : "group relative border-border bg-card p-6 backdrop-blur transition-all hover:border-brand/30 hover:shadow-lg hover:shadow-brand/10";
+  const cardClassName = [
+    "group relative flex h-full flex-col  overflow-hidden border-[1px] pb-4 rounded-md  bg-white px-6 pt-6 text-left",
+    isLive
+      ? "border-red-800  shadow-[0_3px_0_rgba(255,0,0,0.5)]"
+      : "border-black   shadow-[0_3px_0_rgba(0,0,0,0.5)]",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <TooltipProvider>
       <motion.div className="h-full">
-        <Card className={`${cardClassName} h-full`}>
-          <Link href={`/artist/${artist.subdomain?.name ?? ""}`}>
-            {/* Avatar section */}
-            <div className="mb-4 flex justify-center">
-              <div className="relative">
+        <article className={cardClassName}>
+          <Link
+            className="flex h-full flex-col gap-4"
+            href={`/artist/${artist.subdomain?.name ?? ""}`}
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div
+                className={`inline-flex size-12 items-center justify-center  text-xl `}
+              >
                 <ArtistAvatar
                   avatarUrl={avatar}
-                  className={`border-2 transition-transform group-hover:scale-105 ${
-                    isLive ? "border-live" : "border-border"
+                  className={`size-12 border-2 rounded-2xl ${
+                    isLive ? "border-live" : "border-black"
                   }`}
                   name={artist.subdomain?.name ?? ""}
                   size="lg"
                 />
-
-                {/* Live indicator with screen reader text */}
-                {isLive && (
-                  <>
-                    <span
-                      aria-hidden="true"
-                      className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-live"
-                    >
-                      <span className="h-3 w-3 animate-pulse rounded-full bg-white" />
-                    </span>
-                    <span className="sr-only">Currently live</span>
-                  </>
-                )}
               </div>
+              <span
+                className={`rounded-full border-2   px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white ${
+                  isLive ? "bg-red-500" : "bg-black"
+                }`}
+              >
+                {isLive ? (
+                  <span className="rounded-full    py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white">
+                    LIVE
+                  </span>
+                ) : (
+                  <span className="rounded-full   py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white">
+                    OFFLINE
+                  </span>
+                )}
+              </span>
             </div>
-
-            {/* Name and live badge */}
-            <div className="mb-4 flex items-center justify-center gap-2">
-              <h3 className="text-center font-semibold text-primary">
+            <div>
+              <h3 className="text-lg font-black text-gray-950">
                 {artist.subdomain?.name ?? ""}
               </h3>
-              {isLive && (
-                <span className="rounded-full bg-live/20 px-2 py-0.5 text-live text-xs">
-                  LIVE
-                </span>
-              )}
-            </div>
-
-            {/* Description */}
-            {description && (
-              <p className="mb-4 line-clamp-2 text-center text-muted-foreground text-sm">
-                {description}
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                {description ? description : "No description"}
               </p>
-            )}
-
-            {/* Tagged Artists */}
-            {taggedArtists.length > 0 && (
-              <div className="mt-4 flex justify-center">
-                <AvatarGroup artists={taggedArtists} size="sm" />
-              </div>
-            )}
+            </div>
+            {/* <button className="inline-flex items-center gap-2 self-start rounded-xl border-2 border-black bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-gray-900 transition hover:-translate-y-[2px]">
+              <span className="text-base leading-none">⇆</span>
+              Manage
+            </button> */}
           </Link>
-        </Card>
+          {/* {isLive ? (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden border-t border-live/50 bg-live">
+              <motion.div
+                aria-hidden="true"
+                className="flex w-max items-center gap-6 py-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-live-foreground"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ duration: 8, ease: "linear", repeat: Infinity }}
+              >
+                {[...Array(2)].map((_, loopIndex) => (
+                  <div
+                    className="flex items-center gap-6"
+                    key={`live-loop-${loopIndex}`}
+                  >
+                    {[...Array(6)].map((__, itemIndex) => {
+                      const key = loopIndex * 6 + itemIndex;
+                      return (
+                        <span
+                          className="flex items-center gap-3 whitespace-nowrap"
+                          key={`live-item-${key}`}
+                        >
+                          <span className="relative flex size-2 items-center justify-center">
+                            <span className="absolute inline-flex size-3 animate-ping rounded-full bg-live-foreground/50" />
+                            <span className="relative inline-flex size-2 rounded-full bg-live-foreground" />
+                          </span>
+                          Live
+                        </span>
+                      );
+                    })}
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+          ) : null} */}
+        </article>
       </motion.div>
     </TooltipProvider>
   );
