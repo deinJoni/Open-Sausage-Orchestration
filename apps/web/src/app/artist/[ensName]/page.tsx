@@ -10,6 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
 import { SocialKey } from "@/lib/constants";
+import {
+  PAGE_CONTENT_CLASS,
+  PANEL_CLASS,
+  SECTION_HEADING_CLASS,
+} from "@/lib/page-styles";
 import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 
 const SOCIAL_ICONS: Record<SocialKey, string> = {
@@ -36,11 +41,11 @@ export default function ArtistProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-12">
+      <div className={`${PAGE_CONTENT_CLASS} py-12`}>
         <div className="mb-8 space-y-4">
-          <Skeleton className="h-64 w-full rounded-lg" />
+          <Skeleton className={`${PANEL_CLASS} h-64 w-full rounded-3xl`} />
           <div className="flex items-center gap-6">
-            <Skeleton className="h-32 w-32 rounded-full" />
+            <Skeleton className="h-32 w-32 rounded-full border border-dashed border-black/30" />
             <div className="flex-1 space-y-3">
               <Skeleton className="h-8 w-48" />
               <Skeleton className="h-4 w-full max-w-lg" />
@@ -53,17 +58,21 @@ export default function ArtistProfilePage() {
 
   if (!artist) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-12 text-center">
-        <div className="mb-4 text-5xl">🤔</div>
-        <h2 className="mb-2 font-bold text-2xl text-foreground">
-          Artist not found
-        </h2>
-        <p className="mb-6 text-muted-foreground">
-          This artist profile doesn't exist or hasn't been created yet.
-        </p>
-        <Button asChild variant="outline">
-          <Link href="/">Go Home</Link>
-        </Button>
+      <div className={`${PAGE_CONTENT_CLASS} max-w-4xl py-16 text-center`}>
+        <div className={`${PANEL_CLASS} space-y-4 p-10`}>
+          <div className="text-5xl">🤔</div>
+          <h2 className={`${SECTION_HEADING_CLASS} text-2xl`}>
+            Artist not found
+          </h2>
+          <p className="text-gray-600">
+            This artist profile doesn't exist or hasn't been created yet.
+          </p>
+          <div className="flex justify-center">
+            <Button asChild variant="outline">
+              <Link href="/">Go Home</Link>
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -72,17 +81,15 @@ export default function ArtistProfilePage() {
   const description = getTextRecord(artist.textRecords?.(), "description");
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      {/* Back Button */}
-      <div className="mb-6">
+    <div className={`${PAGE_CONTENT_CLASS} py-12`}>
+      <div className="mb-6 flex items-center justify-between">
         <Button asChild size="sm" variant="ghost">
           <Link href="/">← Back to Home</Link>
         </Button>
       </div>
 
-      {/* Stream Embed - Show if artist is currently streaming */}
       {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
-        <div className="mb-8">
+        <div className={`${PANEL_CLASS} mb-8 overflow-hidden p-0`}>
           <StreamEmbed
             artistName={artist.subdomain || ensName}
             streamPlatform={artist.streamPlatform}
@@ -93,15 +100,15 @@ export default function ArtistProfilePage() {
         </div>
       )}
 
-      {/* Profile Header - Compact */}
-      <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-start">
-        {/* Avatar */}
+      <div
+        className={`${PANEL_CLASS} mb-8 flex flex-col gap-6 px-8 py-10 md:flex-row md:items-start`}
+      >
         <div className="flex-shrink-0">
           {avatar ? (
             <Image
               alt={artist.subdomain || ensName}
               className={`h-32 w-32 rounded-full border-4 ${
-                artist.isStreaming ? "border-live" : "border-border"
+                artist.isStreaming ? "border-live" : "border-black"
               }`}
               height={128}
               src={ipfsToHttp(avatar)}
@@ -110,22 +117,23 @@ export default function ArtistProfilePage() {
           ) : (
             <div
               className={`flex h-32 w-32 items-center justify-center rounded-full border-4 ${
-                artist.isStreaming ? "border-live" : "border-border"
-              } bg-surface-elevated text-4xl`}
+                artist.isStreaming ? "border-live" : "border-black"
+              } bg-white text-4xl`}
             >
               👤
             </div>
           )}
         </div>
 
-        {/* Name + Bio + Action */}
         <div className="flex-1 space-y-4">
-          <div>
-            <h1 className="mb-2 font-bold text-4xl text-foreground">
+          <div className="space-y-2">
+            <h1 className={`${SECTION_HEADING_CLASS} text-4xl`}>
               {artist.subdomain || ensName}
             </h1>
             {description && (
-              <p className="text-foreground text-lg">{description}</p>
+              <p className="text-lg leading-relaxed text-gray-700">
+                {description}
+              </p>
             )}
           </div>
 
@@ -140,18 +148,17 @@ export default function ArtistProfilePage() {
         </div>
       </div>
 
-      {/* Social Links */}
-      <div>
-        <h3 className="mb-4 font-semibold text-foreground text-xl">
+      <div className={`${PANEL_CLASS} px-8 py-10`}>
+        <h3 className={`${SECTION_HEADING_CLASS} mb-6 text-2xl`}>
           🔗 Connect & Listen
         </h3>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {artist
             .textRecords?.()
             ?.filter((record) => SocialKey.safeParse(record.key).success)
             .map((record) => (
               <a
-                className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:border-brand/50 hover:bg-card/80"
+                className="flex items-center gap-3 rounded-2xl border border-black bg-white px-4 py-3 transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0_6px_0_rgba(0,0,0,0.45)]"
                 href={record.value}
                 key={record.value}
                 rel="noopener noreferrer"
@@ -161,14 +168,14 @@ export default function ArtistProfilePage() {
                   {SOCIAL_ICONS[SocialKey.parse(record.key)] || "🔗"}
                 </span>
                 <div className="flex-1 overflow-hidden">
-                  <div className="font-medium text-foreground capitalize">
+                  <div className="font-semibold capitalize text-gray-900">
                     {record.key}
                   </div>
-                  <div className="truncate text-muted-foreground text-xs">
+                  <div className="truncate text-xs text-gray-500">
                     {record.value}
                   </div>
                 </div>
-                <span className="text-muted-foreground">→</span>
+                <span className="text-gray-400">→</span>
               </a>
             ))}
         </div>

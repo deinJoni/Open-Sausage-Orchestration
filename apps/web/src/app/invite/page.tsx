@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useDebounceValue } from "usehooks-ts";
 import { useAccount, useDisconnect, useReadContract } from "wagmi";
+import { AppKitButton } from "@/components/appkit-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -208,7 +209,7 @@ export default function InvitePage() {
             >
               Disconnect Porto
             </Button>
-            <appkit-button size="md" />
+            <AppKitButton size="md" />
           </div>
         </Card>
       </div>
@@ -225,7 +226,7 @@ export default function InvitePage() {
           <p className="mb-6 text-muted-foreground">
             Connect your wallet to generate invite codes
           </p>
-          <appkit-button size="md" />
+          <AppKitButton size="md" />
         </Card>
       </div>
     );

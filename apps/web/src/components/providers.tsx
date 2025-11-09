@@ -16,7 +16,7 @@ export default function Providers({
     <AppKitProvider cookies={cookies}>
       <ThemeProvider
         attribute="data-theme"
-        defaultTheme="dark-midnight"
+        defaultTheme="light-midnight"
         disableTransitionOnChange
         enableSystem={false}
         themes={[

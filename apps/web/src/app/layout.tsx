@@ -37,9 +37,11 @@ export default async function RootLayout({
       >
         <NuqsAdapter>
           <Providers cookies={cookies}>
-            <Header />
-            {children}
-            <Footer />
+            <div className="flex min-h-screen flex-col bg-[#f8f4ff] text-gray-950">
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
           </Providers>
         </NuqsAdapter>
       </body>

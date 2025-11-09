@@ -18,6 +18,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
 import { ENS, SocialKey } from "@/lib/constants";
+import {
+  PAGE_CONTENT_CLASS,
+  PANEL_CLASS,
+  SECTION_HEADING_CLASS,
+  SECTION_SUBHEADING_CLASS,
+  SOFT_PANEL_CLASS,
+} from "@/lib/page-styles";
 import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 
 const SOCIAL_ICONS: Record<SocialKey, string> = {
@@ -73,11 +80,11 @@ export default function ProfilePage() {
   // Loading state
   if (artistLoading || (isOwner && ownedProfile.isLoading)) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-12">
+      <div className={`${PAGE_CONTENT_CLASS} py-12`}>
         <div className="mb-8 space-y-4">
-          <Skeleton className="h-64 w-full rounded-lg" />
+          <Skeleton className={`${PANEL_CLASS} h-64 w-full rounded-3xl`} />
           <div className="flex items-center gap-6">
-            <Skeleton className="h-32 w-32 rounded-full" />
+            <Skeleton className="h-32 w-32 rounded-full border border-dashed border-black/30" />
             <div className="flex-1 space-y-3">
               <Skeleton className="h-8 w-48" />
               <Skeleton className="h-4 w-full max-w-lg" />
@@ -93,10 +100,14 @@ export default function ProfilePage() {
     // If viewing own address without connection, show connect prompt
     if (!isConnected) {
       return (
-        <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-          <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-            <h1 className="mb-4 font-bold text-2xl text-white">Your Profile</h1>
-            <p className="mb-6 text-muted-foreground">
+        <div
+          className={`${PAGE_CONTENT_CLASS} flex min-h-[70vh] max-w-2xl items-center justify-center`}
+        >
+          <Card className={`${SOFT_PANEL_CLASS} w-full p-10 text-center`}>
+            <h1 className={`${SECTION_HEADING_CLASS} mb-4 text-3xl`}>
+              Your Profile
+            </h1>
+            <p className="mb-6 text-gray-600">
               Connect your wallet to view and manage your profile
             </p>
             <PortoConnectButton />
@@ -111,8 +122,8 @@ export default function ProfilePage() {
       if (ownedProfile.hasProfile && ownedProfile.data) {
         // Show edit form
         return (
-          <div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
-            <h1 className="mb-8 font-bold text-3xl text-white">Your Profile</h1>
+          <div className={`${PAGE_CONTENT_CLASS} max-w-4xl py-12`}>
+            <h1 className={`${SECTION_HEADING_CLASS} mb-8`}>Your Profile</h1>
             <div className="grid gap-6">
               <ProfileEditForm
                 key={ownedProfile.data?.ensName}
@@ -126,16 +137,20 @@ export default function ProfilePage() {
 
       // No subdomain - show request message
       return (
-        <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-          <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-            <div className="mb-4 text-5xl">👤</div>
-            <h1 className="mb-4 font-bold text-2xl text-white">
+        <div
+          className={`${PAGE_CONTENT_CLASS} flex min-h-[70vh] max-w-2xl items-center justify-center`}
+        >
+          <Card
+            className={`${SOFT_PANEL_CLASS} w-full space-y-4 p-10 text-center`}
+          >
+            <div className="text-5xl">👤</div>
+            <h1 className={`${SECTION_HEADING_CLASS} text-2xl`}>
               No Profile Found
             </h1>
-            <p className="mb-4 break-all font-mono text-muted-foreground text-sm">
+            <p className="mb-4 break-all font-mono text-sm text-gray-500">
               {identifier}
             </p>
-            <p className="mb-6 text-muted-foreground">
+            <p className="mb-6 text-gray-600">
               You need a subdomain to edit your profile. Get an invite code to
               get started!
             </p>
@@ -154,13 +169,13 @@ export default function ProfilePage() {
 
     // Viewing someone else's address - not allowed
     return (
-      <div className="mx-auto max-w-4xl px-4 py-12 text-center">
-        <Card className="border-border bg-card p-8 backdrop-blur">
-          <div className="mb-4 text-5xl">🔒</div>
-          <h2 className="mb-2 font-bold text-2xl text-white">
+      <div className={`${PAGE_CONTENT_CLASS} max-w-4xl py-16 text-center`}>
+        <Card className={`${SOFT_PANEL_CLASS} space-y-4 p-10`}>
+          <div className="text-5xl">🔒</div>
+          <h2 className={`${SECTION_HEADING_CLASS} text-2xl`}>
             Private Profile
           </h2>
-          <p className="mb-6 text-muted-foreground">This profile is private.</p>
+          <p className="mb-6 text-gray-600">This profile is private.</p>
           <Button asChild variant="outline">
             <Link href="/">Go Home</Link>
           </Button>
@@ -172,13 +187,13 @@ export default function ProfilePage() {
   // Handle subdomain-based profile
   if (!artist) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-12 text-center">
-        <Card className="border-border bg-card p-8 backdrop-blur">
-          <div className="mb-4 text-5xl">🤔</div>
-          <h2 className="mb-2 font-bold text-2xl text-white">
+      <div className={`${PAGE_CONTENT_CLASS} max-w-4xl py-16 text-center`}>
+        <Card className={`${SOFT_PANEL_CLASS} space-y-4 p-10`}>
+          <div className="text-5xl">🤔</div>
+          <h2 className={`${SECTION_HEADING_CLASS} text-2xl`}>
             Profile not found
           </h2>
-          <p className="mb-6 text-muted-foreground">
+          <p className="mb-6 text-gray-600">
             The profile "{identifier}" doesn't exist or hasn't been created yet.
           </p>
           <Button asChild variant="outline">
@@ -192,8 +207,8 @@ export default function ProfilePage() {
   // If owner is viewing their own subdomain profile, show edit form
   if (isOwner && ownedProfile.data) {
     return (
-      <div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
-        <h1 className="mb-8 font-bold text-3xl text-white">Your Profile</h1>
+      <div className={`${PAGE_CONTENT_CLASS} max-w-4xl py-12`}>
+        <h1 className={`${SECTION_HEADING_CLASS} mb-8`}>Your Profile</h1>
         <div className="grid gap-6">
           <ProfileEditForm
             key={ownedProfile.data?.ensName}
@@ -210,20 +225,15 @@ export default function ProfilePage() {
   const description = getTextRecord(artist.textRecords?.(), "description");
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      {/* Back Button */}
-      <div className="mb-6">
+    <div className={`${PAGE_CONTENT_CLASS} py-12`}>
+      <div className="mb-6 flex items-center justify-between">
         <Button asChild size="sm" variant="ghost">
-          {
-            // @ts-expect-error - TODO: fix this
-            <Link href={"/artists"}>← Back to Artists</Link>
-          }
+          <Link href="/">← Back to Home</Link>
         </Button>
       </div>
 
-      {/* Stream Embed - Show if artist is currently streaming */}
       {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
-        <div className="mb-8">
+        <div className={`${PANEL_CLASS} mb-8 overflow-hidden p-0`}>
           <StreamEmbed
             artistName={artist.subdomain || fullEnsName || ""}
             streamPlatform={artist.streamPlatform}
@@ -233,15 +243,15 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* Profile Header */}
-      <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-start">
-        {/* Avatar */}
+      <div
+        className={`${PANEL_CLASS} mb-8 flex flex-col gap-6 px-8 py-10 md:flex-row md:items-start`}
+      >
         <div className="flex-shrink-0">
           {avatar ? (
             <Image
               alt={artist.subdomain || fullEnsName || "Artist"}
               className={`h-32 w-32 rounded-full border-4 ${
-                artist.isStreaming ? "border-live" : "border-border"
+                artist.isStreaming ? "border-live" : "border-black"
               }`}
               height={128}
               src={ipfsToHttp(avatar)}
@@ -250,43 +260,47 @@ export default function ProfilePage() {
           ) : (
             <div
               className={`flex h-32 w-32 items-center justify-center rounded-full border-4 ${
-                artist.isStreaming ? "border-live" : "border-border"
-              } bg-surface-elevated text-4xl`}
+                artist.isStreaming ? "border-live" : "border-black"
+              } bg-white text-4xl`}
             >
               👤
             </div>
           )}
         </div>
 
-        {/* Name + Bio + Action */}
         <div className="flex-1 space-y-4">
-          <div>
-            <h1 className="mb-2 font-bold text-4xl text-white">
+          <div className="space-y-2">
+            <h1 className={`${SECTION_HEADING_CLASS} text-4xl`}>
               {artist.subdomain || fullEnsName}
             </h1>
             {description && (
-              <p className="text-foreground text-lg">{description}</p>
+              <p className="text-lg leading-relaxed text-gray-700">
+                {description}
+              </p>
             )}
           </div>
 
-          <Button onClick={() => setShowDonationModal(true)} size="lg">
+          <Button
+            className="w-fit"
+            onClick={() => setShowDonationModal(true)}
+            size="lg"
+          >
             💜 Send Gift
           </Button>
         </div>
       </div>
 
-      {/* Social Links */}
-      <div>
-        <h3 className="mb-4 font-semibold text-white text-xl">
+      <div className={`${PANEL_CLASS} px-8 py-10`}>
+        <h3 className={`${SECTION_HEADING_CLASS} mb-6 text-2xl`}>
           🔗 Connect & Listen
         </h3>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {artist
             .textRecords?.()
             ?.filter((record) => SocialKey.safeParse(record.key).success)
             .map((record) => (
               <a
-                className="flex items-center gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:border-brand/50 hover:bg-card/80"
+                className="flex items-center gap-3 rounded-2xl border border-black bg-white px-4 py-3 transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0_6px_0_rgba(0,0,0,0.45)]"
                 href={record.value}
                 key={record.value}
                 rel="noopener noreferrer"
@@ -296,20 +310,19 @@ export default function ProfilePage() {
                   {SOCIAL_ICONS[SocialKey.parse(record.key)] || "🔗"}
                 </span>
                 <div className="flex-1 overflow-hidden">
-                  <div className="font-medium text-white capitalize">
+                  <div className="font-semibold capitalize text-gray-900">
                     {record.key}
                   </div>
-                  <div className="truncate text-muted-foreground text-xs">
+                  <div className="truncate text-xs text-gray-500">
                     {record.value}
                   </div>
                 </div>
-                <span className="text-muted-foreground">→</span>
+                <span className="text-gray-400">→</span>
               </a>
             ))}
         </div>
       </div>
 
-      {/* Donation Modal */}
       {showDonationModal && (
         <DonationPopover
           ensName={artist.subdomain ?? ""}

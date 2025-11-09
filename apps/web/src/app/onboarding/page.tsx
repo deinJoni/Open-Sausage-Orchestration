@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
+import { AppKitButton } from "@/components/appkit-button";
 import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,6 +21,13 @@ import {
   ENS,
   FILE_UPLOAD,
 } from "@/lib/constants";
+import {
+  PAGE_CONTENT_CLASS,
+  PANEL_CLASS,
+  SECTION_HEADING_CLASS,
+  SECTION_SUBHEADING_CLASS,
+  SOFT_PANEL_CLASS,
+} from "@/lib/page-styles";
 import type { SocialLink } from "@/types/artist";
 
 type Step = "claim" | "basic" | "avatar" | "socials";
@@ -138,66 +146,71 @@ export default function OnboardingPage() {
     });
   };
 
+  const renderCentered = (content: ReactNode) => (
+    <div
+      className={`${PAGE_CONTENT_CLASS} flex min-h-[70vh] max-w-3xl items-center justify-center`}
+    >
+      {content}
+    </div>
+  );
+
   if (!isPorto) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-12">
-        <div className="mb-8 text-center">
-          <h1 className="mb-2 font-bold text-3xl text-foreground">
-            <PortoConnectButton />
-          </h1>
+    return renderCentered(
+      <Card className={`${SOFT_PANEL_CLASS} w-full space-y-6 p-10 text-center`}>
+        <h1 className={`${SECTION_HEADING_CLASS}`}>Connect With Porto</h1>
+        <p className="text-gray-600">
+          You need to connect using the Porto wallet to start creating your
+          artist profile.
+        </p>
+        <div className="flex justify-center">
+          <PortoConnectButton />
         </div>
-      </div>
+      </Card>
     );
   }
 
   if (isCheckingOwnership) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <p className="text-muted-foreground">Checking profile...</p>
+      <div
+        className={`${PAGE_CONTENT_CLASS} flex min-h-[70vh] max-w-2xl items-center justify-center`}
+      >
+        <p className="text-gray-600">Checking profile...</p>
       </div>
     );
   }
 
   if (hasProfile) {
-    return (
-      <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-          <h1 className="mb-4 font-bold text-2xl text-foreground">
-            Profile Already Exists
-          </h1>
-          <div className="mb-6 space-y-4">
-            <div className="rounded-lg border border-info/20 bg-info/10 p-4">
-              <p className="mb-2 text-info-foreground text-md">
-                You already own a subdomain
+    return renderCentered(
+      <Card className={`${SOFT_PANEL_CLASS} w-full space-y-6 p-10 text-center`}>
+        <h1 className={`${SECTION_HEADING_CLASS} text-2xl`}>
+          Profile Already Exists
+        </h1>
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-info/40 bg-white/80 px-4 py-5 text-left shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+            <p className="mb-2 text-sm font-semibold text-info-foreground">
+              You already own a subdomain
+            </p>
+            {ensName ? (
+              <p className="font-mono text-xs text-gray-800">{ensName}</p>
+            ) : (
+              <p className="text-xs text-gray-500">
+                (Subdomain detected on-chain)
               </p>
-              {ensName ? (
-                <p className="font-mono text-foreground text-xs">{ensName}</p>
-              ) : (
-                <p className="text-muted-foreground text-xs">
-                  (Subdomain detected on-chain)
-                </p>
-              )}
-            </div>
-            <p className="text-md text-muted-foreground">
-              Each wallet can only register one subdomain. You can view or edit
-              your existing profile.
-            </p>
-            <p className="text-muted-foreground text-xs">
-              Connected: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
-              {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
-            </p>
+            )}
           </div>
-          <div className="space-y-3">
-            <Button
-              className="w-full"
-              onClick={() => router.push("/")}
-              size="lg"
-            >
-              Go to Home
-            </Button>
-          </div>
-        </Card>
-      </div>
+          <p className="text-sm text-gray-600">
+            Each wallet can only register one subdomain. You can view or edit
+            your existing profile.
+          </p>
+          <p className="text-xs text-gray-500">
+            Connected: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
+            {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
+          </p>
+        </div>
+        <Button className="w-full" onClick={() => router.push("/")} size="lg">
+          Go to Home
+        </Button>
+      </Card>
     );
   }
 
@@ -217,59 +230,69 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
-      <div className="mb-8 text-center">
-        <h1 className="mb-2 font-bold text-3xl text-foreground">
-          Create Your Artist Profile
-        </h1>
-        <p className="text-muted-foreground">
-          Set up your profile and start receiving tips
-          {address}
+    <div className={`${PAGE_CONTENT_CLASS} max-w-3xl py-12`}>
+      <header className="mb-10 space-y-3 text-center">
+        <h1 className={SECTION_HEADING_CLASS}>Create Your Artist Profile</h1>
+        <p className={SECTION_SUBHEADING_CLASS}>
+          Set up your profile and start receiving tips from your fans.
         </p>
-      </div>
+        {address && (
+          <p className="text-xs font-mono text-gray-500">
+            Connected: {address.slice(0, ADDRESS_PREFIX_LENGTH)}...
+            {address.slice(-ADDRESS_SUFFIX_LENGTH)}
+          </p>
+        )}
+      </header>
 
-      {/* Progress indicator */}
-      <div className="mb-8 flex justify-center gap-2">
+      <div className="mb-8 flex justify-center gap-3">
         <div
-          className={`h-2 w-12 rounded ${getStepIndicatorColor(
+          className={`h-2 w-12 rounded-full ${getStepIndicatorColor(
             step,
             "claim",
             isRegistered
           )}`}
         />
         <div
-          className={`h-2 w-12 rounded ${step === "basic" ? "bg-brand" : "bg-surface-elevated"}`}
+          className={`h-2 w-12 rounded-full ${
+            step === "basic" ? "bg-brand" : "bg-gray-200"
+          }`}
         />
         <div
-          className={`h-2 w-12 rounded ${step === "avatar" ? "bg-brand" : "bg-surface-elevated"}`}
+          className={`h-2 w-12 rounded-full ${
+            step === "avatar" ? "bg-brand" : "bg-gray-200"
+          }`}
         />
         <div
-          className={`h-2 w-12 rounded ${step === "socials" ? "bg-brand" : "bg-surface-elevated"}`}
+          className={`h-2 w-12 rounded-full ${
+            step === "socials" ? "bg-brand" : "bg-gray-200"
+          }`}
         />
       </div>
 
-      <Card className="border-border bg-card p-8 backdrop-blur">
+      <Card className="space-y-8 px-8 py-10">
         {!address && (
-          <div className="mb-6 space-y-3 rounded-lg border border-info/20 bg-info/10 p-4">
-            <p className="text-center font-medium text-info-foreground text-md">
+          <div className="space-y-3 rounded-2xl border border-info/40 bg-white/80 px-4 py-5 text-center shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+            <p className="text-sm font-semibold text-info-foreground">
               ⚡ Connect with Porto Wallet
             </p>
-            <p className="text-center text-info-foreground/80 text-xs">
+            <p className="text-xs text-info-foreground/80">
               Artists use Porto for a simple, secure onboarding experience.
               Select Porto from the wallet options below.
             </p>
-            <appkit-button size="md" />
+            <div className="flex justify-center">
+              <AppKitButton size="md" />
+            </div>
           </div>
         )}
 
         {inviteData && (
-          <div className="mb-6 rounded-lg border border-brand/20 bg-brand/10 p-4">
-            <p className="mb-1 font-medium text-brand text-md">
+          <div className="rounded-2xl border border-brand/40 bg-white/80 px-4 py-5 shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+            <p className="mb-1 text-sm font-semibold text-brand">
               ✨ Invited by {inviteData.inviter.slice(0, ADDRESS_PREFIX_LENGTH)}
               ...
               {inviteData.inviter.slice(-ADDRESS_SUFFIX_LENGTH)}
             </p>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-xs text-gray-600">
               You're invited to claim:{" "}
               <span className="font-mono text-brand">
                 {ensName}.{ENS.PARENT_DOMAIN}
@@ -291,25 +314,25 @@ export default function OnboardingPage() {
                 type="text"
                 value={ensName}
               />
-              <p className="mt-1 font-mono text-md text-muted-foreground">
+              <p className="mt-1 font-mono text-sm text-gray-500">
                 {ensName}.{ENS.PARENT_DOMAIN}
               </p>
               {inviteData ? (
-                <p className="mt-1 text-warning text-xs">
+                <p className="mt-1 text-xs text-warning">
                   ✨ This name is reserved for you via invite
                 </p>
               ) : (
-                <p className="mt-1 text-muted-foreground text-xs">
+                <p className="mt-1 text-xs text-gray-500">
                   Your unique identifier on the platform
                 </p>
               )}
             </div>
 
-            <div className="rounded-lg border border-info/20 bg-info/10 p-4">
-              <p className="mb-2 font-medium text-info-foreground text-md">
+            <div className="rounded-2xl border border-info/40 bg-white/80 px-4 py-5 shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+              <p className="mb-2 text-sm font-semibold text-info-foreground">
                 📝 First, let's claim your name
               </p>
-              <p className="text-info-foreground/80 text-xs">
+              <p className="text-xs text-info-foreground/80">
                 You'll sign one transaction to register your subdomain. After
                 that, we'll collect your profile details and you'll sign once
                 more to save them.
@@ -330,11 +353,11 @@ export default function OnboardingPage() {
 
         {step === "basic" && (
           <div className="space-y-6">
-            <div className="rounded-lg border border-success/20 bg-success/10 p-4">
-              <p className="mb-1 font-medium text-md text-success-foreground">
+            <div className="rounded-2xl border border-success/40 bg-white/80 px-4 py-5 shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+              <p className="mb-1 text-sm font-semibold text-success-foreground">
                 ✅ Name Claimed: {ensName}.{ENS.PARENT_DOMAIN}
               </p>
-              <p className="text-success-foreground/80 text-xs">
+              <p className="text-xs text-success-foreground/80">
                 Now let's set up your profile!
               </p>
             </div>
@@ -353,7 +376,7 @@ export default function OnboardingPage() {
             <div>
               <Label htmlFor="bio">Bio</Label>
               <textarea
-                className="mt-2 w-full rounded-md border border-border bg-surface-elevated px-3 py-2 text-foreground text-md placeholder:text-muted-foreground focus:border-brand focus:outline-none"
+                className="mt-2 w-full rounded-2xl border border-black/50 bg-white px-3 py-3 text-md text-gray-900 placeholder:text-gray-400 focus:border-black focus:outline-none"
                 id="bio"
                 maxLength={160}
                 onChange={(e) => setBio(e.target.value)}
@@ -361,7 +384,7 @@ export default function OnboardingPage() {
                 rows={4}
                 value={bio}
               />
-              <p className="mt-1 text-right text-muted-foreground text-xs">
+              <p className="mt-1 text-right text-xs text-gray-500">
                 {bio.length}/160
               </p>
             </div>
@@ -382,7 +405,7 @@ export default function OnboardingPage() {
               <Label>Profile Picture</Label>
               <div className="mt-4 flex flex-col items-center gap-4">
                 {avatar && (
-                  <div className="h-32 w-32 overflow-hidden rounded-full border-2 border-brand">
+                  <div className="h-32 w-32 overflow-hidden rounded-full border-2 border-black">
                     <Image
                       alt="Avatar preview"
                       className="h-full w-full object-cover"
@@ -408,13 +431,11 @@ export default function OnboardingPage() {
                         return;
                       }
 
-                      // Validate file type
                       if (!file.type.startsWith("image/")) {
                         toast.error("Please upload an image file");
                         return;
                       }
 
-                      // Validate file size (4MB)
                       if (file.size > FILE_UPLOAD.MAX_AVATAR_SIZE_BYTES) {
                         toast.error("Image must be less than 4MB");
                         return;
@@ -431,7 +452,7 @@ export default function OnboardingPage() {
                   </label>
                 </div>
 
-                <p className="text-center text-muted-foreground text-xs">
+                <p className="text-center text-xs text-gray-500">
                   Upload a square image (recommended 400x400px)
                 </p>
               </div>
@@ -456,7 +477,7 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div>
               <Label>Social Links</Label>
-              <p className="mb-4 text-md text-muted-foreground">
+              <p className="mb-4 text-sm text-gray-600">
                 Connect your platforms (you can skip this for now)
               </p>
 
@@ -475,11 +496,12 @@ export default function OnboardingPage() {
 
                   return (
                     <div
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 rounded-2xl border border-black/20 bg-white px-4 py-3 shadow-sm"
                       key={social.platform}
                     >
                       <span className="text-2xl">{social.icon}</span>
                       <Input
+                        className="border-none bg-transparent focus-visible:ring-0"
                         onChange={(e) => {
                           const newSocials = socials.filter(
                             (s) =>
