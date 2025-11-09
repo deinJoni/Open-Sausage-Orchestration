@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LivestreamCarousel } from "@/components/livestream-carousel";
 import { Button } from "@/components/ui/button";
 import { useActiveBroadcasts } from "@/hooks/use-active-broadcast";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function Home() {
   const { data: activeBroadcasts, isLoading } = useActiveBroadcasts();
@@ -36,6 +37,8 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       <LivestreamCarousel broadcasts={activeBroadcasts} />
+
+      <ThemeSwitcher />
 
       <div className="mt-8 text-center">
         <Button asChild variant="outline">
