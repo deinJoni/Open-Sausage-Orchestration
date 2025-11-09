@@ -1,11 +1,11 @@
 "use client";
 
-import { Check, Palette } from "lucide-react";
+import { Check, Moon, Palette, Sun } from "lucide-react";
 import { useColorTheme } from "./color-theme-provider";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
-const themes = {
+const colorThemes = {
   midnight: {
     name: "Midnight",
     description: "Purple & fuchsia",
@@ -17,7 +17,7 @@ const themes = {
 } as const;
 
 export function ThemeSwitcher() {
-  const { theme, setTheme } = useColorTheme();
+  const { mode, color, setMode, setColor } = useColorTheme();
 
   return (
     <Popover>
@@ -27,28 +27,60 @@ export function ThemeSwitcher() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-56">
-        <div className="space-y-1">
-          <p className="mb-2 font-medium text-sm">Theme</p>
-          {Object.entries(themes).map(([key, value]) => (
-            <button
-              className="flex w-full items-center gap-3 rounded-md p-2 text-left transition-colors hover:bg-accent"
-              key={key}
-              onClick={() => setTheme(key as keyof typeof themes)}
-              type="button"
-            >
-              <div
-                className="size-5 shrink-0 rounded-full bg-gradient-to-r from-brand to-brand-secondary"
-                data-theme={key}
-              />
-              <div className="flex-1">
-                <div className="font-medium text-sm">{value.name}</div>
-                <div className="text-muted-foreground text-xs">
-                  {value.description}
-                </div>
-              </div>
-              {theme === key && <Check className="size-4 text-brand" />}
-            </button>
-          ))}
+        <div className="space-y-4">
+          {/* Mode Toggle */}
+          <div>
+            <p className="mb-2 font-medium text-sm">Mode</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                className={`flex items-center justify-center gap-2 rounded-md border p-2 text-left transition-colors hover:bg-accent ${
+                  mode === "light" ? "border-brand bg-accent" : "border-border"
+                }`}
+                onClick={() => setMode("light")}
+                type="button"
+              >
+                <Sun className="size-4" />
+                <span className="text-sm">Light</span>
+              </button>
+              <button
+                className={`flex items-center justify-center gap-2 rounded-md border p-2 text-left transition-colors hover:bg-accent ${
+                  mode === "dark" ? "border-brand bg-accent" : "border-border"
+                }`}
+                onClick={() => setMode("dark")}
+                type="button"
+              >
+                <Moon className="size-4" />
+                <span className="text-sm">Dark</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Color Theme Picker */}
+          <div>
+            <p className="mb-2 font-medium text-sm">Color</p>
+            <div className="space-y-1">
+              {Object.entries(colorThemes).map(([key, value]) => (
+                <button
+                  className="flex w-full items-center gap-3 rounded-md p-2 text-left transition-colors hover:bg-accent"
+                  key={key}
+                  onClick={() => setColor(key as keyof typeof colorThemes)}
+                  type="button"
+                >
+                  <div
+                    className="size-5 shrink-0 rounded-full bg-gradient-to-r from-brand to-brand-secondary"
+                    data-theme={`${mode}-${key}`}
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium text-sm">{value.name}</div>
+                    <div className="text-muted-foreground text-xs">
+                      {value.description}
+                    </div>
+                  </div>
+                  {color === key && <Check className="size-4 text-brand" />}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </PopoverContent>
     </Popover>

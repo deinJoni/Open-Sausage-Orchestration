@@ -1,7 +1,6 @@
 "use client";
 
 import { AppKitProvider } from "./appkit-provider";
-import { ColorThemeProvider } from "./color-theme-provider";
 import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "./ui/sonner";
 
@@ -15,15 +14,19 @@ export default function Providers({
   return (
     <AppKitProvider cookies={cookies}>
       <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
+        attribute="data-theme"
+        defaultTheme="light-midnight"
         disableTransitionOnChange
-        enableSystem
+        enableSystem={false}
+        themes={[
+          "light-midnight",
+          "dark-midnight",
+          "light-sunset",
+          "dark-sunset",
+        ]}
       >
-        <ColorThemeProvider>
-          {children}
-          <Toaster richColors />
-        </ColorThemeProvider>
+        {children}
+        <Toaster richColors />
       </ThemeProvider>
     </AppKitProvider>
   );

@@ -44,12 +44,9 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
   }
 
   return (
-    <div className="mb-12 w-full">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-bold text-2xl text-white">🔴 Live Now</h2>
-      </div>
-
+    <div className="w-full">
       <Carousel
+        className="w-full"
         opts={{
           loop: true,
           align: "center",
@@ -134,14 +131,14 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
 
       {/* Navigation Dots */}
       {broadcasts.length > 1 && (
-        <div className="mt-4 flex justify-center gap-2">
+        <div className="mt-6 flex justify-center gap-2">
           {broadcasts.map((broadcast, index) => (
             <button
               aria-label={`Go to stream ${index + 1} of ${broadcasts.length}`}
-              className={`h-2 w-2 rounded-full transition-all ${
+              className={`h-2 rounded-full transition-all duration-300 ${
                 index === current
-                  ? "w-8 bg-brand"
-                  : "bg-surface-elevated hover:bg-muted-foreground"
+                  ? "w-12 bg-gradient-to-r from-live to-brand shadow-brand/50 shadow-lg"
+                  : "w-2 bg-muted-foreground/30 hover:scale-125 hover:bg-muted-foreground/60"
               }`}
               key={`dot-${broadcast.subdomain?.name ?? index}`}
               onClick={() => api?.scrollTo(index)}

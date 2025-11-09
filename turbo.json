@@ -1,72 +1,72 @@
 {
-	"$schema": "https://turbo.build/schema.json",
-	"ui": "tui",
-	"tasks": {
-		"build": {
-			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$", ".env*"],
-			"outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-			"env": ["PINATA_JWT", "MERCHANT_ADDRESS", "MERCHANT_PRIVATE_KEY"]
-		},
-		"dev": {
-			"cache": false,
-			"persistent": true
-		},
-		"typecheck": {
-			"dependsOn": [],
-			"outputs": [],
-			"cache": true
-		},
-		"lint": {
-			"outputs": [],
-			"cache": true
-		},
-		"fix": {
-			"outputs": [],
-			"cache": false
-		},
-		"fix:unsafe": {
-			"outputs": [],
-			"cache": true
-		},
-		"format": {
-			"outputs": [],
-			"cache": false
-		},
-		"check": {
-			"dependsOn": ["lint", "typecheck"]
-		},
-		"db:push": {
-			"cache": false,
-			"persistent": true
-		},
-		"db:studio": {
-			"cache": false,
-			"persistent": true
-		},
-		"db:migrate": {
-			"cache": false,
-			"persistent": true
-		},
-		"db:generate": {
-			"cache": false,
-			"persistent": true
-		},
-		"db:start": {
-			"cache": false,
-			"persistent": true
-		},
-		"db:stop": {
-			"cache": false,
-			"persistent": true
-		},
-		"db:watch": {
-			"cache": false,
-			"persistent": true
-		},
-		"db:down": {
-			"cache": false,
-			"persistent": true
-		}
-	}
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": ["PINATA_JWT", "MERCHANT_ADDRESS", "MERCHANT_PRIVATE_KEY"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": [],
+      "outputs": [],
+      "cache": true
+    },
+    "lint": {
+      "outputs": [],
+      "cache": true
+    },
+    "fix": {
+      "outputs": [],
+      "cache": false
+    },
+    "fix:unsafe": {
+      "outputs": [],
+      "cache": true
+    },
+    "format": {
+      "outputs": [],
+      "cache": false
+    },
+    "check": {
+      "dependsOn": ["lint", "typecheck"]
+    },
+    "db:push": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:migrate": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:generate": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:start": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:stop": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "db:down": {
+      "cache": false,
+      "persistent": true
+    }
+  }
 }

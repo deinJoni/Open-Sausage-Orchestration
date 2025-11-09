@@ -1,13 +1,13 @@
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
   assert,
+  beforeEach,
+  clearStore,
   describe,
   test,
-  clearStore,
-  beforeEach,
 } from "matchstick-as/assembly/index";
 import { handleTextChanged } from "../src/l2-resolver";
 import { createTextChangedEvent } from "./l2-resolver-utils";
-import { Address, Bytes, BigInt } from "@graphprotocol/graph-ts";
 
 describe("L2Resolver TextChanged mapping", () => {
   beforeEach(() => {
@@ -16,23 +16,23 @@ describe("L2Resolver TextChanged mapping", () => {
 
   test("creates User and NameLabel on TextChanged event", () => {
     // Prepare event values
-    let node = Bytes.fromHexString(
+    const node = Bytes.fromHexString(
       "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     ) as Bytes;
-    let indexedKey = "avatar";
-    let key = "avatar";
-    let value = "https://example.com/avatar.png";
+    const indexedKey = "avatar";
+    const key = "avatar";
+    const value = "https://example.com/avatar.png";
 
-    let txFrom = Address.fromString(
+    const txFrom = Address.fromString(
       "0x1111111111111111111111111111111111111111"
     );
-    let txHash = Bytes.fromHexString(
+    const txHash = Bytes.fromHexString(
       "0x9999999999999999999999999999999999999999999999999999999999999999"
     ) as Bytes;
-    let logIndex = BigInt.fromI32(0);
+    const logIndex = BigInt.fromI32(0);
 
     // Create mock event
-    let event = createTextChangedEvent(
+    const event = createTextChangedEvent(
       node,
       indexedKey,
       key,
@@ -46,12 +46,12 @@ describe("L2Resolver TextChanged mapping", () => {
     handleTextChanged(event);
 
     // Assert User entity was created
-    let userId = txFrom.toHexString();
+    const userId = txFrom.toHexString();
     assert.fieldEquals("User", userId, "address", txFrom.toHexString());
     assert.fieldEquals("User", userId, "subdomain", node.toHexString());
 
     // Assert NameLabel entity was created with correct ID
-    let nameLabelId = txHash.toHexString() + "-" + logIndex.toString();
+    const nameLabelId = txHash.toHexString() + "-" + logIndex.toString();
     assert.fieldEquals("NameLabel", nameLabelId, "key", key);
     assert.fieldEquals("NameLabel", nameLabelId, "value", value);
     assert.fieldEquals("NameLabel", nameLabelId, "node", node.toHexString());
@@ -66,18 +66,18 @@ describe("L2Resolver TextChanged mapping", () => {
 
   test("creates multiple NameLabels for same User", () => {
     // Same user, different transactions
-    let node = Bytes.fromHexString(
+    const node = Bytes.fromHexString(
       "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
     ) as Bytes;
-    let txFrom = Address.fromString(
+    const txFrom = Address.fromString(
       "0x2222222222222222222222222222222222222222"
     );
 
     // First event - avatar
-    let txHash1 = Bytes.fromHexString(
+    const txHash1 = Bytes.fromHexString(
       "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     ) as Bytes;
-    let event1 = createTextChangedEvent(
+    const event1 = createTextChangedEvent(
       node,
       "avatar",
       "avatar",
@@ -89,10 +89,10 @@ describe("L2Resolver TextChanged mapping", () => {
     handleTextChanged(event1);
 
     // Second event - description
-    let txHash2 = Bytes.fromHexString(
+    const txHash2 = Bytes.fromHexString(
       "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
     ) as Bytes;
-    let event2 = createTextChangedEvent(
+    const event2 = createTextChangedEvent(
       node,
       "description",
       "description",
@@ -104,9 +104,9 @@ describe("L2Resolver TextChanged mapping", () => {
     handleTextChanged(event2);
 
     // Assert both NameLabels exist and link to same User
-    let userId = txFrom.toHexString();
-    let nameLabelId1 = txHash1.toHexString() + "-0";
-    let nameLabelId2 = txHash2.toHexString() + "-0";
+    const userId = txFrom.toHexString();
+    const nameLabelId1 = txHash1.toHexString() + "-0";
+    const nameLabelId2 = txHash2.toHexString() + "-0";
 
     assert.fieldEquals("NameLabel", nameLabelId1, "key", "avatar");
     assert.fieldEquals("NameLabel", nameLabelId1, "user", userId);
@@ -116,18 +116,18 @@ describe("L2Resolver TextChanged mapping", () => {
   });
 
   test("handles multiple events in same transaction (different logIndex)", () => {
-    let node = Bytes.fromHexString(
+    const node = Bytes.fromHexString(
       "0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
     ) as Bytes;
-    let txFrom = Address.fromString(
+    const txFrom = Address.fromString(
       "0x3333333333333333333333333333333333333333"
     );
-    let txHash = Bytes.fromHexString(
+    const txHash = Bytes.fromHexString(
       "0xdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
     ) as Bytes;
 
     // Two events in same transaction, different log indices
-    let event1 = createTextChangedEvent(
+    const event1 = createTextChangedEvent(
       node,
       "com.twitter",
       "com.twitter",
@@ -138,7 +138,7 @@ describe("L2Resolver TextChanged mapping", () => {
     );
     handleTextChanged(event1);
 
-    let event2 = createTextChangedEvent(
+    const event2 = createTextChangedEvent(
       node,
       "com.github",
       "com.github",
@@ -150,8 +150,8 @@ describe("L2Resolver TextChanged mapping", () => {
     handleTextChanged(event2);
 
     // Assert both NameLabels exist with different IDs
-    let nameLabelId1 = txHash.toHexString() + "-5";
-    let nameLabelId2 = txHash.toHexString() + "-6";
+    const nameLabelId1 = txHash.toHexString() + "-5";
+    const nameLabelId2 = txHash.toHexString() + "-6";
 
     assert.fieldEquals("NameLabel", nameLabelId1, "key", "com.twitter");
     assert.fieldEquals("NameLabel", nameLabelId1, "value", "@artist");
@@ -163,18 +163,18 @@ describe("L2Resolver TextChanged mapping", () => {
   });
 
   test("handles livestream-related keys", () => {
-    let node = Bytes.fromHexString(
+    const node = Bytes.fromHexString(
       "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
     ) as Bytes;
-    let txFrom = Address.fromString(
+    const txFrom = Address.fromString(
       "0x4444444444444444444444444444444444444444"
     );
-    let txHash = Bytes.fromHexString(
+    const txHash = Bytes.fromHexString(
       "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
     ) as Bytes;
 
     // Test livestream.url
-    let event1 = createTextChangedEvent(
+    const event1 = createTextChangedEvent(
       node,
       "livestream.url",
       "livestream.url",
@@ -186,7 +186,7 @@ describe("L2Resolver TextChanged mapping", () => {
     handleTextChanged(event1);
 
     // Test livestream.active
-    let event2 = createTextChangedEvent(
+    const event2 = createTextChangedEvent(
       node,
       "livestream.active",
       "livestream.active",
@@ -197,8 +197,8 @@ describe("L2Resolver TextChanged mapping", () => {
     );
     handleTextChanged(event2);
 
-    let nameLabelId1 = txHash.toHexString() + "-0";
-    let nameLabelId2 = txHash.toHexString() + "-1";
+    const nameLabelId1 = txHash.toHexString() + "-0";
+    const nameLabelId2 = txHash.toHexString() + "-1";
 
     assert.fieldEquals("NameLabel", nameLabelId1, "key", "livestream.url");
     assert.fieldEquals(
@@ -212,4 +212,3 @@ describe("L2Resolver TextChanged mapping", () => {
     assert.fieldEquals("NameLabel", nameLabelId2, "value", "true");
   });
 });
-

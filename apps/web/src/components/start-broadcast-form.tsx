@@ -68,7 +68,7 @@ export function StartBroadcastForm() {
             Stream URL *
           </Label>
           <Input
-            className={`border-border ${urlError ? "border-red-500" : ""}`}
+            className={`border-border ${urlError ? "border-destructive" : ""}`}
             disabled={updateBroadcast.isPending}
             onChange={(e) => setStreamUrl(e.target.value)}
             placeholder="https://youtube.com/live/... or https://twitch.tv/..."
@@ -78,14 +78,16 @@ export function StartBroadcastForm() {
 
           {/* Platform Indicator */}
           {platform && !urlError && (
-            <p className="mt-2 flex items-center gap-2 text-green-400 text-sm">
+            <p className="mt-2 flex items-center gap-2 text-sm text-success">
               <span>✓</span>
               <span className="capitalize">{platform} detected</span>
             </p>
           )}
 
           {/* Error Message */}
-          {urlError && <p className="mt-2 text-red-400 text-sm">{urlError}</p>}
+          {urlError && (
+            <p className="mt-2 text-destructive text-sm">{urlError}</p>
+          )}
         </div>
 
         {/* Guest Artists Picker */}
