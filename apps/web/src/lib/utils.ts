@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { keccak256, toBytes } from "viem";
 import { namehash } from "viem/ens";
 import { type AllValidKeys, ENS } from "./constants";
 
@@ -43,7 +44,9 @@ export function getTextRecord(
  * Extract initials from artist name
  */
 export function getInitials(name: string): string {
-  if (!name) return "?";
+  if (!name) {
+    return "?";
+  }
 
   // Remove .orchestraid.eth or similar suffixes
   const cleanName = name.split(".")[0];
@@ -56,13 +59,14 @@ export function getInitials(name: string): string {
  * Generate consistent color from string
  */
 export function stringToColor(str: string): string {
-  if (!str) return "hsl(0, 0%, 50%)";
+  if (!str) {
+    return "hsl(0, 0%, 50%)";
+  }
 
   // Simple hash function
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
+  // convert string to bytes
+  const bytes = toBytes(str);
+  const hash = Number(keccak256(bytes));
 
   // Generate hue (0-360)
   const hue = Math.abs(hash) % 360;

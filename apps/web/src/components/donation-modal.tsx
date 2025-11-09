@@ -66,7 +66,7 @@ function DonationContent({
         setCopied(true);
         toast.success("Wallet address copied to clipboard!");
         setTimeout(() => setCopied(false), 2000);
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to copy address");
       }
     }
