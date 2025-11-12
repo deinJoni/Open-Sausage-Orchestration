@@ -2,6 +2,7 @@
 
 import { type ComponentProps, useState } from "react";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
+import { getOnboardingPermissions } from "@/lib/onboarding-permissions";
 import { Button } from "./ui/button";
 
 const COPIED_TIMEOUT_MS = 2000;
@@ -56,7 +57,12 @@ export function PortoConnectButton({
   return (
     <Button
       className={className}
-      onClick={() => connect({ connector: portoConnector })}
+      onClick={() => {
+        connect({
+          connector: portoConnector,
+          withCapabilities: getOnboardingPermissions(),
+        });
+      }}
       size={size}
     >
       {isPending ? "Connecting..." : "⚡ Connect Wallet to Start"}

@@ -11,7 +11,7 @@ const corsHeaders = {
   "Access-Control-Max-Age": "86400",
 };
 
-export const route = Router({ basePath: "/porto" }).route(
+export const route = Router({ basePath: "api/porto" }).route(
   "/merchant",
   Route.merchant({
     address: env.MERCHANT_ADDRESS as Address,

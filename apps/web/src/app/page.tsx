@@ -1,8 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { useRef } from "react";
 import { ArtistCard } from "@/components/artist-card";
 import { LivestreamCarousel } from "@/components/livestream-carousel";
 import {
@@ -15,40 +13,26 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAllArtists } from "@/hooks/use-all-artists";
 import { ARTISTS_GRID_SIZE } from "@/lib/constants";
 
+const LoadingSkeleton = () => (
+  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    {[...new Array(ARTISTS_GRID_SIZE)].map((_, i) => (
+      <Card
+        className="border-border bg-card p-6"
+        key={`artist-skeleton-${String(i)}`}
+      >
+        <Skeleton className="mx-auto mb-4 h-24 w-24 rounded-full" />
+        <Skeleton className="mx-auto mb-2 h-4 w-32" />
+        <Skeleton className="mx-auto mb-4 h-3 w-48" />
+      </Card>
+    ))}
+  </div>
+);
+
 // Type-safe filter parser for nuqs
 const filterParser = parseAsStringLiteral(FILTER_OPTIONS);
 
-const dashboardNavItems = [
-  { label: "Overview", icon: "🏠" },
-  { label: "Wallet", icon: "👛" },
-  { label: "Transfers", icon: "🔁" },
-  { label: "Analytics", icon: "📊" },
-  { label: "Settings", icon: "⚙️" },
-];
-
-const dashboardActivityItems = [
-  {
-    id: "identity",
-    title: "Identity verification",
-    description: "Upload your government ID to unlock higher limits.",
-    tag: "Pending",
-    iconBackground: "bg-[#FACC15]",
-    icon: "🪪",
-  },
-  {
-    id: "beta",
-    title: "Beta Tester badge",
-    description: "Thanks for pioneering the new osopit dashboard experience.",
-    tag: "Active",
-    iconBackground:
-      "bg-gradient-to-r from-[#f97316] via-[#ec4899] to-[#8b5cf6]",
-    icon: "🌈",
-  },
-];
-
 export default function Home() {
   const { data: allArtists, isLoading } = useAllArtists();
-  const gridRef = useRef<HTMLDivElement>(null);
 
   // URL state management with nuqs - single source of truth
   const [filter, setFilter] = useQueryState(
@@ -83,21 +67,6 @@ export default function Home() {
       return matchesSearch && matchesFilter;
     }) || [];
 
-  const renderSkeletons = () => (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {[...new Array(ARTISTS_GRID_SIZE)].map((_, i) => (
-        <Card
-          className="border-border bg-card p-6"
-          key={`artist-skeleton-${String(i)}`}
-        >
-          <Skeleton className="mx-auto mb-4 h-24 w-24 rounded-full" />
-          <Skeleton className="mx-auto mb-2 h-4 w-32" />
-          <Skeleton className="mx-auto mb-4 h-3 w-48" />
-        </Card>
-      ))}
-    </div>
-  );
-
   const renderEmptyState = () => {
     const emptyConfig = {
       all: {
@@ -126,39 +95,13 @@ export default function Home() {
       : emptyConfig[filter];
 
     return (
-      <motion.div
-        animate={{ opacity: 1, y: 0 }}
-        className="py-24 text-center"
-        initial={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.5 }}
-      >
+      <div className="py-24 text-center">
         <div className="mb-4 text-7xl">{config.emoji}</div>
         <h3 className="mb-2 font-bold text-2xl">{config.title}</h3>
         <p className="text-lg text-muted-foreground">{config.message}</p>
-      </motion.div>
+      </div>
     );
   };
-
-  const renderArtistsGrid = () => (
-    <motion.div
-      animate="show"
-      className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 "
-      initial="hidden"
-      variants={{
-        hidden: { opacity: 0 },
-        show: {
-          opacity: 1,
-          transition: {
-            staggerChildren: 0.05,
-          },
-        },
-      }}
-    >
-      {filteredArtists.map((artist) => (
-        <ArtistCard artist={artist} key={artist.subdomain?.name ?? ""} />
-      ))}
-    </motion.div>
-  );
 
   // Loading state
   if (isLoading) {
@@ -167,7 +110,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 py-8">
           <div className="mb-8 h-[60vh] animate-pulse rounded-xl bg-surface-elevated" />
           <div className="mb-8 h-20 animate-pulse rounded-lg bg-surface-elevated" />
-          {renderSkeletons()}
+          <LoadingSkeleton />
         </div>
       </div>
     );
@@ -183,36 +126,29 @@ export default function Home() {
         Skip to artists
       </a>
 
-      <section className="mx-auto pt-5 pb-5 w-full bg-[#f8f4ff]  lg:px-12">
-        <div className="flex flex-col gap-12 lg:flex-row max-w-6xl mx-auto">
-          <div className="flex flex-1 flex-col items-center gap-6 text-center border-none">
+      <section className="mx-auto w-full bg-[#f8f4ff] pt-5 pb-5 lg:px-12">
+        <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row">
+          <div className="flex flex-1 flex-col items-center gap-6 border-none text-center">
             {/* Hero Section: Live Streams */}
-            <AnimatePresence mode="wait">
-              {liveArtists.length > 0 && (
-                <motion.div
-                  animate={{ opacity: 1, y: 0 }}
-                  className="w-full rounded-md border-[1px] border-black bg-white p-8  text-left shadow-[0_4px_0_rgba(0,0,0,0.55)]"
-                  exit={{ opacity: 0, y: -20 }}
-                  initial={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5 }}
+            {liveArtists.length > 0 && (
+              <div className="w-full rounded-md border-[1px] border-black bg-white p-8 text-left shadow-[0_4px_0_rgba(0,0,0,0.55)]">
+                <span
+                  className={
+                    "mx-4 rounded-full border-2 bg-red-500 px-3 py-1 font-semibold text-white text-xs uppercase tracking-[0.3em]"
+                  }
                 >
-                  <span
-                    className={`rounded-full border-2 mx-4  px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white bg-red-500`}
-                  >
-                    <span className="rounded-full    py-1 text-xs font-semibold uppercase tracking-[0.3em] text-white">
-                      LIVE
-                    </span>
+                  <span className="rounded-full py-1 font-semibold text-white text-xs uppercase tracking-[0.3em]">
+                    LIVE
                   </span>
-                  <div className="mx-auto max-w-7xl px-4 py-8 border-none">
-                    <LivestreamCarousel broadcasts={liveArtists} />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </span>
+                <div className="mx-auto max-w-7xl border-none px-4 py-8">
+                  <LivestreamCarousel broadcasts={liveArtists} />
+                </div>
+              </div>
+            )}
+
             <section className="w-full rounded-md border-[1px] border-black bg-white p-8 pt-4 text-left shadow-[0_4px_0_rgba(0,0,0.55,0.55)]">
-              <h2 className=" px-4  text-2xl font-black text-gray-950">
-                Artist
-              </h2>
+              <h2 className="px-4 font-black text-2xl text-gray-950">Artist</h2>
 
               {/* Sticky Filter Bar - always show theme switcher */}
               <StickyFilterBar
@@ -228,13 +164,18 @@ export default function Home() {
               />
 
               {/* Artist Grid Section */}
-              <div
-                className="mx-auto w-full px-4 "
-                id="artist-grid"
-                ref={gridRef}
-              >
+              <div className="mx-auto w-full px-4" id="artist-grid">
                 {filteredArtists.length === 0 && renderEmptyState()}
-                {filteredArtists.length > 0 && renderArtistsGrid()}
+                {filteredArtists.length > 0 && (
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {filteredArtists.map((artist) => (
+                      <ArtistCard
+                        artist={artist}
+                        key={artist.subdomain?.name ?? ""}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </section>
           </div>

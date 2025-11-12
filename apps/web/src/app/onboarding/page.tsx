@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
-import { AppKitButton } from "@/components/appkit-button";
 import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,14 +22,10 @@ import {
 } from "@/lib/constants";
 import {
   PAGE_CONTENT_CLASS,
-  PANEL_CLASS,
   SECTION_HEADING_CLASS,
-  SECTION_SUBHEADING_CLASS,
   SOFT_PANEL_CLASS,
 } from "@/lib/page-styles";
 import type { SocialLink } from "@/types/artist";
-
-type Step = "claim" | "basic" | "avatar" | "socials";
 
 type InviteData = {
   label: string;
@@ -40,7 +35,6 @@ type InviteData = {
   signature: string;
 };
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT CODE IS LONG>
 export default function OnboardingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -56,13 +50,13 @@ export default function OnboardingPage() {
   const { hasSubdomain: hasProfile, isLoading: isCheckingOwnership } =
     useHasSubdomainContract(address);
 
-  const [step, setStep] = useState<Step>("claim");
-  const [isRegistered, setIsRegistered] = useState(false);
-  const registerSubdomain = useRegisterSubdomain();
+  const [step, setStep] = useState<1 | 2>(1);
   const createProfile = useCreateProfile();
+  const registerSubdomain = useRegisterSubdomain();
+  const [isRegistered, setIsRegistered] = useState(false);
 
   // Form state
-  const [ensName, setEnsName] = useState(decoded?.label || "");
+  const [ensName] = useState(decoded?.label || "");
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState<File>();
   const [socials, setSocials] = useState<SocialLink[]>([]);
@@ -70,16 +64,13 @@ export default function OnboardingPage() {
   const inviteData = decoded;
 
   // Transform UI state to text records format
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
   const textRecords = useMemo<{ key: AllValidKeys; value: string }[]>(() => {
     const records: { key: AllValidKeys; value: string }[] = [];
 
-    // Add bio as description
     if (bio) {
       records.push({ key: "description", value: bio });
     }
 
-    // Transform socials to individual ENS keys
     for (const social of socials) {
       if (social.platform === "twitter") {
         records.push({ key: "com.twitter", value: social.url });
@@ -109,35 +100,24 @@ export default function OnboardingPage() {
     return records;
   }, [bio, socials]);
 
-  // Handle subdomain registration (Step 1)
-  const handleRegisterSubdomain = async () => {
+  // Handle subdomain claim
+  const handleClaimSubdomain = async () => {
     if (!inviteData) {
       toast.error("No invite data found");
       return;
     }
-
     try {
       await registerSubdomain.mutateAsync({
         label: ensName,
         inviteData,
       });
-
-      // Wait for registration to be processed
-      const TIMEOUT_MS = 2000;
-      await new Promise((resolve) => setTimeout(resolve, TIMEOUT_MS));
-
       setIsRegistered(true);
-      setStep("basic");
-      toast.success(
-        "Name claimed successfully! Now let's set up your profile 🎉"
-      );
     } catch (error) {
-      // Error is already handled by the mutation
       console.error("Registration failed:", error);
     }
   };
 
-  // Handle profile details submission (Step 2)
+  // Handle profile submission
   const handleSubmit = async () => {
     await createProfile.mutation.mutateAsync({
       ensName,
@@ -146,29 +126,7 @@ export default function OnboardingPage() {
     });
   };
 
-  const renderCentered = (content: ReactNode) => (
-    <div
-      className={`${PAGE_CONTENT_CLASS} flex min-h-[70vh] max-w-3xl items-center justify-center`}
-    >
-      {content}
-    </div>
-  );
-
-  if (!isPorto) {
-    return renderCentered(
-      <Card className={`${SOFT_PANEL_CLASS} w-full space-y-6 p-10 text-center`}>
-        <h1 className={`${SECTION_HEADING_CLASS}`}>Connect With Porto</h1>
-        <p className="text-gray-600">
-          You need to connect using the Porto wallet to start creating your
-          artist profile.
-        </p>
-        <div className="flex justify-center">
-          <PortoConnectButton />
-        </div>
-      </Card>
-    );
-  }
-
+  // Loading state
   if (isCheckingOwnership) {
     return (
       <div
@@ -179,204 +137,190 @@ export default function OnboardingPage() {
     );
   }
 
+  // Already has profile
   if (hasProfile) {
-    return renderCentered(
-      <Card className={`${SOFT_PANEL_CLASS} w-full space-y-6 p-10 text-center`}>
-        <h1 className={`${SECTION_HEADING_CLASS} text-2xl`}>
-          Profile Already Exists
-        </h1>
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-info/40 bg-white/80 px-4 py-5 text-left shadow-[0_6px_0_rgba(0,0,0,0.25)]">
-            <p className="mb-2 text-sm font-semibold text-info-foreground">
-              You already own a subdomain
-            </p>
-            {ensName ? (
-              <p className="font-mono text-xs text-gray-800">{ensName}</p>
-            ) : (
-              <p className="text-xs text-gray-500">
-                (Subdomain detected on-chain)
+    return (
+      <div
+        className={`${PAGE_CONTENT_CLASS} flex min-h-[70vh] max-w-3xl items-center justify-center`}
+      >
+        <Card
+          className={`${SOFT_PANEL_CLASS} w-full space-y-6 p-10 text-center`}
+        >
+          <h1 className={`${SECTION_HEADING_CLASS} text-2xl`}>
+            Profile Already Exists
+          </h1>
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-info/40 bg-white/80 px-4 py-5 text-left shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+              <p className="mb-2 font-semibold text-info-foreground text-sm">
+                You already own a subdomain
               </p>
-            )}
+              {ensName ? (
+                <p className="font-mono text-gray-800 text-xs">{ensName}</p>
+              ) : (
+                <p className="text-gray-500 text-xs">
+                  (Subdomain detected on-chain)
+                </p>
+              )}
+            </div>
+            <p className="text-gray-600 text-sm">
+              Each wallet can only register one subdomain. You can view or edit
+              your existing profile.
+            </p>
+            <p className="text-gray-500 text-xs">
+              Connected: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
+              {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
+            </p>
           </div>
-          <p className="text-sm text-gray-600">
-            Each wallet can only register one subdomain. You can view or edit
-            your existing profile.
-          </p>
-          <p className="text-xs text-gray-500">
-            Connected: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
-            {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
-          </p>
-        </div>
-        <Button className="w-full" onClick={() => router.push("/")} size="lg">
-          Go to Home
-        </Button>
-      </Card>
+          <Button className="w-full" onClick={() => router.push("/")} size="lg">
+            Go to Home
+          </Button>
+        </Card>
+      </div>
     );
   }
 
-  // Helper function to get step indicator color
-  const getStepIndicatorColor = (
-    currentStep: Step,
-    targetStep: Step,
-    isCompleted: boolean
-  ): string => {
-    if (currentStep === targetStep) {
-      return "bg-brand";
-    }
-    if (targetStep === "claim" && isCompleted) {
-      return "bg-success";
-    }
-    return "bg-muted";
-  };
+  // No invite data
+  if (!inviteData) {
+    return (
+      <div
+        className={`${PAGE_CONTENT_CLASS} flex min-h-[70vh] max-w-3xl items-center justify-center`}
+      >
+        <Card
+          className={`${SOFT_PANEL_CLASS} w-full space-y-6 p-10 text-center`}
+        >
+          <h1 className={`${SECTION_HEADING_CLASS}`}>Invite Required</h1>
+          <p className="text-gray-600">
+            You need an invite code to create an artist profile.
+          </p>
+          <Button onClick={() => router.push("/")} size="lg">
+            Go to Home
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className={`${PAGE_CONTENT_CLASS} max-w-3xl py-12`}>
       <header className="mb-10 space-y-3 text-center">
         <h1 className={SECTION_HEADING_CLASS}>Create Your Artist Profile</h1>
-        <p className={SECTION_SUBHEADING_CLASS}>
-          Set up your profile and start receiving tips from your fans.
-        </p>
-        {address && (
-          <p className="text-xs font-mono text-gray-500">
-            Connected: {address.slice(0, ADDRESS_PREFIX_LENGTH)}...
-            {address.slice(-ADDRESS_SUFFIX_LENGTH)}
-          </p>
-        )}
+        <div className="flex items-center justify-center gap-2 text-gray-500 text-xs">
+          <span className="rounded-full bg-brand/10 px-3 py-1">Gas-free</span>
+          <span className="rounded-full bg-brand/10 px-3 py-1">
+            Decentralized
+          </span>
+          <span className="rounded-full bg-brand/10 px-3 py-1">
+            Own your identity
+          </span>
+        </div>
       </header>
 
-      <div className="mb-8 flex justify-center gap-3">
+      <div className="mb-8 flex items-center justify-center gap-2 text-sm">
         <div
-          className={`h-2 w-12 rounded-full ${getStepIndicatorColor(
-            step,
-            "claim",
-            isRegistered
-          )}`}
-        />
-        <div
-          className={`h-2 w-12 rounded-full ${
-            step === "basic" ? "bg-brand" : "bg-gray-200"
+          className={`flex h-8 w-8 items-center justify-center rounded-full font-bold ${
+            step === 1 ? "bg-brand text-white" : "bg-gray-200 text-gray-500"
           }`}
-        />
+        >
+          1
+        </div>
+        <div className="h-0.5 w-12 bg-gray-200" />
         <div
-          className={`h-2 w-12 rounded-full ${
-            step === "avatar" ? "bg-brand" : "bg-gray-200"
+          className={`flex h-8 w-8 items-center justify-center rounded-full font-bold ${
+            step === 2 ? "bg-brand text-white" : "bg-gray-200 text-gray-500"
           }`}
-        />
-        <div
-          className={`h-2 w-12 rounded-full ${
-            step === "socials" ? "bg-brand" : "bg-gray-200"
-          }`}
-        />
+        >
+          2
+        </div>
       </div>
 
       <Card className="space-y-8 px-8 py-10">
-        {!address && (
-          <div className="space-y-3 rounded-2xl border border-info/40 bg-white/80 px-4 py-5 text-center shadow-[0_6px_0_rgba(0,0,0,0.25)]">
-            <p className="text-sm font-semibold text-info-foreground">
-              ⚡ Connect with Porto Wallet
-            </p>
-            <p className="text-xs text-info-foreground/80">
-              Artists use Porto for a simple, secure onboarding experience.
-              Select Porto from the wallet options below.
-            </p>
-            <div className="flex justify-center">
-              <AppKitButton size="md" />
-            </div>
-          </div>
-        )}
-
-        {inviteData && (
-          <div className="rounded-2xl border border-brand/40 bg-white/80 px-4 py-5 shadow-[0_6px_0_rgba(0,0,0,0.25)]">
-            <p className="mb-1 text-sm font-semibold text-brand">
-              ✨ Invited by {inviteData.inviter.slice(0, ADDRESS_PREFIX_LENGTH)}
-              ...
-              {inviteData.inviter.slice(-ADDRESS_SUFFIX_LENGTH)}
-            </p>
-            <p className="text-xs text-gray-600">
-              You're invited to claim:{" "}
-              <span className="font-mono text-brand">
-                {ensName}.{ENS.PARENT_DOMAIN}
-              </span>
-            </p>
-          </div>
-        )}
-
-        {step === "claim" && (
+        {step === 1 && (
           <div className="space-y-6">
-            <div>
-              <Label htmlFor="ensName">Claim Your ENS Name</Label>
-              <Input
-                className="mt-2"
-                disabled={!!inviteData}
-                id="ensName"
-                onChange={(e) => setEnsName(e.target.value)}
-                placeholder="yourname"
-                type="text"
-                value={ensName}
-              />
-              <p className="mt-1 font-mono text-sm text-gray-500">
+            <div className="rounded-2xl border border-brand/40 bg-white/80 px-4 py-5 shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+              <p className="mb-1 font-semibold text-brand text-sm">
+                ✨ You're invited to claim
+              </p>
+              <p className="font-mono text-2xl text-brand">
                 {ensName}.{ENS.PARENT_DOMAIN}
               </p>
-              {inviteData ? (
-                <p className="mt-1 text-xs text-warning">
-                  ✨ This name is reserved for you via invite
-                </p>
-              ) : (
-                <p className="mt-1 text-xs text-gray-500">
-                  Your unique identifier on the platform
-                </p>
-              )}
-            </div>
-
-            <div className="rounded-2xl border border-info/40 bg-white/80 px-4 py-5 shadow-[0_6px_0_rgba(0,0,0,0.25)]">
-              <p className="mb-2 text-sm font-semibold text-info-foreground">
-                📝 First, let's claim your name
-              </p>
-              <p className="text-xs text-info-foreground/80">
-                You'll sign one transaction to register your subdomain. After
-                that, we'll collect your profile details and you'll sign once
-                more to save them.
+              <p className="mt-2 text-gray-600 text-xs">
+                Invited by {inviteData.inviter.slice(0, ADDRESS_PREFIX_LENGTH)}
+                ...
+                {inviteData.inviter.slice(-ADDRESS_SUFFIX_LENGTH)}
               </p>
             </div>
 
-            <Button
-              className="w-full"
-              disabled={!(ensName && inviteData) || registerSubdomain.isPending}
-              onClick={handleRegisterSubdomain}
-            >
-              {registerSubdomain.isPending
-                ? "Claiming Name..."
-                : "Claim Name & Continue 🚀"}
-            </Button>
+            {!isPorto && (
+              <div className="space-y-4 text-center">
+                <p className="text-gray-600">
+                  Connect with Porto to claim your domain
+                </p>
+                <PortoConnectButton
+                  className="mx-auto"
+                  size="lg"
+                />
+                <p className="text-gray-500 text-xs">
+                  No wallet popups after connecting - all transactions are
+                  pre-authorized
+                </p>
+              </div>
+            )}
+
+            {isPorto && !isRegistered && !registerSubdomain.isPending && (
+              <div className="space-y-4 text-center">
+                <p className="text-gray-600">
+                  Ready to claim your domain! This won't require any popups.
+                </p>
+                <Button
+                  className="w-full"
+                  onClick={handleClaimSubdomain}
+                  size="lg"
+                >
+                  Claim {ensName}.{ENS.PARENT_DOMAIN}
+                </Button>
+              </div>
+            )}
+
+            {isPorto && registerSubdomain.isPending && (
+              <div className="space-y-4 text-center">
+                <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-brand" />
+                <p className="font-medium text-gray-900">Claiming domain...</p>
+                <p className="text-gray-500 text-sm">
+                  This will only take a moment
+                </p>
+              </div>
+            )}
+
+            {isPorto && isRegistered && (
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-success/40 bg-white/80 px-4 py-5 text-center shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+                  <p className="mb-1 font-semibold text-sm text-success-foreground">
+                    ✅ Domain Claimed Successfully!
+                  </p>
+                  <p className="font-mono text-success text-xl">
+                    {ensName}.{ENS.PARENT_DOMAIN}
+                  </p>
+                </div>
+                <Button className="w-full" onClick={() => setStep(2)} size="lg">
+                  Next: Setup Your Profile →
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
-        {step === "basic" && (
+        {step === 2 && (
           <div className="space-y-6">
             <div className="rounded-2xl border border-success/40 bg-white/80 px-4 py-5 shadow-[0_6px_0_rgba(0,0,0,0.25)]">
-              <p className="mb-1 text-sm font-semibold text-success-foreground">
-                ✅ Name Claimed: {ensName}.{ENS.PARENT_DOMAIN}
+              <p className="mb-1 font-semibold text-sm text-success-foreground">
+                Your Domain: {ensName}.{ENS.PARENT_DOMAIN} ✓
               </p>
-              <p className="text-xs text-success-foreground/80">
-                Now let's set up your profile!
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="ensName">Your ENS Name</Label>
-              <Input
-                className="mt-2"
-                disabled={true}
-                id="ensName"
-                type="text"
-                value={`${ensName}.${ENS.PARENT_DOMAIN}`}
-              />
             </div>
 
             <div>
               <Label htmlFor="bio">Bio</Label>
               <textarea
-                className="mt-2 w-full rounded-2xl border border-black/50 bg-white px-3 py-3 text-md text-gray-900 placeholder:text-gray-400 focus:border-black focus:outline-none"
+                className="mt-2 w-full rounded-2xl border border-black/50 bg-white px-3 py-3 text-gray-900 text-md placeholder:text-gray-400 focus:border-black focus:outline-none"
                 id="bio"
                 maxLength={160}
                 onChange={(e) => setBio(e.target.value)}
@@ -384,23 +328,11 @@ export default function OnboardingPage() {
                 rows={4}
                 value={bio}
               />
-              <p className="mt-1 text-right text-xs text-gray-500">
+              <p className="mt-1 text-right text-gray-500 text-xs">
                 {bio.length}/160
               </p>
             </div>
 
-            <Button
-              className="w-full"
-              disabled={!(ensName && bio)}
-              onClick={() => setStep("avatar")}
-            >
-              Next →
-            </Button>
-          </div>
-        )}
-
-        {step === "avatar" && (
-          <div className="space-y-6">
             <div>
               <Label>Profile Picture</Label>
               <div className="mt-4 flex flex-col items-center gap-4">
@@ -447,38 +379,21 @@ export default function OnboardingPage() {
                   />
                   <label htmlFor="avatar-upload">
                     <Button asChild className="w-full" variant="outline">
-                      <span>Choose Image</span>
+                      <span>{avatar ? "Change Image" : "Choose Image"}</span>
                     </Button>
                   </label>
                 </div>
 
-                <p className="text-center text-xs text-gray-500">
-                  Upload a square image (recommended 400x400px)
+                <p className="text-center text-gray-500 text-xs">
+                  Square image recommended (400x400px)
                 </p>
               </div>
             </div>
 
-            <div className="flex min-w-0 flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-              <Button
-                className="flex-1"
-                onClick={() => setStep("basic")}
-                variant="outline"
-              >
-                ← Back
-              </Button>
-              <Button className="flex-1" onClick={() => setStep("socials")}>
-                Next →
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {step === "socials" && (
-          <div className="space-y-6">
             <div>
-              <Label>Social Links</Label>
-              <p className="mb-4 text-sm text-gray-600">
-                Connect your platforms (you can skip this for now)
+              <Label>Social Links (Optional)</Label>
+              <p className="mb-4 text-gray-600 text-sm">
+                Connect your platforms
               </p>
 
               <div className="space-y-3">
@@ -527,23 +442,20 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            <div className="flex min-w-0 flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+            <div className="space-y-3">
               <Button
-                className="flex-1"
-                onClick={() => setStep("avatar")}
-                variant="outline"
-              >
-                ← Back
-              </Button>
-              <Button
-                className="flex-1"
-                disabled={createProfile.mutation.isPending}
+                className="w-full"
+                disabled={!bio || createProfile.mutation.isPending}
                 onClick={handleSubmit}
+                size="lg"
               >
                 {createProfile.mutation.isPending
                   ? "Creating Profile..."
-                  : "Complete Profile ✨"}
+                  : "Create Profile ✨"}
               </Button>
+              <p className="text-center text-gray-500 text-xs">
+                No popup required - using pre-authorized permissions
+              </p>
             </div>
           </div>
         )}

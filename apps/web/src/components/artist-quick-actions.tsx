@@ -86,7 +86,7 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
 
       <div className="flex gap-2">
         <Button asChild className="flex-1" size="sm" variant="outline">
-          <Link href={`/artist/${artist.subdomain ?? ""}`}>View Profile</Link>
+          <Link href={`/${artist.subdomain ?? ""}`}>View Profile</Link>
         </Button>
         <DonationPopover
           ensName={artist.subdomain ?? ""}

@@ -1,10 +1,10 @@
 "use client";
 
+import { AppKitButton } from "@reown/appkit/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useDebounceValue } from "usehooks-ts";
 import { useAccount, useDisconnect, useReadContract } from "wagmi";
-import { AppKitButton } from "@/components/appkit-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

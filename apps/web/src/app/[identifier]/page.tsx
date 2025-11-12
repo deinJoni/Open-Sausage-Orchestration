@@ -36,8 +36,8 @@ const SOCIAL_ICONS: Record<SocialKey, string> = {
 
 export default function ArtistProfilePage() {
   const params = useParams();
-  const ensName = params.ensName as string;
-  const { data: artist, isLoading } = useArtistProfile(ensName);
+  const identifier = params.identifier as string;
+  const { data: artist, isLoading } = useArtistProfile(identifier);
 
   if (isLoading) {
     return (
@@ -45,7 +45,7 @@ export default function ArtistProfilePage() {
         <div className="mb-8 space-y-4">
           <Skeleton className={`${PANEL_CLASS} h-64 w-full rounded-3xl`} />
           <div className="flex items-center gap-6">
-            <Skeleton className="h-32 w-32 rounded-full border border-dashed border-black/30" />
+            <Skeleton className="h-32 w-32 rounded-full border border-black/30 border-dashed" />
             <div className="flex-1 space-y-3">
               <Skeleton className="h-8 w-48" />
               <Skeleton className="h-4 w-full max-w-lg" />
@@ -91,7 +91,7 @@ export default function ArtistProfilePage() {
       {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
         <div className={`${PANEL_CLASS} mb-8 overflow-hidden p-0`}>
           <StreamEmbed
-            artistName={artist.subdomain || ensName}
+            artistName={artist.subdomain || identifier}
             streamPlatform={artist.streamPlatform}
             streamUrl={artist.streamUrl}
             taggedArtists={artist.taggedArtists || []}
@@ -106,7 +106,7 @@ export default function ArtistProfilePage() {
         <div className="flex-shrink-0">
           {avatar ? (
             <Image
-              alt={artist.subdomain || ensName}
+              alt={artist.subdomain || identifier}
               className={`h-32 w-32 rounded-full border-4 ${
                 artist.isStreaming ? "border-live" : "border-black"
               }`}
@@ -128,10 +128,10 @@ export default function ArtistProfilePage() {
         <div className="flex-1 space-y-4">
           <div className="space-y-2">
             <h1 className={`${SECTION_HEADING_CLASS} text-4xl`}>
-              {artist.subdomain || ensName}
+              {artist.subdomain || identifier}
             </h1>
             {description && (
-              <p className="text-lg leading-relaxed text-gray-700">
+              <p className="text-gray-700 text-lg leading-relaxed">
                 {description}
               </p>
             )}
@@ -155,10 +155,10 @@ export default function ArtistProfilePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {artist
             .textRecords?.()
-            ?.filter((record) => SocialKey.safeParse(record.key).success)
+            ?.filter((x) => SocialKey.safeParse(x.key).success)
             .map((record) => (
               <a
-                className="flex items-center gap-3 rounded-2xl border border-black bg-white px-4 py-3 transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0_6px_0_rgba(0,0,0,0.45)]"
+                className="hover:-translate-y-1 flex items-center gap-3 rounded-2xl border border-black bg-white px-4 py-3 transition-transform duration-200 hover:shadow-[0_6px_0_rgba(0,0,0,0.45)]"
                 href={record.value}
                 key={record.value}
                 rel="noopener noreferrer"
@@ -168,10 +168,10 @@ export default function ArtistProfilePage() {
                   {SOCIAL_ICONS[SocialKey.parse(record.key)] || "🔗"}
                 </span>
                 <div className="flex-1 overflow-hidden">
-                  <div className="font-semibold capitalize text-gray-900">
+                  <div className="font-semibold text-gray-900 capitalize">
                     {record.key}
                   </div>
-                  <div className="truncate text-xs text-gray-500">
+                  <div className="truncate text-gray-500 text-xs">
                     {record.value}
                   </div>
                 </div>

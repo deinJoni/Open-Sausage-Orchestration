@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
@@ -33,11 +32,8 @@ export function StickyFilterBar({
   themeSwitcher,
 }: StickyFilterBarProps) {
   return (
-    <motion.div
-      animate={{ opacity: 1, y: 0 }}
-      className="  top-0 z-40 w-full  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      initial={{ opacity: 0, y: 0 }}
-      transition={{ duration: 0.3, delay: 0.2 }}
+    <div
+      className="top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
       <div className="mx-auto max-w-7xl px-4 py-4">
         <div className="flex flex-col gap-4">
@@ -112,6 +108,6 @@ export function StickyFilterBar({
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

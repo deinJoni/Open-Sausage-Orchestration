@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { keccak256, toBytes } from "viem";
+import { isAddress, keccak256, toBytes } from "viem";
 import { namehash } from "viem/ens";
 import { type AllValidKeys, ENS } from "./constants";
 
@@ -11,6 +11,40 @@ export function cn(...inputs: ClassValue[]) {
 export function calculateNodeHash(label: string) {
   const fullName = `${label}.${ENS.PARENT_DOMAIN}`;
   return namehash(fullName);
+}
+
+/**
+ * Check if input is an Ethereum address
+ * @param input - String to check (ENS name or address)
+ * @returns true if input is a valid Ethereum address
+ */
+export function isEthereumAddress(input: string): boolean {
+  return isAddress(input);
+}
+
+/**
+ * Parse ENS name to extract the subdomain label
+ * Handles both "kris" and "kris.catmisha.eth" formats
+ * @param ensName - Full or partial ENS name
+ * @returns The subdomain label (first part before first dot)
+ */
+export function parseEnsLabel(ensName: string): string {
+  const parts = ensName.split(".");
+  return parts[0];
+}
+
+/**
+ * Normalize identifier for consistent querying
+ * - Addresses are lowercased (subgraph uses lowercase IDs)
+ * - ENS names are returned as-is (will be parsed separately)
+ * @param identifier - Address or ENS name
+ * @returns Normalized identifier
+ */
+export function normalizeIdentifier(identifier: string): string {
+  if (isAddress(identifier)) {
+    return identifier.toLowerCase();
+  }
+  return identifier;
 }
 
 export function ipfsToHttp(url: string | undefined | null): string {

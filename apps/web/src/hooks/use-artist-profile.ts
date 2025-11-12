@@ -1,16 +1,13 @@
 import { useQuery as useGqtyQuery } from "@/gqty";
 import { _SubgraphErrorPolicy_ } from "@/gqty/schema.generated";
 import { detectStreamPlatform } from "@/lib/broadcast";
-import { calculateNodeHash, getTextRecord } from "@/lib/utils";
-
-/**
- * Extract subdomain label from full ENS name
- * e.g., "kristjan.catmisha.eth" → "kristjan"
- */
-function extractLabel(ensName: string): string {
-  const parts = ensName.split(".");
-  return parts[0];
-}
+import {
+  calculateNodeHash,
+  getTextRecord,
+  isEthereumAddress,
+  normalizeIdentifier,
+  parseEnsLabel,
+} from "@/lib/utils";
 
 /**
  * Parse broadcast text record value
@@ -40,13 +37,14 @@ function parseBroadcast(value: string | undefined): {
 }
 
 /**
- * Hook to fetch a single artist profile by ENS name
+ * Hook to fetch a single artist profile by identifier
+ * Supports both ENS names (e.g., "kris" or "kris.catmisha.eth") and Ethereum addresses (e.g., "0x123...")
  * Returns GQty subdomain data with streaming info
  */
-export function useArtistProfile(ensName?: string) {
-  const { subdomain, $state } = useGqtyQuery({ suspense: false });
+export function useArtistProfile(identifier?: string) {
+  const { subdomain, user, $state } = useGqtyQuery({ suspense: false });
 
-  if (!ensName) {
+  if (!identifier) {
     return {
       data: undefined,
       isLoading: false,
@@ -54,13 +52,17 @@ export function useArtistProfile(ensName?: string) {
     };
   }
 
-  const label = extractLabel(ensName);
-  const nodeHash = calculateNodeHash(label);
+  const normalized = normalizeIdentifier(identifier);
 
-  const result = subdomain({
-    id: nodeHash,
-    subgraphError: _SubgraphErrorPolicy_.deny,
-  });
+  const result = isEthereumAddress(normalized)
+    ? user({
+        id: normalized,
+        subgraphError: _SubgraphErrorPolicy_.deny,
+      })?.subdomain
+    : subdomain({
+        id: calculateNodeHash(parseEnsLabel(normalized)),
+        subgraphError: _SubgraphErrorPolicy_.deny,
+      });
 
   // Parse broadcast data
   const broadcastValue = getTextRecord(
