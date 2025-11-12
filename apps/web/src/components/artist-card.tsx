@@ -50,7 +50,7 @@ export const ArtistCard = ({ artist }: ArtistCardProps) => {
               <span
                 className={`rounded-full px-3 py-1.5 font-semibold text-xs uppercase tracking-wider ${
                   isLive
-                    ? "bg-live text-white"
+                    ? "bg-live text-live-foreground"
                     : "bg-muted text-muted-foreground"
                 }`}
               >

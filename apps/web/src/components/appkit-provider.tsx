@@ -62,7 +62,7 @@ export function AppKitProvider({
       initialState={initialState}
     >
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools />
+        <ReactQueryDevtools buttonPosition="bottom-left" />
         {children}
       </QueryClientProvider>
     </WagmiProvider>

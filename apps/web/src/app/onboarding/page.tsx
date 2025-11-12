@@ -286,7 +286,7 @@ export default function OnboardingPage() {
 
             {isPorto && registerSubdomain.isPending && (
               <div className="space-y-4 text-center">
-                <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-brand" />
+                <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-brand" />
                 <p className="font-medium text-foreground">
                   Claiming domain...
                 </p>
