@@ -7,7 +7,6 @@ import {
   FILTER_OPTIONS,
   StickyFilterBar,
 } from "@/components/sticky-filter-bar";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllArtists } from "@/hooks/use-all-artists";
@@ -152,7 +151,7 @@ export default function Home() {
                 Artists
               </h2>
 
-              {/* Sticky Filter Bar - always show theme switcher */}
+              {/* Sticky Filter Bar */}
               <StickyFilterBar
                 filter={filter}
                 liveCount={liveCount}
@@ -160,8 +159,6 @@ export default function Home() {
                 searchQuery={searchQuery}
                 setFilter={setFilter}
                 setSearchQuery={setSearchQuery}
-                showThemeSwitcher={true}
-                themeSwitcher={<ThemeSwitcher />}
                 totalArtists={totalArtists}
               />
 

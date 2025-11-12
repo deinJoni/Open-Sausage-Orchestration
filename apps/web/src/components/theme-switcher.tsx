@@ -58,10 +58,15 @@ export function ThemeSwitcher() {
                   onClick={() => setColor(theme.color)}
                   type="button"
                 >
+                  {/* Multi-color preview */}
                   <div
-                    className="size-5 shrink-0 rounded-full bg-brand"
+                    className="flex shrink-0 gap-1"
                     data-theme={`${mode}-${theme.color}`}
-                  />
+                  >
+                    <div className="size-4 rounded-full bg-brand" />
+                    <div className="size-4 rounded-full bg-brand-secondary" />
+                    <div className="size-4 rounded-full bg-live" />
+                  </div>
                   <div className="flex-1">
                     <div className="font-medium text-md">{theme.label}</div>
                     <div className="text-muted-foreground text-xs">

@@ -169,6 +169,171 @@ Indexes blockchain events from Base mainnet contracts to provide queryable data 
 
 ---
 
+## Theming System
+
+The app uses a **two-dimensional theme system** with full type safety and dynamic color palettes.
+
+### Architecture
+
+**Composite Themes:**
+- **Mode**: `light` | `dark` (controls brightness)
+- **Color**: `midnight` | `sunset` | `ocean` | `forest` (controls color palette)
+- **Combined**: `light-midnight`, `dark-midnight`, `light-sunset`, `dark-sunset`, etc.
+
+**Tech Stack:**
+- `next-themes` for theme management and persistence
+- OKLCH color space for perceptually uniform colors
+- TailwindCSS 4 with CSS variables
+- Type-safe theme configuration in TypeScript
+
+### Key Files
+
+**Configuration:**
+- `src/lib/theme-config.ts` - TypeScript theme definitions, helper functions
+- `src/index.css` - CSS variable definitions for all themes (8 themes × 40+ tokens)
+- `src/components/providers.tsx` - ThemeProvider setup
+- `src/app/layout.tsx` - Global theme switcher placement
+
+**Components:**
+- `src/components/theme-switcher.tsx` - Theme picker UI (fixed bottom-right)
+- `src/components/color-theme-provider.tsx` - `useColorTheme()` hook
+
+### Using Themes
+
+**In Components:**
+```tsx
+// Use semantic tokens via Tailwind classes
+<div className="bg-background text-foreground">
+  <h1 className="text-brand">Heading</h1>
+  <button className="bg-brand text-brand-foreground">Click me</button>
+  <div className="bg-surface-elevated border-border">Elevated surface</div>
+</div>
+```
+
+**Available Tokens:**
+- **Base**: `background`, `foreground`, `card`, `popover`
+- **Semantic**: `primary`, `secondary`, `muted`, `accent`, `destructive`
+- **Brand**: `brand`, `brand-secondary` (theme-specific colors)
+- **State**: `live`, `success`, `info`, `warning`
+- **Surfaces**: `surface-elevated`, `surface-glass`
+- **UI**: `border`, `input`, `ring`
+
+**Using the Hook:**
+```tsx
+import { useColorTheme } from "@/components/color-theme-provider";
+
+function MyComponent() {
+  const { mode, color, setMode, setColor } = useColorTheme();
+
+  // mode = "light" | "dark"
+  // color = "midnight" | "sunset" | "ocean" | "forest"
+
+  setMode("dark");        // Changes to dark mode, preserves color
+  setColor("ocean");      // Changes to ocean, preserves mode
+}
+```
+
+### Adding a New Color Theme
+
+1. **Add to theme config** (`src/lib/theme-config.ts`):
+   ```ts
+   export type ThemeColor = "midnight" | "sunset" | "ocean" | "forest" | "yourtheme";
+
+   export const COLOR_THEMES = {
+     yourtheme: {
+       label: "Your Theme",
+       description: "Description of color palette",
+       brandHue: 180,    // OKLCH hue for primary brand color
+       accentHue: 210,   // OKLCH hue for secondary color
+     },
+   };
+   ```
+
+2. **Define CSS variables** (`src/index.css`):
+   ```css
+   /* Light Your Theme */
+   [data-theme="light-yourtheme"] {
+     /* Copy all tokens from light-midnight */
+     /* Change only brand colors: */
+     --brand: oklch(0.6 0.2 180);           /* Your primary color */
+     --brand-secondary: oklch(0.65 0.22 210); /* Your accent color */
+   }
+
+   /* Dark Your Theme */
+   [data-theme="dark-yourtheme"] {
+     /* Copy all tokens from dark-midnight */
+     /* Change only brand colors (slightly brighter for dark): */
+     --brand: oklch(0.7 0.2 180);
+     --brand-secondary: oklch(0.75 0.22 210);
+   }
+   ```
+
+3. **Update providers** (`src/components/providers.tsx`):
+   ```tsx
+   themes={[
+     "light-midnight",
+     "dark-midnight",
+     // ... other themes
+     "light-yourtheme",
+     "dark-yourtheme",
+   ]}
+   ```
+
+### Color System
+
+**OKLCH Format:**
+- `oklch(lightness chroma hue)`
+- Lightness: 0-1 (0 = black, 1 = white)
+- Chroma: 0-0.4 (saturation/colorfulness)
+- Hue: 0-360 (color angle)
+
+**Examples:**
+- Purple: `oklch(0.6 0.2 270)`
+- Orange: `oklch(0.65 0.2 30)`
+- Blue: `oklch(0.6 0.2 230)`
+- Green: `oklch(0.6 0.2 145)`
+
+**Benefits:**
+- Perceptually uniform (equal changes look equally different)
+- Wide color gamut support
+- Predictable lightness adjustments
+
+### Theme Switcher
+
+**Location:** Fixed bottom-right corner on all pages
+
+**Features:**
+- Mode toggle (Light/Dark) with icons
+- Color picker with multi-color preview (brand, brand-secondary, live)
+- Persists to localStorage automatically
+- Accessible via keyboard
+
+**Customization:**
+Preview shows 3 colors per theme. Edit `src/components/theme-switcher.tsx` to change preview colors.
+
+### Best Practices
+
+1. **Always use semantic tokens** - Never hardcode colors
+   - ✅ `className="bg-brand text-foreground"`
+   - ❌ `className="bg-purple-500 text-white"`
+
+2. **Pair colors with foregrounds** - Ensures readability
+   - ✅ `className="bg-brand text-brand-foreground"`
+   - ❌ `className="bg-brand text-white"`
+
+3. **Use opacity modifiers** for variations
+   - `bg-brand/50` - 50% opacity
+   - `border-border/60` - 60% opacity
+
+4. **Test in all themes** - Verify appearance in light/dark modes
+
+5. **Prefer semantic over brand** for UI elements
+   - Buttons: `bg-primary` (unless specifically branded)
+   - Backgrounds: `bg-background`, `bg-card`
+   - Text: `text-foreground`, `text-muted-foreground`
+
+---
+
 ## Core Principles
 
 Write code that is **accessible, performant, type-safe, and maintainable**. Focus on clarity and explicit intent over brevity.
