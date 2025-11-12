@@ -165,9 +165,12 @@ export const DEBOUNCE_TIME = 300;
 
 // External API URLs
 export const API_URLS = {
-  BASESCAN: "https://api.basescan.org/api",
+  GRAPH_TOKEN_API: "https://token-api.thegraph.com/v1/evm/transfers",
+  GRAPH_POOL_OHLC: "https://token-api.thegraph.com/v1/evm/pools/ohlc",
 } as const;
 
-// App configuration
-export const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";
+// DEX Pool Addresses for Price Data
+export const GRAPH_POOLS = {
+  // Ethereum mainnet USDC/WETH pool (ETH price is universal across chains)
+  ETH_USDC_MAINNET: "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640",
+} as const;

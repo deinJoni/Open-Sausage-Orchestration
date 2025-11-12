@@ -119,12 +119,12 @@ export default function Home() {
         Skip to artists
       </a>
 
-      <section className="mx-auto w-full bg-background px-4 py-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6">
-          <div className="flex flex-1 flex-col gap-6">
+      <section className="mx-auto w-full bg-background px-0 py-3 lg:px-8 lg:py-6">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4">
+          <div className="flex flex-1 flex-col gap-4">
             {liveArtists.length > 0 && (
-              <div className="w-full rounded-lg border border-border bg-card p-6 shadow-lg">
-                <div className="mb-4 flex items-center gap-2">
+              <div className="w-full">
+                <div className="mb-3 flex items-center gap-2 px-4 lg:px-0">
                   <span className="flex size-3">
                     <span className="absolute inline-flex size-3 animate-ping rounded-full bg-live opacity-75" />
                     <span className="relative inline-flex size-3 rounded-full bg-live" />
@@ -133,17 +133,13 @@ export default function Home() {
                     Live Now
                   </span>
                 </div>
-                <div className="h-[60vh] max-h-[700px] min-h-[400px]">
+                <div className="max-h-[700px] min-h-[400px]">
                   <LivestreamCarousel broadcasts={liveArtists} />
                 </div>
               </div>
             )}
 
-            <section className="w-full rounded-lg border border-border bg-card p-6 shadow-md">
-              <h2 className="px-4 font-bold text-2xl text-foreground">
-                Artists
-              </h2>
-
+            <section className="w-full">
               <StickyFilterBar
                 filter={filter}
                 liveCount={liveCount}
@@ -154,7 +150,7 @@ export default function Home() {
                 totalArtists={totalArtists}
               />
 
-              <div className="mx-auto w-full px-4" id="artist-grid">
+              <div className="mx-auto w-full px-4 lg:px-0" id="artist-grid">
                 {filteredArtists.length === 0 && renderEmptyState()}
                 {filteredArtists.length > 0 && (
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">

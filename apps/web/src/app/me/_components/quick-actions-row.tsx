@@ -1,19 +1,17 @@
 "use client";
 
-import { ArrowUpRight, QrCode, Settings, Share2 } from "lucide-react";
+import { ArrowUpRight, Settings, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type QuickActionsRowProps = {
   onSend: () => void;
   onShare: () => void;
-  onQR: () => void;
   onSettings: () => void;
 };
 
 export function QuickActionsRow({
   onSend,
   onShare,
-  onQR,
   onSettings,
 }: QuickActionsRowProps) {
   return (
@@ -28,11 +26,6 @@ export function QuickActionsRow({
         icon={<Share2 className="size-5" />}
         label="Share Link"
         onClick={onShare}
-      />
-      <ActionButton
-        icon={<QrCode className="size-5" />}
-        label="QR Code"
-        onClick={onQR}
       />
       <ActionButton
         icon={<Settings className="size-5" />}

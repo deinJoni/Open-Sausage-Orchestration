@@ -19,6 +19,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEthPrice } from "@/hooks/use-eth-price";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
 import { useTransactionHistory } from "@/hooks/use-transaction-history";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
@@ -32,7 +33,9 @@ import { useWalletBalance } from "@/hooks/use-wallet-balance";
 export default function MePage() {
   const { isConnected, address } = useAccount();
   const ownedProfile = useOwnedProfile();
-  const balance = useWalletBalance(address);
+  const ethPriceQuery = useEthPrice();
+  const ethPrice = ethPriceQuery.ethPrice ?? 2000; // Fallback to $2000 if loading
+  const balance = useWalletBalance(address, ethPrice);
   const transactions = useTransactionHistory(address);
 
   // Sheet visibility state
@@ -67,7 +70,8 @@ export default function MePage() {
   }
 
   // Loading state with skeleton matching the actual UI
-  if (ownedProfile.isLoading) {
+  // Only show skeleton on initial load, not during background refetches
+  if (ownedProfile.isLoading && !ownedProfile.hasProfile) {
     return (
       <div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
         <Skeleton className="mb-8 h-10 w-64" />
@@ -135,11 +139,11 @@ export default function MePage() {
         ensName={ensName}
         isLoading={balance.isLoading}
         onRefresh={balance.refetch}
+        walletAddress={address ?? ""}
       />
 
       {/* Quick Actions */}
       <QuickActionsRow
-        onQR={() => setShowShareSheet(true)}
         onSend={() => setShowSendSheet(true)}
         onSettings={() => setShowSettings((prev) => !prev)}
         onShare={() => setShowShareSheet(true)}
@@ -147,6 +151,7 @@ export default function MePage() {
 
       {/* Transaction History */}
       <TransactionList
+        ethPriceUSD={ethPrice}
         isLoading={transactions.isLoading}
         transactions={transactions.transactions}
       />
