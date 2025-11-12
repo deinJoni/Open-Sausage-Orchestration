@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ActiveBroadcasts } from "@/hooks/use-active-broadcast";
-import { StreamEmbed } from "./stream-embed";
+import { StreamEmbed } from "@/components/stream-embed";
 import {
   Carousel,
   type CarouselApi,
   CarouselContent,
   CarouselItem,
-} from "./ui/carousel";
+} from "@/components/ui/carousel";
+import type { ActiveBroadcasts } from "@/hooks/use-active-broadcast";
 
 type LivestreamCarouselProps = {
   broadcasts: ActiveBroadcasts;

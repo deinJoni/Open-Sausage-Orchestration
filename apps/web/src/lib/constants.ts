@@ -162,3 +162,12 @@ export const ERROR_MESSAGES = {
 export const ARTISTS_GRID_SIZE = 6;
 
 export const DEBOUNCE_TIME = 300;
+
+// External API URLs
+export const API_URLS = {
+  BASESCAN: "https://api.basescan.org/api",
+} as const;
+
+// App configuration
+export const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";

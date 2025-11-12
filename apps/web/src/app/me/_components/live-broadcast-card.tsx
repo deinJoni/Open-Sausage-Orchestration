@@ -2,13 +2,13 @@
 
 import { ExternalLink, Youtube } from "lucide-react";
 import { useEffect, useState } from "react";
+import { AvatarGroup } from "@/components/avatar-group";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
 import { TIME } from "@/lib/constants";
-import { AvatarGroup } from "./avatar-group";
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { TooltipProvider } from "./ui/tooltip";
 
 type LiveBroadcastCardProps = {
   profile: OwnedProfile;

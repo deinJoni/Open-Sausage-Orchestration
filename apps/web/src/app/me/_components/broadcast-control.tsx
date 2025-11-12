@@ -1,8 +1,8 @@
 "use client";
 
+import { LiveBroadcastCard } from "@/app/me/_components/live-broadcast-card";
+import { StartBroadcastForm } from "@/app/me/_components/start-broadcast-form";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
-import { LiveBroadcastCard } from "./live-broadcast-card";
-import { StartBroadcastForm } from "./start-broadcast-form";
 
 /**
  * Main broadcast control component

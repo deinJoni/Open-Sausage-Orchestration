@@ -108,3 +108,17 @@ export function stringToColor(str: string): string {
   // Use consistent saturation and lightness for subtle colors
   return `hsl(${hue}, 60%, 45%)`;
 }
+
+/**
+ * Format address for display (0x1234...5678)
+ */
+export function formatAddress(
+  address: string,
+  prefixLength = 6,
+  suffixLength = 4
+): string {
+  if (!address || address.length < prefixLength + suffixLength) {
+    return address;
+  }
+  return `${address.slice(0, prefixLength)}...${address.slice(-suffixLength)}`;
+}

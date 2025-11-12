@@ -1,17 +1,17 @@
 "use client";
 
 import { Gift } from "lucide-react";
-import { convertToEmbedUrl } from "@/lib/broadcast";
-import { ArtistAvatar } from "./artist-avatar";
-import { ArtistQuickActions } from "./artist-quick-actions";
-import { DonationPopover } from "./donation-modal";
-import { Button } from "./ui/button";
+import { ArtistAvatar } from "@/components/artist-avatar";
+import { ArtistQuickActions } from "@/components/artist-quick-actions";
+import { DonationPopover } from "@/components/donation-modal";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
+} from "@/components/ui/tooltip";
+import { convertToEmbedUrl } from "@/lib/broadcast";
 
 type StreamEmbedProps = {
   streamUrl: string;

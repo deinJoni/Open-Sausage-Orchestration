@@ -5,6 +5,7 @@ export const env = createEnv({
   server: {
     MERCHANT_ADDRESS: z.string().min(1),
     MERCHANT_PRIVATE_KEY: z.string().min(1),
+    BASESCAN_API_KEY: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1),

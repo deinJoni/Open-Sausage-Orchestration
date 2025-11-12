@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ArtistPicker } from "@/components/artist-picker";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
 import { detectStreamPlatform, isValidBroadcastUrl } from "@/lib/broadcast";
-import { ArtistPicker } from "./artist-picker";
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 
 /**
  * Form for starting a new broadcast

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { ArtistAvatar } from "@/components/artist-avatar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { User } from "@/gqty";
 import { getTextRecord } from "@/lib/utils";
-import { ArtistAvatar } from "./artist-avatar";
-import { TooltipProvider } from "./ui/tooltip";
 
 type ArtistCardProps = {
   artist: User;

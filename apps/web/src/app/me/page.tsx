@@ -1,24 +1,53 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useAccount } from "wagmi";
-import { BroadcastControl } from "@/components/broadcast-control";
+import { BalanceHero } from "@/app/me/_components/balance-hero";
+import { BroadcastControl } from "@/app/me/_components/broadcast-control";
+import { ProfileEditForm } from "@/app/me/_components/profile-edit-form";
+import { QuickActionsRow } from "@/app/me/_components/quick-actions-row";
+import { SendMoneySheet } from "@/app/me/_components/send-money-sheet";
+import { ShareLinkSheet } from "@/app/me/_components/share-link-sheet";
+import { TransactionList } from "@/app/me/_components/transaction-list";
 import { PortoConnectButton } from "@/components/porto-connect-button";
-import { ProfileEditForm } from "@/components/profile-edit-form";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
+import { useTransactionHistory } from "@/hooks/use-transaction-history";
+import { useWalletBalance } from "@/hooks/use-wallet-balance";
 
 /**
  * Profile management page (/me)
  *
- * Orchestrates profile display and editing using extracted components
- * Uses key prop on ProfileEditForm to reset form when profile changes
+ * Digital tip jar - Shows balance, transactions, and quick actions
+ * Profile editing is collapsible to keep focus on wallet functionality
  */
 export default function MePage() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const ownedProfile = useOwnedProfile();
+  const balance = useWalletBalance(address);
+  const transactions = useTransactionHistory(address);
+
+  // Sheet visibility state
+  const [showShareSheet, setShowShareSheet] = useState(false);
+  const [showSendSheet, setShowSendSheet] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Derived values
+  const ensName = ownedProfile.data?.subdomain?.name
+    ? `${ownedProfile.data.subdomain.name}.catmisha.eth`
+    : "";
+  const giftUrl =
+    typeof window !== "undefined" && ownedProfile.data?.subdomain?.name
+      ? `${window.location.origin}/${ownedProfile.data.subdomain.name}/gift`
+      : "";
 
   // No wallet connected
   if (!isConnected) {
@@ -96,26 +125,85 @@ export default function MePage() {
     );
   }
 
-  // Main profile view
+  // Main view - Digital tip jar
   return (
-    <div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
-      <h1 className="mb-8 font-bold text-3xl text-foreground">Your Profile</h1>
+    <div className="mx-auto min-h-screen max-w-4xl space-y-6 px-4 py-8 pb-safe">
+      {/* Balance Hero */}
+      <BalanceHero
+        balanceETH={balance.formatted}
+        balanceUSD={balance.balanceUSD}
+        ensName={ensName}
+        isLoading={balance.isLoading}
+        onRefresh={balance.refetch}
+      />
 
-      <div className="grid gap-6">
-        {/* Edit Form - key prop ensures component remounts when profile changes */}
-        {ownedProfile.data && (
-          <ProfileEditForm
-            key={ownedProfile.data?.ensName}
-            profile={ownedProfile.data}
-          />
-        )}
+      {/* Quick Actions */}
+      <QuickActionsRow
+        onQR={() => setShowShareSheet(true)}
+        onSend={() => setShowSendSheet(true)}
+        onSettings={() => setShowSettings((prev) => !prev)}
+        onShare={() => setShowShareSheet(true)}
+      />
 
-        {/* Broadcast Control */}
-        <BroadcastControl />
+      {/* Transaction History */}
+      <TransactionList
+        isLoading={transactions.isLoading}
+        transactions={transactions.transactions}
+      />
 
-        {/* Activity Feed */}
-        {/* <ActivityFeed activities={activities} /> */}
-      </div>
+      {/* Collapsible Settings Section */}
+      <Collapsible onOpenChange={setShowSettings} open={showSettings}>
+        <Card className="overflow-hidden">
+          <CollapsibleTrigger asChild>
+            <button
+              className="w-full p-4 text-left hover:bg-accent"
+              type="button"
+            >
+              <h3 className="font-semibold text-foreground">
+                {showSettings ? "Hide" : "Show"} Settings
+              </h3>
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="space-y-6 p-6 pt-0">
+              {/* Profile Editing */}
+              {ownedProfile.data && (
+                <div>
+                  <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
+                    Profile
+                  </h4>
+                  <ProfileEditForm
+                    key={ownedProfile.data?.ensName}
+                    profile={ownedProfile.data}
+                  />
+                </div>
+              )}
+
+              {/* Broadcast Control */}
+              <div>
+                <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
+                  Live Broadcast
+                </h4>
+                <BroadcastControl />
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
+
+      {/* Bottom Sheets */}
+      <ShareLinkSheet
+        ensName={ensName}
+        giftUrl={giftUrl}
+        onOpenChange={setShowShareSheet}
+        open={showShareSheet}
+      />
+
+      <SendMoneySheet
+        onOpenChange={setShowSendSheet}
+        open={showSendSheet}
+        userBalance={balance.balanceNum}
+      />
     </div>
   );
 }

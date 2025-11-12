@@ -1,12 +1,12 @@
 "use client";
 
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { ArtistCard } from "@/components/artist-card";
-import { LivestreamCarousel } from "@/components/livestream-carousel";
+import { ArtistCard } from "@/app/_components/artist-card";
+import { LivestreamCarousel } from "@/app/_components/livestream-carousel";
 import {
   FILTER_OPTIONS,
   StickyFilterBar,
-} from "@/components/sticky-filter-bar";
+} from "@/app/_components/sticky-filter-bar";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAllArtists } from "@/hooks/use-all-artists";

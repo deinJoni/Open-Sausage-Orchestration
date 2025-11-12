@@ -10,11 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
 import { SocialKey } from "@/lib/constants";
-import {
-  PAGE_CONTENT_CLASS,
-  PANEL_CLASS,
-  SECTION_HEADING_CLASS,
-} from "@/lib/page-styles";
 import { getTextRecord, ipfsToHttp } from "@/lib/utils";
 
 const SOCIAL_ICONS: Record<SocialKey, string> = {
@@ -41,9 +36,9 @@ export default function ArtistProfilePage() {
 
   if (isLoading) {
     return (
-      <div className={`${PAGE_CONTENT_CLASS} py-12`}>
+      <div className="mx-auto w-full max-w-7xl py-12">
         <div className="mb-8 space-y-4">
-          <Skeleton className={`${PANEL_CLASS} h-64 w-full`} />
+          <Skeleton className="h-64 w-full rounded-lg border border-border bg-card shadow-md" />
           <div className="flex items-center gap-6">
             <Skeleton className="h-32 w-32 rounded-full border border-border/30 border-dashed" />
             <div className="flex-1 space-y-3">
@@ -58,10 +53,10 @@ export default function ArtistProfilePage() {
 
   if (!artist) {
     return (
-      <div className={`${PAGE_CONTENT_CLASS} max-w-4xl py-16 text-center`}>
-        <div className={`${PANEL_CLASS} space-y-4 p-10`}>
+      <div className="mx-auto w-full max-w-4xl py-16 text-center">
+        <div className="space-y-4 rounded-lg border border-border bg-card p-10 shadow-md">
           <div className="text-5xl">🤔</div>
-          <h2 className={`${SECTION_HEADING_CLASS} text-2xl`}>
+          <h2 className="font-black text-2xl text-foreground leading-tight">
             Artist not found
           </h2>
           <p className="text-muted-foreground">
@@ -81,7 +76,7 @@ export default function ArtistProfilePage() {
   const description = getTextRecord(artist.textRecords?.(), "description");
 
   return (
-    <div className={`${PAGE_CONTENT_CLASS} py-12`}>
+    <div className="mx-auto w-full max-w-7xl py-12">
       <div className="mb-6 flex items-center justify-between">
         <Button asChild size="sm" variant="ghost">
           <Link href="/">← Back to Home</Link>
@@ -89,7 +84,7 @@ export default function ArtistProfilePage() {
       </div>
 
       {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
-        <div className={`${PANEL_CLASS} mb-8 overflow-hidden p-0`}>
+        <div className="mb-8 overflow-hidden rounded-lg border border-border bg-card p-0 shadow-md">
           <StreamEmbed
             artistName={artist.subdomain || identifier}
             streamPlatform={artist.streamPlatform}
@@ -100,9 +95,7 @@ export default function ArtistProfilePage() {
         </div>
       )}
 
-      <div
-        className={`${PANEL_CLASS} mb-8 flex flex-col gap-6 px-8 py-10 md:flex-row md:items-start`}
-      >
+      <div className="mb-8 flex flex-col gap-6 rounded-lg border border-border bg-card px-8 py-10 shadow-md md:flex-row md:items-start">
         <div className="flex-shrink-0">
           {avatar ? (
             <Image
@@ -127,7 +120,7 @@ export default function ArtistProfilePage() {
 
         <div className="flex-1 space-y-4">
           <div className="space-y-2">
-            <h1 className={`${SECTION_HEADING_CLASS} text-4xl`}>
+            <h1 className="font-black text-4xl text-foreground leading-tight">
               {artist.subdomain || identifier}
             </h1>
             {description && (
@@ -148,8 +141,8 @@ export default function ArtistProfilePage() {
         </div>
       </div>
 
-      <div className={`${PANEL_CLASS} px-8 py-10`}>
-        <h3 className={`${SECTION_HEADING_CLASS} mb-6 text-2xl`}>
+      <div className="rounded-lg border border-border bg-card px-8 py-10 shadow-md">
+        <h3 className="mb-6 font-black text-2xl text-foreground leading-tight">
           🔗 Connect & Listen
         </h3>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

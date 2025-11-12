@@ -4,18 +4,22 @@ import { Cuer } from "cuer";
 import { CheckCheck, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useSendTip } from "@/hooks/use-send-tip";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "./ui/drawer";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+} from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useSendTip } from "@/hooks/use-send-tip";
 
 type DonationContentProps = {
   artistEnsName: string;
