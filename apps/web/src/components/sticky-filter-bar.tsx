@@ -32,9 +32,7 @@ export function StickyFilterBar({
   themeSwitcher,
 }: StickyFilterBarProps) {
   return (
-    <div
-      className="top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-    >
+    <div className="top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto max-w-7xl px-4 py-4">
         <div className="flex flex-col gap-4">
           {/* Search Bar */}

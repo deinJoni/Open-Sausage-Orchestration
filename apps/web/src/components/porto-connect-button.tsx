@@ -60,9 +60,10 @@ export function PortoConnectButton({
       onClick={() => {
         connect({
           connector: portoConnector,
-          capabilities: { 
-            grantPermissions: getOnboardingPermissions(), 
-          }, 
+          // @ts-expect-error - TODO: fix this
+          capabilities: {
+            grantPermissions: getOnboardingPermissions(),
+          },
         });
       }}
       size={size}

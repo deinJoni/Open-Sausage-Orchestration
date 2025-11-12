@@ -43,9 +43,9 @@ export default function ArtistProfilePage() {
     return (
       <div className={`${PAGE_CONTENT_CLASS} py-12`}>
         <div className="mb-8 space-y-4">
-          <Skeleton className={`${PANEL_CLASS} h-64 w-full rounded-3xl`} />
+          <Skeleton className={`${PANEL_CLASS} h-64 w-full`} />
           <div className="flex items-center gap-6">
-            <Skeleton className="h-32 w-32 rounded-full border border-black/30 border-dashed" />
+            <Skeleton className="h-32 w-32 rounded-full border border-border/30 border-dashed" />
             <div className="flex-1 space-y-3">
               <Skeleton className="h-8 w-48" />
               <Skeleton className="h-4 w-full max-w-lg" />
@@ -64,7 +64,7 @@ export default function ArtistProfilePage() {
           <h2 className={`${SECTION_HEADING_CLASS} text-2xl`}>
             Artist not found
           </h2>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             This artist profile doesn't exist or hasn't been created yet.
           </p>
           <div className="flex justify-center">
@@ -107,8 +107,8 @@ export default function ArtistProfilePage() {
           {avatar ? (
             <Image
               alt={artist.subdomain || identifier}
-              className={`h-32 w-32 rounded-full border-4 ${
-                artist.isStreaming ? "border-live" : "border-black"
+              className={`h-32 w-32 rounded-full border-2 ${
+                artist.isStreaming ? "border-live" : "border-border"
               }`}
               height={128}
               src={ipfsToHttp(avatar)}
@@ -116,9 +116,9 @@ export default function ArtistProfilePage() {
             />
           ) : (
             <div
-              className={`flex h-32 w-32 items-center justify-center rounded-full border-4 ${
-                artist.isStreaming ? "border-live" : "border-black"
-              } bg-white text-4xl`}
+              className={`flex h-32 w-32 items-center justify-center rounded-full border-2 ${
+                artist.isStreaming ? "border-live" : "border-border"
+              } bg-card text-4xl`}
             >
               👤
             </div>
@@ -131,7 +131,7 @@ export default function ArtistProfilePage() {
               {artist.subdomain || identifier}
             </h1>
             {description && (
-              <p className="text-gray-700 text-lg leading-relaxed">
+              <p className="text-foreground/90 text-lg leading-relaxed">
                 {description}
               </p>
             )}
@@ -158,7 +158,7 @@ export default function ArtistProfilePage() {
             ?.filter((x) => SocialKey.safeParse(x.key).success)
             .map((record) => (
               <a
-                className="hover:-translate-y-1 flex items-center gap-3 rounded-2xl border border-black bg-white px-4 py-3 transition-transform duration-200 hover:shadow-[0_6px_0_rgba(0,0,0,0.45)]"
+                className="hover:-translate-y-0.5 flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md"
                 href={record.value}
                 key={record.value}
                 rel="noopener noreferrer"
@@ -168,14 +168,14 @@ export default function ArtistProfilePage() {
                   {SOCIAL_ICONS[SocialKey.parse(record.key)] || "🔗"}
                 </span>
                 <div className="flex-1 overflow-hidden">
-                  <div className="font-semibold text-gray-900 capitalize">
+                  <div className="font-semibold text-foreground capitalize">
                     {record.key}
                   </div>
-                  <div className="truncate text-gray-500 text-xs">
+                  <div className="truncate text-muted-foreground text-xs">
                     {record.value}
                   </div>
                 </div>
-                <span className="text-gray-400">→</span>
+                <span className="text-muted-foreground">→</span>
               </a>
             ))}
         </div>

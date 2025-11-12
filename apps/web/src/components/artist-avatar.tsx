@@ -53,7 +53,7 @@ export function ArtistAvatar({
         />
       ) : null}
       <AvatarFallback
-        className={`${textSizeClasses[size]} font-semibold rounded-2xl`}
+        className={`${textSizeClasses[size]} rounded-2xl font-semibold`}
         style={{ backgroundColor: bgColor }}
       >
         {initials}

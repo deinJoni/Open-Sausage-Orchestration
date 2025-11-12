@@ -4,6 +4,7 @@ import "../index.css";
 import { headers } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import Providers from "@/components/providers";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,8 +36,12 @@ export default async function RootLayout({
       >
         <NuqsAdapter>
           <Providers cookies={cookies}>
-            <div className="flex min-h-screen flex-col bg-[#f8f4ff] text-gray-950">
+            <div className="flex min-h-screen flex-col bg-background text-foreground">
               <main className="flex-1">{children}</main>
+              {/* Fixed theme switcher - accessible from all pages */}
+              <div className="fixed right-4 bottom-4 z-50">
+                <ThemeSwitcher />
+              </div>
             </div>
           </Providers>
         </NuqsAdapter>

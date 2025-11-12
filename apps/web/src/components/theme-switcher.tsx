@@ -1,20 +1,12 @@
 "use client";
 
 import { Check, Moon, Palette, Sun } from "lucide-react";
+import { getColorThemeOptions } from "@/lib/theme-config";
 import { useColorTheme } from "./color-theme-provider";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
-const colorThemes = {
-  midnight: {
-    name: "Midnight",
-    description: "Purple & fuchsia",
-  },
-  sunset: {
-    name: "Sunset",
-    description: "Warm oranges & pinks",
-  },
-} as const;
+const colorThemes = getColorThemeOptions();
 
 export function ThemeSwitcher() {
   const { mode, color, setMode, setColor } = useColorTheme();
@@ -59,24 +51,26 @@ export function ThemeSwitcher() {
           <div>
             <p className="mb-2 font-medium text-md">Color</p>
             <div className="space-y-1">
-              {Object.entries(colorThemes).map(([key, value]) => (
+              {colorThemes.map((theme) => (
                 <button
                   className="flex w-full items-center gap-3 rounded-md p-2 text-left transition-colors hover:bg-accent"
-                  key={key}
-                  onClick={() => setColor(key as keyof typeof colorThemes)}
+                  key={theme.color}
+                  onClick={() => setColor(theme.color)}
                   type="button"
                 >
                   <div
                     className="size-5 shrink-0 rounded-full bg-brand"
-                    data-theme={`${mode}-${key}`}
+                    data-theme={`${mode}-${theme.color}`}
                   />
                   <div className="flex-1">
-                    <div className="font-medium text-md">{value.name}</div>
+                    <div className="font-medium text-md">{theme.label}</div>
                     <div className="text-muted-foreground text-xs">
-                      {value.description}
+                      {theme.description}
                     </div>
                   </div>
-                  {color === key && <Check className="size-4 text-brand" />}
+                  {color === theme.color && (
+                    <Check className="size-4 text-brand" />
+                  )}
                 </button>
               ))}
             </div>

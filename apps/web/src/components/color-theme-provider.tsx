@@ -1,14 +1,11 @@
 "use client";
 
 import { useTheme } from "next-themes";
+import type { ThemeColor, ThemeMode, ThemeName } from "@/lib/theme-config";
 
-type Mode = "light" | "dark";
-type ColorTheme = "midnight" | "sunset";
-type CompositeTheme =
-  | "light-midnight"
-  | "dark-midnight"
-  | "light-sunset"
-  | "dark-sunset";
+type Mode = ThemeMode;
+type ColorTheme = ThemeColor;
+type CompositeTheme = ThemeName;
 
 type ColorThemeHook = {
   mode: Mode;

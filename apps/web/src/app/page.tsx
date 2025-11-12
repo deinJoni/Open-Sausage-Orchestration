@@ -14,15 +14,15 @@ import { useAllArtists } from "@/hooks/use-all-artists";
 import { ARTISTS_GRID_SIZE } from "@/lib/constants";
 
 const LoadingSkeleton = () => (
-  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
     {[...new Array(ARTISTS_GRID_SIZE)].map((_, i) => (
       <Card
         className="border-border bg-card p-6"
         key={`artist-skeleton-${String(i)}`}
       >
-        <Skeleton className="mx-auto mb-4 h-24 w-24 rounded-full" />
-        <Skeleton className="mx-auto mb-2 h-4 w-32" />
-        <Skeleton className="mx-auto mb-4 h-3 w-48" />
+        <Skeleton className="mb-4 size-16 rounded-2xl" />
+        <Skeleton className="mb-2 h-5 w-32" />
+        <Skeleton className="mb-4 h-4 w-48" />
       </Card>
     ))}
   </div>
@@ -106,10 +106,10 @@ export default function Home() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="mb-8 h-[60vh] animate-pulse rounded-xl bg-surface-elevated" />
-          <div className="mb-8 h-20 animate-pulse rounded-lg bg-surface-elevated" />
+          <div className="mb-6 h-[60vh] animate-pulse rounded-lg bg-muted" />
+          <div className="mb-6 h-20 animate-pulse rounded-lg bg-muted" />
           <LoadingSkeleton />
         </div>
       </div>
@@ -117,38 +117,40 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Skip to content link for keyboard users */}
       <a
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-brand focus:px-4 focus:py-2 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-brand focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
         href="#artist-grid"
       >
         Skip to artists
       </a>
 
-      <section className="mx-auto w-full bg-[#f8f4ff] pt-5 pb-5 lg:px-12">
-        <div className="mx-auto flex max-w-6xl flex-col gap-12 lg:flex-row">
-          <div className="flex flex-1 flex-col items-center gap-6 border-none text-center">
+      <section className="mx-auto w-full bg-background px-4 py-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6">
+          <div className="flex flex-1 flex-col gap-6">
             {/* Hero Section: Live Streams */}
             {liveArtists.length > 0 && (
-              <div className="w-full rounded-md border-[1px] border-black bg-white p-8 text-left shadow-[0_4px_0_rgba(0,0,0,0.55)]">
-                <span
-                  className={
-                    "mx-4 rounded-full border-2 bg-red-500 px-3 py-1 font-semibold text-white text-xs uppercase tracking-[0.3em]"
-                  }
-                >
-                  <span className="rounded-full py-1 font-semibold text-white text-xs uppercase tracking-[0.3em]">
-                    LIVE
+              <div className="w-full rounded-lg border border-border bg-card p-6 shadow-lg">
+                <div className="mb-4 flex items-center gap-2">
+                  <span className="flex size-3">
+                    <span className="absolute inline-flex size-3 animate-ping rounded-full bg-live opacity-75" />
+                    <span className="relative inline-flex size-3 rounded-full bg-live" />
                   </span>
-                </span>
-                <div className="mx-auto max-w-7xl border-none px-4 py-8">
+                  <span className="font-bold text-foreground text-lg uppercase tracking-wide">
+                    Live Now
+                  </span>
+                </div>
+                <div className="h-[60vh] max-h-[700px] min-h-[400px]">
                   <LivestreamCarousel broadcasts={liveArtists} />
                 </div>
               </div>
             )}
 
-            <section className="w-full rounded-md border-[1px] border-black bg-white p-8 pt-4 text-left shadow-[0_4px_0_rgba(0,0,0.55,0.55)]">
-              <h2 className="px-4 font-black text-2xl text-gray-950">Artist</h2>
+            <section className="w-full rounded-lg border border-border bg-card p-6 shadow-md">
+              <h2 className="px-4 font-bold text-2xl text-foreground">
+                Artists
+              </h2>
 
               {/* Sticky Filter Bar - always show theme switcher */}
               <StickyFilterBar
@@ -167,7 +169,7 @@ export default function Home() {
               <div className="mx-auto w-full px-4" id="artist-grid">
                 {filteredArtists.length === 0 && renderEmptyState()}
                 {filteredArtists.length > 0 && (
-                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                     {filteredArtists.map((artist) => (
                       <ArtistCard
                         artist={artist}

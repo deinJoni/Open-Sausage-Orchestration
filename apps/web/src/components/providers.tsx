@@ -24,6 +24,10 @@ export default function Providers({
           "dark-midnight",
           "light-sunset",
           "dark-sunset",
+          "light-ocean",
+          "dark-ocean",
+          "light-forest",
+          "dark-forest",
         ]}
       >
         <NuqsAdapter>{children}</NuqsAdapter>

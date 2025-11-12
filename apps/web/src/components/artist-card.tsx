@@ -18,10 +18,8 @@ export const ArtistCard = ({ artist }: ArtistCardProps) => {
     "description"
   );
   const cardClassName = [
-    "group relative flex h-full flex-col  overflow-hidden border-[1px] pb-4 rounded-md  bg-white px-6 pt-6 text-left",
-    isLive
-      ? "border-red-800  shadow-[0_3px_0_rgba(255,0,0,0.5)]"
-      : "border-black   shadow-[0_3px_0_rgba(0,0,0,0.5)]",
+    "group relative flex h-full flex-col overflow-hidden rounded-lg border bg-card px-6 pb-6 pt-6 text-left shadow-sm transition-all duration-200 hover:shadow-md",
+    isLive ? "border-live/50 ring-2 ring-live/20" : "border-border",
   ]
     .filter(Boolean)
     .join(" ");
@@ -31,45 +29,39 @@ export const ArtistCard = ({ artist }: ArtistCardProps) => {
       <div className="h-full">
         <article className={cardClassName}>
           <Link
-            className="flex h-full flex-col gap-4"
+            className="flex h-full flex-col gap-5"
             href={`/${artist.subdomain?.name ?? ""}`}
           >
             <div className="flex items-center justify-between gap-4">
               <div
                 className={
-                  "inline-flex size-12 items-center justify-center text-xl"
+                  "inline-flex size-16 items-center justify-center text-2xl"
                 }
               >
                 <ArtistAvatar
                   avatarUrl={avatar}
-                  className={`size-12 rounded-2xl border-2 ${
-                    isLive ? "border-live" : "border-black"
+                  className={`size-16 rounded-2xl border-2 ${
+                    isLive ? "border-live" : "border-border"
                   }`}
                   name={artist.subdomain?.name ?? ""}
                   size="lg"
                 />
               </div>
               <span
-                className={`rounded-full border-2 px-3 py-1 font-semibold text-white text-xs uppercase tracking-[0.3em] ${
-                  isLive ? "bg-red-500" : "bg-black"
+                className={`rounded-full px-3 py-1.5 font-semibold text-xs uppercase tracking-wider ${
+                  isLive
+                    ? "bg-live text-white"
+                    : "bg-muted text-muted-foreground"
                 }`}
               >
-                {isLive ? (
-                  <span className="rounded-full py-1 font-semibold text-white text-xs uppercase tracking-[0.3em]">
-                    LIVE
-                  </span>
-                ) : (
-                  <span className="rounded-full py-1 font-semibold text-white text-xs uppercase tracking-[0.3em]">
-                    OFFLINE
-                  </span>
-                )}
+                {isLive ? "LIVE" : "OFFLINE"}
               </span>
             </div>
             <div>
-              <h3 className="font-black text-gray-950 text-lg">
+              <h3 className="font-bold text-foreground text-xl">
                 {artist.subdomain?.name ?? ""}
               </h3>
-              <p className="mt-2 text-gray-600 text-sm leading-relaxed">
+              <p className="mt-2 line-clamp-2 text-muted-foreground text-sm leading-relaxed">
                 {description ? description : "No description"}
               </p>
             </div>

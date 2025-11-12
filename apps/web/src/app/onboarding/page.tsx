@@ -35,6 +35,7 @@ type InviteData = {
   signature: string;
 };
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT CODE IS LONG>
 export default function OnboardingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,6 +65,7 @@ export default function OnboardingPage() {
   const inviteData = decoded;
 
   // Transform UI state to text records format
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT CODE IS LONG>
   const textRecords = useMemo<{ key: AllValidKeys; value: string }[]>(() => {
     const records: { key: AllValidKeys; value: string }[] = [];
 
@@ -132,7 +134,7 @@ export default function OnboardingPage() {
       <div
         className={`${PAGE_CONTENT_CLASS} flex min-h-[70vh] max-w-2xl items-center justify-center`}
       >
-        <p className="text-gray-600">Checking profile...</p>
+        <p className="text-muted-foreground">Checking profile...</p>
       </div>
     );
   }
@@ -150,23 +152,23 @@ export default function OnboardingPage() {
             Profile Already Exists
           </h1>
           <div className="space-y-4">
-            <div className="rounded-2xl border border-info/40 bg-white/80 px-4 py-5 text-left shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+            <div className="rounded-lg border border-info/40 bg-card/80 px-4 py-5 text-left shadow-sm">
               <p className="mb-2 font-semibold text-info-foreground text-sm">
                 You already own a subdomain
               </p>
               {ensName ? (
-                <p className="font-mono text-gray-800 text-xs">{ensName}</p>
+                <p className="font-mono text-foreground text-xs">{ensName}</p>
               ) : (
-                <p className="text-gray-500 text-xs">
+                <p className="text-muted-foreground text-xs">
                   (Subdomain detected on-chain)
                 </p>
               )}
             </div>
-            <p className="text-gray-600 text-sm">
+            <p className="text-muted-foreground text-sm">
               Each wallet can only register one subdomain. You can view or edit
               your existing profile.
             </p>
-            <p className="text-gray-500 text-xs">
+            <p className="text-muted-foreground text-xs">
               Connected: {address?.slice(0, ADDRESS_PREFIX_LENGTH)}...
               {address?.slice(-ADDRESS_SUFFIX_LENGTH)}
             </p>
@@ -189,7 +191,7 @@ export default function OnboardingPage() {
           className={`${SOFT_PANEL_CLASS} w-full space-y-6 p-10 text-center`}
         >
           <h1 className={`${SECTION_HEADING_CLASS}`}>Invite Required</h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             You need an invite code to create an artist profile.
           </p>
           <Button onClick={() => router.push("/")} size="lg">
@@ -204,7 +206,7 @@ export default function OnboardingPage() {
     <div className={`${PAGE_CONTENT_CLASS} max-w-3xl py-12`}>
       <header className="mb-10 space-y-3 text-center">
         <h1 className={SECTION_HEADING_CLASS}>Create Your Artist Profile</h1>
-        <div className="flex items-center justify-center gap-2 text-gray-500 text-xs">
+        <div className="flex items-center justify-center gap-2 text-muted-foreground text-xs">
           <span className="rounded-full bg-brand/10 px-3 py-1">Gas-free</span>
           <span className="rounded-full bg-brand/10 px-3 py-1">
             Decentralized
@@ -218,15 +220,19 @@ export default function OnboardingPage() {
       <div className="mb-8 flex items-center justify-center gap-2 text-sm">
         <div
           className={`flex h-8 w-8 items-center justify-center rounded-full font-bold ${
-            step === 1 ? "bg-brand text-white" : "bg-gray-200 text-gray-500"
+            step === 1
+              ? "bg-brand text-white"
+              : "bg-muted text-muted-foreground"
           }`}
         >
           1
         </div>
-        <div className="h-0.5 w-12 bg-gray-200" />
+        <div className="h-0.5 w-12 bg-muted" />
         <div
           className={`flex h-8 w-8 items-center justify-center rounded-full font-bold ${
-            step === 2 ? "bg-brand text-white" : "bg-gray-200 text-gray-500"
+            step === 2
+              ? "bg-brand text-white"
+              : "bg-muted text-muted-foreground"
           }`}
         >
           2
@@ -236,14 +242,14 @@ export default function OnboardingPage() {
       <Card className="space-y-8 px-8 py-10">
         {step === 1 && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-brand/40 bg-white/80 px-4 py-5 shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+            <div className="rounded-lg border border-brand/40 bg-card/80 px-4 py-5 shadow-sm">
               <p className="mb-1 font-semibold text-brand text-sm">
                 ✨ You're invited to claim
               </p>
               <p className="font-mono text-2xl text-brand">
                 {ensName}.{ENS.PARENT_DOMAIN}
               </p>
-              <p className="mt-2 text-gray-600 text-xs">
+              <p className="mt-2 text-muted-foreground text-xs">
                 Invited by {inviteData.inviter.slice(0, ADDRESS_PREFIX_LENGTH)}
                 ...
                 {inviteData.inviter.slice(-ADDRESS_SUFFIX_LENGTH)}
@@ -252,14 +258,11 @@ export default function OnboardingPage() {
 
             {!isPorto && (
               <div className="space-y-4 text-center">
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Connect with Porto to claim your domain
                 </p>
-                <PortoConnectButton
-                  className="mx-auto"
-                  size="lg"
-                />
-                <p className="text-gray-500 text-xs">
+                <PortoConnectButton className="mx-auto" size="lg" />
+                <p className="text-muted-foreground text-xs">
                   No wallet popups after connecting - all transactions are
                   pre-authorized
                 </p>
@@ -268,7 +271,7 @@ export default function OnboardingPage() {
 
             {isPorto && !isRegistered && !registerSubdomain.isPending && (
               <div className="space-y-4 text-center">
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                   Ready to claim your domain! This won't require any popups.
                 </p>
                 <Button
@@ -284,8 +287,10 @@ export default function OnboardingPage() {
             {isPorto && registerSubdomain.isPending && (
               <div className="space-y-4 text-center">
                 <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-brand" />
-                <p className="font-medium text-gray-900">Claiming domain...</p>
-                <p className="text-gray-500 text-sm">
+                <p className="font-medium text-foreground">
+                  Claiming domain...
+                </p>
+                <p className="text-muted-foreground text-sm">
                   This will only take a moment
                 </p>
               </div>
@@ -293,7 +298,7 @@ export default function OnboardingPage() {
 
             {isPorto && isRegistered && (
               <div className="space-y-4">
-                <div className="rounded-2xl border border-success/40 bg-white/80 px-4 py-5 text-center shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+                <div className="rounded-lg border border-success/40 bg-card/80 px-4 py-5 text-center shadow-sm">
                   <p className="mb-1 font-semibold text-sm text-success-foreground">
                     ✅ Domain Claimed Successfully!
                   </p>
@@ -311,7 +316,7 @@ export default function OnboardingPage() {
 
         {step === 2 && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-success/40 bg-white/80 px-4 py-5 shadow-[0_6px_0_rgba(0,0,0,0.25)]">
+            <div className="rounded-lg border border-success/40 bg-card/80 px-4 py-5 shadow-sm">
               <p className="mb-1 font-semibold text-sm text-success-foreground">
                 Your Domain: {ensName}.{ENS.PARENT_DOMAIN} ✓
               </p>
@@ -320,7 +325,7 @@ export default function OnboardingPage() {
             <div>
               <Label htmlFor="bio">Bio</Label>
               <textarea
-                className="mt-2 w-full rounded-2xl border border-black/50 bg-white px-3 py-3 text-gray-900 text-md placeholder:text-gray-400 focus:border-black focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-3 text-foreground text-md placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 id="bio"
                 maxLength={160}
                 onChange={(e) => setBio(e.target.value)}
@@ -328,7 +333,7 @@ export default function OnboardingPage() {
                 rows={4}
                 value={bio}
               />
-              <p className="mt-1 text-right text-gray-500 text-xs">
+              <p className="mt-1 text-right text-muted-foreground text-xs">
                 {bio.length}/160
               </p>
             </div>
@@ -337,7 +342,7 @@ export default function OnboardingPage() {
               <Label>Profile Picture</Label>
               <div className="mt-4 flex flex-col items-center gap-4">
                 {avatar && (
-                  <div className="h-32 w-32 overflow-hidden rounded-full border-2 border-black">
+                  <div className="h-32 w-32 overflow-hidden rounded-full border-2 border-border">
                     <Image
                       alt="Avatar preview"
                       className="h-full w-full object-cover"
@@ -384,7 +389,7 @@ export default function OnboardingPage() {
                   </label>
                 </div>
 
-                <p className="text-center text-gray-500 text-xs">
+                <p className="text-center text-muted-foreground text-xs">
                   Square image recommended (400x400px)
                 </p>
               </div>
@@ -392,7 +397,7 @@ export default function OnboardingPage() {
 
             <div>
               <Label>Social Links (Optional)</Label>
-              <p className="mb-4 text-gray-600 text-sm">
+              <p className="mb-4 text-muted-foreground text-sm">
                 Connect your platforms
               </p>
 
@@ -411,7 +416,7 @@ export default function OnboardingPage() {
 
                   return (
                     <div
-                      className="flex items-center gap-2 rounded-2xl border border-black/20 bg-white px-4 py-3 shadow-sm"
+                      className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 shadow-sm"
                       key={social.platform}
                     >
                       <span className="text-2xl">{social.icon}</span>
@@ -453,7 +458,7 @@ export default function OnboardingPage() {
                   ? "Creating Profile..."
                   : "Create Profile ✨"}
               </Button>
-              <p className="text-center text-gray-500 text-xs">
+              <p className="text-center text-muted-foreground text-xs">
                 No popup required - using pre-authorized permissions
               </p>
             </div>
