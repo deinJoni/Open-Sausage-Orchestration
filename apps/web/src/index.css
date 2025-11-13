@@ -31,9 +31,7 @@ body {
   --radius: 0.625rem;
 }
 
-/* Light Midnight - default light theme with purple/fuchsia brand */
 [data-theme="light-midnight"] {
-  /* Shadcn semantic tokens */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -66,13 +64,11 @@ body {
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* Brand colors (midnight theme - purple/fuchsia) */
   --brand: oklch(0.6 0.2 270);
   --brand-foreground: oklch(0.985 0 0);
   --brand-secondary: oklch(0.65 0.25 320);
   --brand-secondary-foreground: oklch(0.985 0 0);
 
-  /* State colors */
   --live: oklch(0.6 0.25 25);
   --live-foreground: oklch(0.985 0 0);
   --success: oklch(0.65 0.2 145);
@@ -82,7 +78,6 @@ body {
   --warning: oklch(0.75 0.2 85);
   --warning-foreground: oklch(0.28 0.07 46);
 
-  /* Surface variations */
   --surface-elevated: oklch(0.97 0 0);
   --surface-elevated-foreground: oklch(0.145 0 0);
   --surface-glass: oklch(1 0 0 / 0.5);

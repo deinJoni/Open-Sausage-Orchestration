@@ -13,11 +13,6 @@ import { TransactionList } from "@/app/me/_components/transaction-list";
 import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEthPrice } from "@/hooks/use-eth-price";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
@@ -38,12 +33,9 @@ export default function MePage() {
   const balance = useWalletBalance(address, ethPrice);
   const transactions = useTransactionHistory(address);
 
-  // Sheet visibility state
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [showSendSheet, setShowSendSheet] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
 
-  // Derived values
   const ensName = ownedProfile.data?.subdomain?.name
     ? `${ownedProfile.data.subdomain.name}.osopit.eth`
     : "";
@@ -52,7 +44,6 @@ export default function MePage() {
       ? `${window.location.origin}/${ownedProfile.data.subdomain.name}/gift`
       : "";
 
-  // No wallet connected
   if (!isConnected) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
@@ -69,15 +60,12 @@ export default function MePage() {
     );
   }
 
-  // Loading state with skeleton matching the actual UI
-  // Only show skeleton on initial load, not during background refetches
   if (ownedProfile.isLoading && !ownedProfile.hasProfile) {
     return (
-      <div className="mx-auto min-h-screen max-w-4xl px-4 py-12">
+      <div className="mx-auto h-full max-w-4xl px-4 py-4 md:py-12">
         <Skeleton className="mb-8 h-10 w-64" />
 
         <div className="grid gap-6">
-          {/* Edit Form Skeleton */}
           <Card className="border-border bg-card p-6 backdrop-blur">
             <div className="mb-6">
               <div className="mb-3">
@@ -109,12 +97,10 @@ export default function MePage() {
     );
   }
 
-  // Connected but no profile - show informational content
   if (!ownedProfile.hasProfile) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-4 py-12">
+      <div className="mx-auto flex h-full max-w-3xl flex-col items-center justify-center px-4 py-4 md:py-12">
         <Card className="w-full border-border bg-card p-8 backdrop-blur">
-          {/* Header */}
           <div className="mb-8 text-center">
             <h1 className="mb-2 font-bold text-3xl text-foreground">
               Welcome to Osopit
@@ -125,7 +111,6 @@ export default function MePage() {
             </p>
           </div>
 
-          {/* Feature Grid */}
           <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded-lg border border-border bg-surface-elevated p-4">
               <div className="mb-2 text-2xl">🎭</div>
@@ -166,7 +151,6 @@ export default function MePage() {
             </div>
           </div>
 
-          {/* Call-to-Actions */}
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link href="/">
               <Button className="w-full sm:w-auto" size="lg">
@@ -184,10 +168,16 @@ export default function MePage() {
     );
   }
 
-  // Main view - Digital tip jar
   return (
-    <div className="mx-auto min-h-screen max-w-4xl space-y-6 px-4 py-8 pb-safe">
-      {/* Balance Hero */}
+    <div className="mx-auto min-h-screen max-w-4xl space-y-6 p-4 pb-safe">
+      <Button
+        asChild
+        className="mb-4 px-0 text-sm hover:bg-transparent hover:opacity-60"
+        size="sm"
+        variant="ghost"
+      >
+        <Link href="/">← Back to Home</Link>
+      </Button>
       <BalanceHero
         balanceETH={balance.formatted}
         balanceUSD={balance.balanceUSD}
@@ -197,61 +187,38 @@ export default function MePage() {
         walletAddress={address ?? ""}
       />
 
-      {/* Quick Actions */}
       <QuickActionsRow
         onSend={() => setShowSendSheet(true)}
-        onSettings={() => setShowSettings((prev) => !prev)}
         onShare={() => setShowShareSheet(true)}
       />
 
-      {/* Transaction History */}
       <TransactionList
         ethPriceUSD={ethPrice}
         isLoading={transactions.isLoading}
         transactions={transactions.transactions}
       />
 
-      {/* Collapsible Settings Section */}
-      <Collapsible onOpenChange={setShowSettings} open={showSettings}>
-        <Card className="overflow-hidden">
-          <CollapsibleTrigger asChild>
-            <button
-              className="w-full p-4 text-left hover:bg-accent"
-              type="button"
-            >
-              <h3 className="font-semibold text-foreground">
-                {showSettings ? "Hide" : "Show"} Settings
-              </h3>
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <div className="space-y-6 p-6 pt-0">
-              {/* Profile Editing */}
-              {ownedProfile.data && (
-                <div>
-                  <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
-                    Profile
-                  </h4>
-                  <ProfileEditForm
-                    key={ownedProfile.data?.ensName}
-                    profile={ownedProfile.data}
-                  />
-                </div>
-              )}
+      <div className="space-y-6 pt-0">
+        {ownedProfile.data && (
+          <div>
+            <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
+              Profile
+            </h4>
+            <ProfileEditForm
+              key={ownedProfile.data?.ensName}
+              profile={ownedProfile.data}
+            />
+          </div>
+        )}
 
-              {/* Broadcast Control */}
-              <div>
-                <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
-                  Live Broadcast
-                </h4>
-                <BroadcastControl />
-              </div>
-            </div>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
+        <div>
+          <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
+            Live Broadcast
+          </h4>
+          <BroadcastControl />
+        </div>
+      </div>
 
-      {/* Bottom Sheets */}
       <ShareLinkSheet
         ensName={ensName}
         giftUrl={giftUrl}

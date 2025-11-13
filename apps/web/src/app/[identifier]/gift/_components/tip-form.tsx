@@ -38,7 +38,7 @@ export function TipForm({
   const [copiedENS, setCopiedENS] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
 
-  const { sendEth, isPending, isSuccess, hash } = useSendEth({
+  const { sendEth, isSuccess, hash } = useSendEth({
     onSuccess: () => {
       toast.success(`Tip sent to ${artistName}!`);
     },
