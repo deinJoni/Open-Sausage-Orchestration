@@ -45,7 +45,7 @@ export default function MePage() {
 
   // Derived values
   const ensName = ownedProfile.data?.subdomain?.name
-    ? `${ownedProfile.data.subdomain.name}.catmisha.eth`
+    ? `${ownedProfile.data.subdomain.name}.osopit.eth`
     : "";
   const giftUrl =
     typeof window !== "undefined" && ownedProfile.data?.subdomain?.name

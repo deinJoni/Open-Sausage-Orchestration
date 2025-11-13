@@ -30,7 +30,7 @@ export const TIME = {
 
 // ENS configuration
 export const ENS = {
-  PARENT_DOMAIN: "catmisha.eth",
+  PARENT_DOMAIN: "osopit.eth",
 } as const;
 
 // ENS text record keys

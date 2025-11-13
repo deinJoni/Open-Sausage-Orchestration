@@ -103,7 +103,7 @@ bun test                 # Run subgraph tests
 
 **Key Features:**
 - **Progressive Web App (PWA)** - Installable, offline-capable
-- **ENS Subdomains** - Users register subdomains under catmisha.eth on Base
+- **ENS Subdomains** - Users register subdomains under osopit.eth on Base
 - **Live Broadcasting** - Users can start/stop broadcasts and track them
 - **Smart Wallet Onboarding** - Porto.sh integration for gasless onboarding
 - **Artist Profiles** - ENS text records store profile data (avatar, bio, social links, art pieces)
@@ -111,7 +111,7 @@ bun test                 # Run subgraph tests
 - **Tipping** - Send tips to artists
 
 **Smart Contracts (Base mainnet):**
-- `L2Registry` (0xa609955...1fdc9e2) - ENS text resolver for catmisha.eth
+- `L2Registry` (0xa609955...1fdc9e2) - ENS text resolver for osopit.eth
 - `L2Registrar` (0x63e7b8F...b1Ca5514) - Invite-based subdomain registration (one per wallet)
 
 **Environment Variables:**

@@ -26,7 +26,7 @@ export default async function GiftPage({ params }: GiftPageProps) {
   }
 
   const artistName = profile.subdomain.name;
-  const ensName = `${artistName}.catmisha.eth`;
+  const ensName = `${artistName}.osopit.eth`;
   const avatar = getTextRecord(profile.textRecords, "avatar");
   const bio = getTextRecord(profile.textRecords, "description");
 

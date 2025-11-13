@@ -3,12 +3,12 @@ import { L2RegistryABI } from "./abi/l2-registry";
 import { ReverseRegistrarABI } from "./abi/reverse-registrar";
 
 /**
- * Contract addresses for catmisha.eth on Base mainnet
+ * Contract addresses for osopit.eth on Base mainnet
  */
 export const L2_REGISTRY_ADDRESS =
-  "0xa609955257eacbbd566a1fa654e6c5f4b1fdc9e2" as const;
+  "0x8c77dd23735dbe20c3cae29250bdd3bf80e6f9b1" as const;
 export const L2_REGISTRAR_ADDRESS =
-  "0x63e7b8F8A8d42b043fe58Be1243d7cBcb1Ca5514" as const;
+  "0xb2576cD3Cfcc023e4A48c79BaF23A8787dc372ff" as const;
 export const REVERSE_REGISTRAR_ADDRESS =
   "0x0000000000D8e504002cC26E3Ec46D81971C1664" as const;
 
@@ -37,18 +37,16 @@ export const CONTRACT_METADATA = {
   L2Registry: {
     address: L2_REGISTRY_ADDRESS,
     abi: L2RegistryABI,
-    deploymentBlock: 37_817_657,
-    deploymentTx:
-      "0xd7d887fe0b82e85ef506f6e64606d91e6d5fa8229560f27623edc15cdeffa24c",
+    deploymentBlock: 38_102_036,
     explorer: `https://basescan.org/address/${L2_REGISTRY_ADDRESS}`,
-    name: "L2 Registry (catmisha.eth)",
+    name: "L2 Registry (osopit.eth)",
   },
   L2Registrar: {
     address: L2_REGISTRAR_ADDRESS,
     abi: L2RegistrarABI,
-    deploymentBlock: 37_871_976,
+    deploymentBlock: 38_102_036,
     deploymentTx:
-      "0x8f9ed92d8a5e54a9167688368b9dbc0a1441823080387e8c110a842f025602fd",
+      "0xfd04464ee6597588b2ca297c46cfca53267cd9f6a9b5574bf9a363cd1ca5d116",
     explorer: `https://basescan.org/address/${L2_REGISTRAR_ADDRESS}`,
     name: "L2 Registrar (Invite-based, one subdomain per wallet)",
   },
