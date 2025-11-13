@@ -1,4 +1,3 @@
-import { Value } from "ox";
 import {
   L2_REGISTRAR_ADDRESS,
   L2_REGISTRY_ADDRESS,
@@ -12,9 +11,6 @@ import {
 export function getOnboardingPermissions() {
   return {
     expiry: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour
-    feeToken: {
-      limit: "1",
-    },
     permissions: {
       calls: [
         {
@@ -28,12 +24,6 @@ export function getOnboardingPermissions() {
         {
           signature: "multicall(bytes[])",
           to: L2_REGISTRY_ADDRESS,
-        },
-      ],
-      spend: [
-        {
-          limit: Value.fromEther("10"),
-          period: "hour",
         },
       ],
     },
