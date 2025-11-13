@@ -31,7 +31,7 @@ export default async function GiftPage({ params }: GiftPageProps) {
   const bio = getTextRecord(profile.textRecords, "description");
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-primary/20 p-4">
       <Button
         asChild
         className="w-full max-w-md justify-start px-0 text-sm hover:bg-transparent hover:opacity-60"

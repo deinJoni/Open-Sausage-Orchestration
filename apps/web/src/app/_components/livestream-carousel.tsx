@@ -47,7 +47,7 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
                     }
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center rounded-lg bg-surface-elevated">
+                  <div className="flex h-full items-center justify-center rounded-lg bg-background">
                     <p className="text-muted-foreground">Stream unavailable</p>
                   </div>
                 )}

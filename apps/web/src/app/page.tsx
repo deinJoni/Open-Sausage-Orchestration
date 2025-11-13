@@ -17,7 +17,7 @@ const LoadingSkeleton = () => (
   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
     {[...new Array(ARTISTS_GRID_SIZE)].map((_, i) => (
       <Card
-        className="border-border bg-card p-6"
+        className="border-border bg-background/80 p-6"
         key={`artist-skeleton-${String(i)}`}
       >
         <Skeleton className="mb-4 size-16 rounded-2xl" />
@@ -150,7 +150,7 @@ export default function Home() {
               totalArtists={totalArtists}
             />
 
-            <div className="mx-auto w-full px-4 lg:px-0" id="artist-grid">
+            <div className="mx-auto w-full" id="artist-grid">
               {filteredArtists.length === 0 && renderEmptyState()}
               {filteredArtists.length > 0 && (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">

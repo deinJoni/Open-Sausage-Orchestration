@@ -38,7 +38,7 @@ export default function ArtistProfilePage() {
     return (
       <div className="mx-auto w-full max-w-7xl py-12">
         <div className="mb-8 space-y-4">
-          <Skeleton className="h-64 w-full rounded-lg border border-border bg-card shadow-md" />
+          <Skeleton className="h-64 w-full rounded-lg border border-border bg-background/80 shadow-md" />
           <div className="flex items-center gap-6">
             <Skeleton className="h-32 w-32 rounded-full border border-border/30 border-dashed" />
             <div className="flex-1 space-y-3">
@@ -54,7 +54,7 @@ export default function ArtistProfilePage() {
   if (!artist) {
     return (
       <div className="mx-auto w-full max-w-4xl py-16 text-center">
-        <div className="space-y-4 rounded-lg border border-border bg-card p-10 shadow-md">
+        <div className="space-y-4 rounded-lg border border-border bg-background/80 p-10 shadow-md">
           <div className="text-5xl">🤔</div>
           <h2 className="font-black text-2xl text-foreground leading-tight">
             Artist not found
@@ -87,7 +87,7 @@ export default function ArtistProfilePage() {
       </Button>
 
       {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
-        <div className="mb-8 overflow-hidden rounded-lg border border-border bg-card p-0 shadow-md">
+        <div className="mb-8 overflow-hidden rounded-lg border border-border bg-primary/20 p-0 shadow-md">
           <StreamEmbed
             artistName={artist.subdomain || identifier}
             streamPlatform={artist.streamPlatform}
@@ -98,7 +98,7 @@ export default function ArtistProfilePage() {
         </div>
       )}
 
-      <div className="mb-8 flex flex-col gap-6 rounded-lg border border-border bg-card px-8 py-10 shadow-md md:flex-row md:items-start">
+      <div className="mb-8 flex flex-col gap-6 rounded-lg border border-border bg-primary/20 px-8 py-10 shadow-md md:flex-row md:items-start">
         <div className="flex-shrink-0">
           {avatar ? (
             <Image
@@ -114,7 +114,7 @@ export default function ArtistProfilePage() {
             <div
               className={`flex h-32 w-32 items-center justify-center rounded-full border-2 ${
                 artist.isStreaming ? "border-live" : "border-border"
-              } bg-card text-4xl`}
+              } bg-background/80 text-4xl`}
             >
               👤
             </div>
@@ -141,7 +141,7 @@ export default function ArtistProfilePage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card px-4 py-6 shadow-md sm:px-8 sm:py-10">
+      <div className="rounded-lg border border-border bg-primary/20 px-4 py-6 shadow-md sm:px-8 sm:py-10">
         <h3 className="mb-4 font-black text-foreground text-xl leading-tight sm:mb-6 sm:text-2xl">
           🔗 Connect & Listen
         </h3>
@@ -151,7 +151,7 @@ export default function ArtistProfilePage() {
             ?.filter((x) => SocialKey.safeParse(x.key).success)
             .map((record) => (
               <a
-                className="hover:-translate-y-0.5 flex w-full flex-nowrap items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 shadow-sm transition-all duration-200 hover:shadow-md sm:gap-3 sm:px-4 sm:py-3"
+                className="hover:-translate-y-0.5 flex w-full flex-nowrap items-center gap-2 rounded-lg border border-border bg-primary/20 px-3 py-2.5 shadow-sm transition-all duration-200 hover:shadow-md sm:gap-3 sm:px-4 sm:py-3"
                 href={record.value}
                 key={`${record.key}-${record.value}`}
                 rel="noopener noreferrer"

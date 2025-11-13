@@ -47,7 +47,7 @@ export default function MePage() {
   if (!isConnected) {
     return (
       <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
+        <Card className="w-full border-border bg-background/80 p-8 text-center backdrop-blur">
           <h1 className="mb-4 font-bold text-2xl text-foreground">
             Your Profile
           </h1>
@@ -66,7 +66,7 @@ export default function MePage() {
         <Skeleton className="mb-8 h-10 w-64" />
 
         <div className="grid gap-6">
-          <Card className="border-border bg-card p-6 backdrop-blur">
+          <Card className="border-border bg-background/80 p-6 backdrop-blur">
             <div className="mb-6">
               <div className="mb-3">
                 <Skeleton className="h-7 w-48" />
@@ -100,7 +100,7 @@ export default function MePage() {
   if (!ownedProfile.hasProfile) {
     return (
       <div className="mx-auto flex h-full max-w-3xl flex-col items-center justify-center px-4 py-4 md:py-12">
-        <Card className="w-full border-border bg-card p-8 backdrop-blur">
+        <Card className="w-full border-border bg-background/80 p-8 backdrop-blur">
           <div className="mb-8 text-center">
             <h1 className="mb-2 font-bold text-3xl text-foreground">
               Welcome to Osopit
@@ -112,7 +112,7 @@ export default function MePage() {
           </div>
 
           <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border border-border bg-surface-elevated p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="mb-2 text-2xl">🎭</div>
               <h3 className="mb-1 font-semibold text-foreground">
                 Own Your Identity
@@ -122,7 +122,7 @@ export default function MePage() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-border bg-surface-elevated p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="mb-2 text-2xl">🎤</div>
               <h3 className="mb-1 font-semibold text-foreground">Go Live</h3>
               <p className="text-muted-foreground text-sm">
@@ -130,7 +130,7 @@ export default function MePage() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-border bg-surface-elevated p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="mb-2 text-2xl">💰</div>
               <h3 className="mb-1 font-semibold text-foreground">
                 Receive Tips
@@ -140,7 +140,7 @@ export default function MePage() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-border bg-surface-elevated p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <div className="mb-2 text-2xl">🔗</div>
               <h3 className="mb-1 font-semibold text-foreground">
                 Connect Platforms

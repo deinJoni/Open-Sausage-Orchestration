@@ -16,7 +16,7 @@ export function AlreadyHasProfile({
 }: AlreadyHasProfileProps) {
   return (
     <Container sm>
-      <Card className="w-full space-y-6 rounded-lg border border-border/60 bg-card/90 p-10 text-center shadow-sm backdrop-blur">
+      <Card className="w-full space-y-6 rounded-lg border border-border/60 bg-background/80 p-10 text-center shadow-sm backdrop-blur">
         <h1 className="font-black text-2xl text-foreground leading-tight">
           Profile Already Exists
         </h1>
