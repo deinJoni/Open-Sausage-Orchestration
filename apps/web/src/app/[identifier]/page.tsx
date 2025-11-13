@@ -4,7 +4,6 @@ import { Gift } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { DonationPopover } from "@/components/donation-modal";
 import { StreamEmbed } from "@/components/stream-embed";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -130,14 +129,11 @@ export default function ArtistProfilePage() {
             )}
           </div>
 
-          <DonationPopover
-            ensName={artist.subdomain ?? ""}
-            walletAddress={artist.user?.address}
-          >
+          <Link href={`/${artist.subdomain || identifier}/gift`}>
             <Button size="lg">
               <Gift className="h-3 w-3" />
             </Button>
-          </DonationPopover>
+          </Link>
         </div>
       </div>
 
