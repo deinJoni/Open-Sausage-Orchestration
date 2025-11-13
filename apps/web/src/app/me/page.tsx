@@ -109,21 +109,76 @@ export default function MePage() {
     );
   }
 
-  // No profile found
+  // Connected but no profile - show informational content
   if (!ownedProfile.hasProfile) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
-        <Card className="w-full border-border bg-card p-8 text-center backdrop-blur">
-          <h1 className="mb-4 font-bold text-2xl text-foreground">
-            No Profile Found
-          </h1>
-          <p className="mb-6 text-muted-foreground">
-            You haven't created an artist profile yet. Get an invite code to get
-            started!
-          </p>
-          <Link href="/onboarding">
-            <Button>Create Profile</Button>
-          </Link>
+      <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center px-4 py-12">
+        <Card className="w-full border-border bg-card p-8 backdrop-blur">
+          {/* Header */}
+          <div className="mb-8 text-center">
+            <h1 className="mb-2 font-bold text-3xl text-foreground">
+              Welcome to Osopit
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              A platform for creators to build identity, go live, and receive
+              tips
+            </p>
+          </div>
+
+          {/* Feature Grid */}
+          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="rounded-lg border border-border bg-surface-elevated p-4">
+              <div className="mb-2 text-2xl">🎭</div>
+              <h3 className="mb-1 font-semibold text-foreground">
+                Own Your Identity
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Decentralized ENS subdomain on Base blockchain
+              </p>
+            </div>
+
+            <div className="rounded-lg border border-border bg-surface-elevated p-4">
+              <div className="mb-2 text-2xl">🎤</div>
+              <h3 className="mb-1 font-semibold text-foreground">Go Live</h3>
+              <p className="text-muted-foreground text-sm">
+                Stream to your fans in real-time
+              </p>
+            </div>
+
+            <div className="rounded-lg border border-border bg-surface-elevated p-4">
+              <div className="mb-2 text-2xl">💰</div>
+              <h3 className="mb-1 font-semibold text-foreground">
+                Receive Tips
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Digital tip jar for direct fan support
+              </p>
+            </div>
+
+            <div className="rounded-lg border border-border bg-surface-elevated p-4">
+              <div className="mb-2 text-2xl">🔗</div>
+              <h3 className="mb-1 font-semibold text-foreground">
+                Connect Platforms
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                Link all your socials in one place
+              </p>
+            </div>
+          </div>
+
+          {/* Call-to-Actions */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Link href="/">
+              <Button className="w-full sm:w-auto" size="lg">
+                Browse Artists
+              </Button>
+            </Link>
+            <Link href="/onboarding">
+              <Button className="w-full sm:w-auto" size="lg" variant="outline">
+                Create Your Profile
+              </Button>
+            </Link>
+          </div>
         </Card>
       </div>
     );

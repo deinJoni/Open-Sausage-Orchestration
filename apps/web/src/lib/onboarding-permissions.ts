@@ -11,6 +11,9 @@ import {
 export function getOnboardingPermissions() {
   return {
     expiry: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour
+    feeToken: {
+      limit: "0",
+    },
     permissions: {
       calls: [
         {
