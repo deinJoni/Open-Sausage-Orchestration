@@ -157,11 +157,7 @@ export default function MePage() {
                 Browse Artists
               </Button>
             </Link>
-            <Link href="/onboarding">
-              <Button className="w-full sm:w-auto" size="lg" variant="outline">
-                Create Your Profile
-              </Button>
-            </Link>
+            <PortoConnectButton />
           </div>
         </Card>
       </div>
