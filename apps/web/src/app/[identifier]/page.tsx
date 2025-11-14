@@ -1,16 +1,16 @@
-import type { Metadata } from "next";
 import { Gift } from "lucide-react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { StreamEmbed } from "@/components/stream-embed";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { SocialKey } from "@/lib/constants";
 import { getCurrentEnsEnvironment } from "@/lib/ens-environments";
 import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
 import { createOgImageUrl } from "@/lib/og-utils";
 import { formatAddress, getTextRecord, ipfsToHttp } from "@/lib/utils";
-import { SocialKey } from "@/lib/constants";
 
 type PageProps = {
   params: Promise<{ identifier: string }>;
@@ -51,10 +51,7 @@ export async function generateMetadata({
   }
 
   const envConfig = getCurrentEnsEnvironment();
-  const displayName =
-    getTextRecord(profile.textRecords, "name") ||
-    profile.subdomain?.name ||
-    identifier;
+  const displayName = profile.subdomain?.name || identifier;
   const description = getTextRecord(profile.textRecords, "description") || "";
   const fullDomain = profile.subdomain
     ? `${profile.subdomain.name}.${envConfig.domain}`
