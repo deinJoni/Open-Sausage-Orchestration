@@ -65,7 +65,7 @@ export function BalanceHero({
 
   if (isLoading) {
     return (
-      <Card className="bg-card p-8 text-center">
+      <Card className="bg-background/80 p-8 text-center">
         <div className="mx-auto max-w-md space-y-4">
           <Skeleton className="mx-auto h-6 w-32" />
           <Skeleton className="mx-auto h-16 w-48" />
@@ -76,7 +76,7 @@ export function BalanceHero({
   }
 
   return (
-    <Card className="bg-card p-8 text-center">
+    <Card className="bg-background/80 p-8 text-center">
       <div className="mx-auto max-w-md space-y-4">
         <div className="flex items-center justify-center gap-2">
           <h2 className="font-medium text-muted-foreground text-sm uppercase tracking-wide">

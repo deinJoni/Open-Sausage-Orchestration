@@ -14,8 +14,8 @@ export function ArtistBottomBar() {
   // State 1: No wallet connected
   if (!isConnected) {
     return (
-      <div className="border-border border-t bg-card/60 backdrop-blur-sm">
-        <div className="mx-auto flex h-[40px] max-w-7xl items-center justify-between px-4">
+      <div className="border-border border-t bg-background/80 backdrop-blur-sm">
+        <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4">
           <Link
             className="text-muted-foreground text-xs transition-colors hover:text-foreground"
             href="/me"
@@ -31,8 +31,8 @@ export function ArtistBottomBar() {
   // State 2: Wallet connected but no profile
   if (!ownedProfile.hasProfile) {
     return (
-      <div className="border-border border-t bg-card/60 backdrop-blur-sm">
-        <div className="mx-auto flex h-[40px] max-w-7xl items-center justify-between px-4">
+      <div className="border-border border-t bg-background/80 backdrop-blur-sm">
+        <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4">
           <Link
             className="text-muted-foreground text-xs transition-colors hover:text-foreground"
             href="/me"
@@ -45,11 +45,9 @@ export function ArtistBottomBar() {
     );
   }
 
-  // State 3: Artist with profile - show balance (clickable to /me) + theme
   return (
-    <div className="border-border border-t bg-card/60 backdrop-blur-sm">
-      <div className="mx-auto flex h-[40px] max-w-7xl items-center justify-between px-4">
-        {/* Left: Balance preview - clickable to dashboard */}
+    <div className="border-border border-t bg-background/80 backdrop-blur-sm">
+      <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4">
         <Link
           className="flex items-center gap-2 text-xs transition-colors hover:text-brand"
           href="/me"
@@ -65,7 +63,6 @@ export function ArtistBottomBar() {
           )}
         </Link>
 
-        {/* Right: Theme switcher */}
         <ThemeSwitcher />
       </div>
     </div>

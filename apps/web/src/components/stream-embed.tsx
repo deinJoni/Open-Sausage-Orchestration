@@ -34,7 +34,7 @@ export function StreamEmbed({
 
   return (
     <TooltipProvider>
-      <div className="flex h-full flex-col overflow-hidden rounded-none border-0 border-border bg-card md:rounded-lg md:border">
+      <div className="flex h-full flex-col overflow-hidden rounded-none border-0 border-border bg-background/80 md:rounded-lg md:border">
         <div className="relative flex-1">
           <iframe
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -45,7 +45,7 @@ export function StreamEmbed({
           />
         </div>
         {showPlatformBadge && (
-          <div className="border-border border-t bg-card px-3 py-2 backdrop-blur">
+          <div className="border-border border-t bg-background/80 px-3 py-2 backdrop-blur">
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               {/* Left: Artist info + gift button */}
               {artistName && (

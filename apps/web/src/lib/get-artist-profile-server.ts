@@ -20,10 +20,117 @@ type ArtistProfile = {
   textRecords: TextRecord[];
 };
 
-/**
- * Server-side function to fetch artist profile from subgraph using GQty
- * Supports both ENS names and Ethereum addresses
- */
+function normalizeTextRecords(
+  records:
+    | Array<{ key?: string | null; value?: string | null }>
+    | null
+    | undefined
+): TextRecord[] {
+  if (!records) {
+    return [];
+  }
+
+  return records.map((record) => ({
+    key: record?.key ?? "",
+    value: record?.value ?? "",
+  }));
+}
+
+function buildArtistProfileFromUser(
+  user: {
+    address?: string | null;
+    subdomain?: {
+      name?: string | null;
+      node?: string | null;
+      textRecords?: (args: { first: number }) => Array<{
+        key?: string | null;
+        value?: string | null;
+      }> | null;
+    } | null;
+  } | null
+): ArtistProfile | null {
+  if (!user) {
+    return null;
+  }
+
+  const subdomain = user.subdomain;
+  const name = subdomain?.name ?? undefined;
+  const node = subdomain?.node ?? undefined;
+  const textRecords = subdomain?.textRecords?.({ first: 100 });
+
+  return {
+    address: user.address ?? "",
+    subdomain: name && node ? { name, node } : null,
+    textRecords: normalizeTextRecords(textRecords),
+  };
+}
+
+function buildArtistProfileFromSubdomain(
+  subdomain: {
+    name?: string | null;
+    node?: string | null;
+    owner?: { address?: string | null } | null;
+    textRecords: (args: { first: number }) => Array<{
+      key?: string | null;
+      value?: string | null;
+    }> | null;
+  } | null
+): ArtistProfile | null {
+  if (!subdomain) {
+    return null;
+  }
+
+  const name = subdomain.name ?? undefined;
+  const node = subdomain.node ?? undefined;
+  const ownerAddress = subdomain.owner?.address ?? "";
+  const textRecords = subdomain.textRecords({ first: 100 });
+
+  return {
+    address: ownerAddress,
+    subdomain: name && node ? { name, node } : null,
+    textRecords: normalizeTextRecords(textRecords),
+  };
+}
+
+function fetchProfileByAddress(
+  query: {
+    user: (args: { id: string }) => {
+      address?: string | null;
+      subdomain?: {
+        name?: string | null;
+        node?: string | null;
+        textRecords?: (args: { first: number }) => Array<{
+          key?: string | null;
+          value?: string | null;
+        }> | null;
+      } | null;
+    } | null;
+  },
+  normalized: string
+): ArtistProfile | null {
+  const user = query.user({ id: normalized });
+  return buildArtistProfileFromUser(user);
+}
+
+function fetchProfileBySubdomain(
+  query: {
+    subdomain: (args: { id: string }) => {
+      name?: string | null;
+      node?: string | null;
+      owner?: { address?: string | null } | null;
+      textRecords: (args: { first: number }) => Array<{
+        key?: string | null;
+        value?: string | null;
+      }> | null;
+    } | null;
+  },
+  normalized: string
+): ArtistProfile | null {
+  const nodeHash = calculateNodeHash(parseEnsLabel(normalized));
+  const subdomain = query.subdomain({ id: nodeHash });
+  return buildArtistProfileFromSubdomain(subdomain);
+}
+
 export async function getArtistProfileServer(
   identifier: string
 ): Promise<ArtistProfile | null> {
@@ -31,69 +138,11 @@ export async function getArtistProfileServer(
   const isAddress = isEthereumAddress(normalized);
 
   try {
-    // Use GQty's resolve function for Server Components
-    const result = await resolve(({ query }) => {
-      if (isAddress) {
-        // Query by wallet address
-        const user = query.user({ id: normalized });
-        if (!user) return null;
-
-        // Access fields to build the query
-        const address = user.address;
-        const subdomain = user.subdomain;
-        const name = subdomain?.name;
-        const node = subdomain?.node;
-        const textRecords = subdomain?.textRecords({ first: 100 }) || [];
-
-        // Access text record fields
-        textRecords.forEach((record) => {
-          record.key;
-          record.value;
-        });
-
-        return {
-          address: address || "",
-          subdomain:
-            subdomain && name && node
-              ? { name, node }
-              : null,
-          textRecords: textRecords.map((record) => ({
-            key: record.key || "",
-            value: record.value || "",
-          })),
-        };
-      }
-
-      // Query by subdomain name
-      const nodeHash = calculateNodeHash(parseEnsLabel(normalized));
-      const subdomain = query.subdomain({ id: nodeHash });
-      if (!subdomain) return null;
-
-      // Access fields to build the query
-      const name = subdomain.name;
-      const node = subdomain.node;
-      const owner = subdomain.owner;
-      const address = owner?.address;
-      const textRecords = subdomain.textRecords({ first: 100 }) || [];
-
-      // Access text record fields
-      textRecords.forEach((record) => {
-        record.key;
-        record.value;
-      });
-
-      return {
-        address: address || "",
-        subdomain:
-          name && node
-            ? { name, node }
-            : null,
-        textRecords: textRecords.map((record) => ({
-          key: record.key || "",
-          value: record.value || "",
-        })),
-      };
-    });
+    const result = await resolve(({ query }) =>
+      isAddress
+        ? fetchProfileByAddress(query, normalized)
+        : fetchProfileBySubdomain(query, normalized)
+    );
 
     return result;
   } catch (error) {

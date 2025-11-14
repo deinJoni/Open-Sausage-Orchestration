@@ -1,19 +1,14 @@
 "use client";
 
-import { ArrowUpRight, Settings, Share2 } from "lucide-react";
+import { ArrowUpRight, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type QuickActionsRowProps = {
   onSend: () => void;
   onShare: () => void;
-  onSettings: () => void;
 };
 
-export function QuickActionsRow({
-  onSend,
-  onShare,
-  onSettings,
-}: QuickActionsRowProps) {
+export function QuickActionsRow({ onSend, onShare }: QuickActionsRowProps) {
   return (
     <div className="scrollbar-hide flex gap-3 overflow-x-auto pb-2">
       <ActionButton
@@ -26,11 +21,6 @@ export function QuickActionsRow({
         icon={<Share2 className="size-5" />}
         label="Share Link"
         onClick={onShare}
-      />
-      <ActionButton
-        icon={<Settings className="size-5" />}
-        label="Settings"
-        onClick={onSettings}
       />
     </div>
   );
