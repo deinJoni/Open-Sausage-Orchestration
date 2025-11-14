@@ -48,16 +48,38 @@ export function PortoConnectButton({
     );
   }
 
+  // Debug: Log available connectors
+  console.log("[PortoConnectButton] Available connectors:", connectors.map(c => ({
+    name: c.name,
+    type: c.type,
+    id: c.id,
+  })));
+
   const portoConnector = connectors.find((c) => c.name === "Porto");
 
+  console.log("[PortoConnectButton] Porto connector found:", !!portoConnector);
+  console.log("[PortoConnectButton] Porto connector details:", portoConnector);
+
   if (!portoConnector) {
-    return <div>No connector found</div>;
+    console.error("[PortoConnectButton] Porto connector not found. Available connectors:", connectors.map(c => c.name));
+    return (
+      <div className="flex flex-col gap-2">
+        <Button disabled size={size} variant="outline" className={className}>
+          ⚡ Connect Wallet to Start
+        </Button>
+        <p className="text-destructive text-xs">
+          Porto connector not available. Check console for details.
+        </p>
+      </div>
+    );
   }
 
   return (
     <Button
       className={className}
       onClick={() => {
+        console.log("[PortoConnectButton] Connect button clicked");
+        console.log("[PortoConnectButton] Using connector:", portoConnector.name);
         connect({
           connector: portoConnector,
           // @ts-expect-error - TODO: fix this
