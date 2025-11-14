@@ -72,7 +72,8 @@ export async function GET() {
               maxWidth: "800px",
             }}
           >
-            Connect with creators, support artists, and experience live performances
+            Connect with creators, support artists, and experience live
+            performances
           </p>
 
           {/* Features */}

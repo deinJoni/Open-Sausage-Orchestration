@@ -5,13 +5,11 @@ import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
 import { getGeistFonts } from "@/lib/og-fonts";
 import {
   fetchImageWithTimeout,
-  getTextRecord,
-  ipfsToHttp,
   OgIdentifierSchema,
   parseBroadcast,
   truncateText,
 } from "@/lib/og-utils";
-import { formatAddress } from "@/lib/utils";
+import { formatAddress, getTextRecord, ipfsToHttp } from "@/lib/utils";
 export const runtime = "edge";
 
 export async function GET(request: Request) {

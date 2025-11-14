@@ -6,9 +6,6 @@
 import { z } from "zod";
 import { isEthereumAddress } from "./utils";
 
-// Re-export existing utilities
-export { ipfsToHttp, getTextRecord } from "./utils";
-
 /**
  * Parse broadcast text record value
  * Format: "true|url|userId1|userId2|..."
@@ -45,7 +42,9 @@ export async function fetchImageWithTimeout(
   url: string,
   timeoutMs = 2000
 ): Promise<string | null> {
-  if (!url) return null;
+  if (!url) {
+    return null;
+  }
 
   try {
     const controller = new AbortController();
@@ -79,11 +78,13 @@ export const OgIdentifierSchema = z
     (val) => {
       // Must be either valid ENS name or Ethereum address
       const isAddress = isEthereumAddress(val);
+      // biome-ignore lint/performance/useTopLevelRegex: <LIFE IS SHORT>
       const isEnsName = /^[a-z0-9-]+(\.[a-z0-9-]+)*$/i.test(val);
       return isAddress || isEnsName;
     },
     {
-      message: "Invalid identifier format (must be ENS name or Ethereum address)",
+      message:
+        "Invalid identifier format (must be ENS name or Ethereum address)",
     }
   );
 
@@ -92,7 +93,9 @@ export const OgIdentifierSchema = z
  * Prevents overflow in OG image layouts
  */
 export function truncateText(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) return text;
+  if (!text || text.length <= maxLength) {
+    return text;
+  }
   return `${text.slice(0, maxLength).trim()}...`;
 }
 
@@ -118,7 +121,10 @@ export function getBaseUrl(): string {
 /**
  * Create OG image URL with proper base URL
  */
-export function createOgImageUrl(path: string, params?: Record<string, string>): string {
+export function createOgImageUrl(
+  path: string,
+  params?: Record<string, string>
+): string {
   const baseUrl = getBaseUrl();
   const url = new URL(path, baseUrl);
 

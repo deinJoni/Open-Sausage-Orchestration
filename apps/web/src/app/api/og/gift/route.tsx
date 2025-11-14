@@ -3,13 +3,8 @@ import { ImageResponse } from "next/og";
 import { getCurrentEnsEnvironment } from "@/lib/ens-environments";
 import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
 import { getGeistFonts } from "@/lib/og-fonts";
-import {
-  fetchImageWithTimeout,
-  getTextRecord,
-  ipfsToHttp,
-  OgIdentifierSchema,
-} from "@/lib/og-utils";
-import { formatAddress } from "@/lib/utils";
+import { fetchImageWithTimeout, OgIdentifierSchema } from "@/lib/og-utils";
+import { formatAddress, getTextRecord, ipfsToHttp } from "@/lib/utils";
 
 export const runtime = "edge";
 

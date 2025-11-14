@@ -25,7 +25,7 @@ async function fetchFont(url: string): Promise<ArrayBuffer> {
   try {
     const response = await fetch(url, {
       // Cache for 24 hours
-      next: { revalidate: 86400 },
+      next: { revalidate: 86_400 },
     });
 
     if (!response.ok) {

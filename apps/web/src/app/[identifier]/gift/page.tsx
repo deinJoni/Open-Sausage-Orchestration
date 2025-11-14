@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { TipForm } from "@/app/[identifier]/gift/_components/tip-form";
 import { Button } from "@/components/ui/button";
 import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
-import { getTextRecord } from "@/lib/utils";
 import { createOgImageUrl } from "@/lib/og-utils";
+import { getTextRecord } from "@/lib/utils";
 
 type GiftPageProps = {
   params: Promise<{

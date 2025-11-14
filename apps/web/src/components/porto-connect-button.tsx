@@ -41,7 +41,7 @@ export function PortoConnectButton({
     return (
       <div className="flex items-center gap-2">
         <Button
-          className={`group relative overflow-hidden border-black bg-white font-mono text-xs font-semibold text-black shadow-sm transition-all hover:scale-105 hover:bg-gray-50 ${className}`}
+          className={`group relative overflow-hidden border-black bg-white font-mono font-semibold text-black text-xs shadow-sm transition-all hover:scale-105 hover:bg-gray-50 ${className}`}
           onClick={handleCopyAddress}
           size={size}
           variant="outline"
@@ -51,7 +51,7 @@ export function PortoConnectButton({
           </span>
         </Button>
         <Button
-          className="border-black bg-white text-xs font-semibold text-black shadow-sm transition-all hover:bg-gray-50"
+          className="border-black bg-white font-semibold text-black text-xs shadow-sm transition-all hover:bg-gray-50"
           onClick={() => disconnect()}
           size={size}
           variant="outline"
@@ -63,11 +63,14 @@ export function PortoConnectButton({
   }
 
   // Debug: Log available connectors
-  console.log("[PortoConnectButton] Available connectors:", connectors.map(c => ({
-    name: c.name,
-    type: c.type,
-    id: c.id,
-  })));
+  console.log(
+    "[PortoConnectButton] Available connectors:",
+    connectors.map((c) => ({
+      name: c.name,
+      type: c.type,
+      id: c.id,
+    }))
+  );
 
   const portoConnector = connectors.find((c) => c.name === "Porto");
 
@@ -75,10 +78,13 @@ export function PortoConnectButton({
   console.log("[PortoConnectButton] Porto connector details:", portoConnector);
 
   if (!portoConnector) {
-    console.error("[PortoConnectButton] Porto connector not found. Available connectors:", connectors.map(c => c.name));
+    console.error(
+      "[PortoConnectButton] Porto connector not found. Available connectors:",
+      connectors.map((c) => c.name)
+    );
     return (
       <div className="flex flex-col gap-2">
-        <Button disabled size={size} variant="outline" className={className}>
+        <Button className={className} disabled size={size} variant="outline">
           ⚡ Connect Wallet to Start
         </Button>
         <p className="text-destructive text-xs">
@@ -90,10 +96,13 @@ export function PortoConnectButton({
 
   return (
     <Button
-      className={`group relative overflow-hidden border-black bg-white text-xs font-semibold text-black shadow-sm transition-all hover:scale-105 hover:bg-gray-50 ${className}`}
+      className={`group relative overflow-hidden border-black bg-white font-semibold text-black text-xs shadow-sm transition-all hover:scale-105 hover:bg-gray-50 ${className}`}
       onClick={() => {
         console.log("[PortoConnectButton] Connect button clicked");
-        console.log("[PortoConnectButton] Using connector:", portoConnector.name);
+        console.log(
+          "[PortoConnectButton] Using connector:",
+          portoConnector.name
+        );
         connect({
           connector: portoConnector,
           // @ts-expect-error - TODO: fix this

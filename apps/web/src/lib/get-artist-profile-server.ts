@@ -1,12 +1,12 @@
 import { resolve } from "@/gqty";
+import { detectStreamPlatform } from "./broadcast";
 import {
   calculateNodeHash,
+  getTextRecord,
   isEthereumAddress,
   normalizeIdentifier,
   parseEnsLabel,
-  getTextRecord,
 } from "./utils";
-import { detectStreamPlatform } from "./broadcast";
 
 type TextRecord = {
   key: string;
@@ -94,7 +94,10 @@ function buildArtistProfileFromUser(
   const normalizedRecords = normalizeTextRecords(textRecords);
 
   // Parse broadcast data
-  const broadcastValue = getTextRecord(normalizedRecords, "app.osopit.broadcast");
+  const broadcastValue = getTextRecord(
+    normalizedRecords,
+    "app.osopit.broadcast"
+  );
   const broadcast = parseBroadcast(broadcastValue);
 
   return {
@@ -103,7 +106,9 @@ function buildArtistProfileFromUser(
     textRecords: normalizedRecords,
     isStreaming: broadcast.isLive,
     streamUrl: broadcast.url,
-    streamPlatform: broadcast.url ? detectStreamPlatform(broadcast.url) ?? undefined : undefined,
+    streamPlatform: broadcast.url
+      ? (detectStreamPlatform(broadcast.url) ?? undefined)
+      : undefined,
     taggedArtists: broadcast.taggedArtists ?? [],
   };
 }
@@ -130,7 +135,10 @@ function buildArtistProfileFromSubdomain(
   const normalizedRecords = normalizeTextRecords(textRecords);
 
   // Parse broadcast data
-  const broadcastValue = getTextRecord(normalizedRecords, "app.osopit.broadcast");
+  const broadcastValue = getTextRecord(
+    normalizedRecords,
+    "app.osopit.broadcast"
+  );
   const broadcast = parseBroadcast(broadcastValue);
 
   return {
@@ -139,7 +147,9 @@ function buildArtistProfileFromSubdomain(
     textRecords: normalizedRecords,
     isStreaming: broadcast.isLive,
     streamUrl: broadcast.url,
-    streamPlatform: broadcast.url ? detectStreamPlatform(broadcast.url) ?? undefined : undefined,
+    streamPlatform: broadcast.url
+      ? (detectStreamPlatform(broadcast.url) ?? undefined)
+      : undefined,
     taggedArtists: broadcast.taggedArtists ?? [],
   };
 }

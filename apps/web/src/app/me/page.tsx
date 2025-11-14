@@ -62,12 +62,12 @@ export default function MePage() {
               <strong>New to Osopit?</strong>
             </p>
             <p className="text-muted-foreground text-sm">
-              You need an invitation from an existing member to create your profile.
-              Once invited, you'll receive an osopit.eth subdomain and can manage your
-              identity, go live, and receive tips.
+              You need an invitation from an existing member to create your
+              profile. Once invited, you'll receive an osopit.eth subdomain and
+              can manage your identity, go live, and receive tips.
             </p>
             <Link href="/">
-              <Button variant="link" className="h-auto p-0 text-sm">
+              <Button className="h-auto p-0 text-sm" variant="link">
                 Browse existing artists →
               </Button>
             </Link>
