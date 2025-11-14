@@ -41,7 +41,7 @@ export const ENS_ENVIRONMENTS: Record<EnsEnvironmentName, EnsEnvironment> = {
 		registrarDeploymentTx:
 			"0x8f9ed92d8a5e54a9167688368b9dbc0a1441823080387e8c110a842f025602fd",
 		subgraphUrl:
-			"https://api.studio.thegraph.com/query/92278/catmisha-subgraph/version/latest",
+			"https://api.studio.thegraph.com/query/1714097/catmisha-subgraph/version/latest",
 	},
 	osopit: {
 		domain: "osopit.eth",
@@ -52,7 +52,7 @@ export const ENS_ENVIRONMENTS: Record<EnsEnvironmentName, EnsEnvironment> = {
 		registrarDeploymentTx:
 			"0xfd04464ee6597588b2ca297c46cfca53267cd9f6a9b5574bf9a363cd1ca5d116",
 		subgraphUrl:
-			"https://api.studio.thegraph.com/query/92278/osopit-subgraphv-1/version/latest",
+			"https://api.studio.thegraph.com/query/1714097/osopit-subgraphv-1/version/latest"
 	},
 } as const;
 
