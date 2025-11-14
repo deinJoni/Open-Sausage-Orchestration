@@ -33,15 +33,29 @@ export function PortoConnectButton({
   };
 
   const formatAddress = (addr: string) =>
-    `${addr.slice(0, ADDRESS_PREFIX_LENGTH)}...${addr.slice(-ADDRESS_SUFFIX_LENGTH)}`;
+    `${addr.slice(0, ADDRESS_PREFIX_LENGTH)}...${addr.slice(
+      -ADDRESS_SUFFIX_LENGTH
+    )}`;
 
   if (isConnected && address) {
     return (
       <div className="flex items-center gap-2">
-        <Button onClick={handleCopyAddress} size={size} variant="outline">
-          {copied ? "Copied!" : formatAddress(address)}
+        <Button
+          className={`group relative overflow-hidden border-black bg-white font-mono text-xs font-semibold text-black shadow-sm transition-all hover:scale-105 hover:bg-gray-50 ${className}`}
+          onClick={handleCopyAddress}
+          size={size}
+          variant="outline"
+        >
+          <span className="relative z-10">
+            {copied ? "✓ Copied!" : formatAddress(address)}
+          </span>
         </Button>
-        <Button onClick={() => disconnect()} size={size} variant="ghost">
+        <Button
+          className="border-black bg-white text-xs font-semibold text-black shadow-sm transition-all hover:bg-gray-50"
+          onClick={() => disconnect()}
+          size={size}
+          variant="outline"
+        >
           Disconnect
         </Button>
       </div>
@@ -76,7 +90,7 @@ export function PortoConnectButton({
 
   return (
     <Button
-      className={className}
+      className={`group relative overflow-hidden border-black bg-white text-xs font-semibold text-black shadow-sm transition-all hover:scale-105 hover:bg-gray-50 ${className}`}
       onClick={() => {
         console.log("[PortoConnectButton] Connect button clicked");
         console.log("[PortoConnectButton] Using connector:", portoConnector.name);
@@ -89,8 +103,18 @@ export function PortoConnectButton({
         });
       }}
       size={size}
+      variant="outline"
     >
-      {isPending ? "Connecting..." : "⚡ Connect Wallet to Start"}
+      <span className="relative z-10 flex items-center gap-2">
+        {isPending ? (
+          <>
+            <span className="inline-block size-3.5 animate-spin rounded-full border-2 border-black/20 border-t-black" />
+            Connecting...
+          </>
+        ) : (
+          <>Sign In</>
+        )}
+      </span>
     </Button>
   );
 }
