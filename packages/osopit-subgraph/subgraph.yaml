@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: OsopitRegistry
-    network: base
+    network: catmisha
     source:
-      address: "0xb2576cD3Cfcc023e4A48c79BaF23A8787dc372ff"
       abi: OsopitRegistry
-      startBlock: 38102036
+      address: "0x63e7b8F8A8d42b043fe58Be1243d7cBcb1Ca5514"
+      startBlock: 37817657
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9
@@ -26,11 +26,11 @@ dataSources:
       file: ./src/osopit-registry.ts
   - kind: ethereum
     name: L2Resolver
-    network: base
+    network: catmisha
     source:
-      address: "0x8c77dd23735dbe20c3cae29250bdd3bf80e6f9b1"
       abi: ITextResolver
-      startBlock: 38102036
+      address: "0xa609955257eacbbd566a1fa654e6c5f4b1fdc9e2"
+      startBlock: 37817657
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.9

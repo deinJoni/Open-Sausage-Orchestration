@@ -2,6 +2,8 @@
  * Application constants and configuration values
  */
 import { z } from "zod";
+import { getCurrentEnsEnvironment } from "./ens-environments";
+
 // Subdomain validation rules
 export const SUBDOMAIN_VALIDATION = {
   MIN_LENGTH: 3,
@@ -28,9 +30,11 @@ export const TIME = {
   MS_PER_2_WEEKS: 1_209_600_000,
 } as const;
 
-// ENS configuration
+// ENS configuration (dynamic based on environment)
 export const ENS = {
-  PARENT_DOMAIN: "osopit.eth",
+  get PARENT_DOMAIN() {
+    return getCurrentEnsEnvironment().domain;
+  },
 } as const;
 
 // ENS text record keys

@@ -14,28 +14,28 @@ import {
   scalarsEnumsHash,
   type GeneratedSchema,
 } from "./schema.generated";
+import { getCurrentEnsEnvironment } from "@/lib/ens-environments";
 
 const queryFetcher: QueryFetcher = async function (
   { query, variables, operationName },
   fetchOptions
 ) {
-  // Modify "https://api.studio.thegraph.com/query/1714097/osopit-subgraphv-1/version/latest" if needed
-  const response = await fetch(
-    "https://api.studio.thegraph.com/query/1714097/osopit-subgraphv-1/version/latest",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-        operationName,
-      }),
-      mode: "cors",
-      ...fetchOptions,
-    }
-  );
+  // Subgraph URL is dynamic based on ENS environment (catmisha.eth vs osopit.eth)
+  const subgraphUrl = getCurrentEnsEnvironment().subgraphUrl;
+
+  const response = await fetch(subgraphUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query,
+      variables,
+      operationName,
+    }),
+    mode: "cors",
+    ...fetchOptions,
+  });
 
   return await defaultResponseHandler(response);
 };

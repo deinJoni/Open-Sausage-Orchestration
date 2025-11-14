@@ -9,9 +9,14 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1),
+    NEXT_PUBLIC_ENS_ENVIRONMENT: z
+      .enum(["catmisha", "osopit"])
+      .default("osopit")
+      .optional(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+    NEXT_PUBLIC_ENS_ENVIRONMENT: process.env.NEXT_PUBLIC_ENS_ENVIRONMENT,
   },
 });
