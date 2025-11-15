@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAccount } from "wagmi";
 import { BalanceHero } from "@/app/me/_components/balance-hero";
-import { BroadcastControl } from "@/app/me/_components/broadcast-control";
+import { BroadcastSheet } from "@/app/me/_components/broadcast-sheet";
+import { LiveBroadcastCard } from "@/app/me/_components/live-broadcast-card";
+import { LiveStatusBanner } from "@/app/me/_components/live-status-banner";
 import { ProfileEditForm } from "@/app/me/_components/profile-edit-form";
 import { QuickActionsRow } from "@/app/me/_components/quick-actions-row";
 import { SendMoneySheet } from "@/app/me/_components/send-money-sheet";
@@ -35,6 +37,8 @@ export default function MePage() {
 
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [showSendSheet, setShowSendSheet] = useState(false);
+  const [showBroadcastSheet, setShowBroadcastSheet] = useState(false);
+  const broadcastCardRef = useRef<HTMLDivElement>(null);
 
   const ensName = ownedProfile.data?.subdomain?.name
     ? `${ownedProfile.data.subdomain.name}.osopit.eth`
@@ -193,16 +197,40 @@ export default function MePage() {
     );
   }
 
+  const isLive = ownedProfile.data?.user?.activeBroadcast?.isLive ?? false;
+
+  const handleGoLive = () => {
+    if (isLive && broadcastCardRef.current) {
+      // If already live, scroll to broadcast card
+      broadcastCardRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    } else {
+      // Open broadcast sheet to start streaming
+      setShowBroadcastSheet(true);
+    }
+  };
+
+  const handleViewBroadcastDetails = () => {
+    if (broadcastCardRef.current) {
+      broadcastCardRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  };
+
   return (
     <div className="mx-auto min-h-screen max-w-4xl space-y-6 p-4 pb-safe">
-      <Button
-        asChild
-        className="mb-4 px-0 text-sm hover:bg-transparent hover:opacity-60"
-        size="sm"
-        variant="ghost"
-      >
-        <Link href="/">← Back to Home</Link>
-      </Button>
+      {/* Live Status Banner - Only show when streaming */}
+      {isLive && ownedProfile.data && (
+        <LiveStatusBanner
+          onViewDetails={handleViewBroadcastDetails}
+          profile={ownedProfile.data}
+        />
+      )}
+
       <BalanceHero
         balanceETH={balance.formatted}
         balanceUSD={balance.balanceUSD}
@@ -213,16 +241,23 @@ export default function MePage() {
       />
 
       <QuickActionsRow
+        isLive={isLive}
+        onGoLive={handleGoLive}
         onSend={() => setShowSendSheet(true)}
         onShare={() => setShowShareSheet(true)}
       />
 
-      <TransactionList
-        ethPriceUSD={ethPrice}
-        isLoading={transactions.isLoading}
-        transactions={transactions.transactions}
-      />
+      {/* Live Broadcast Card - Only show when streaming */}
+      {isLive && ownedProfile.data && (
+        <div ref={broadcastCardRef}>
+          <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
+            Live Broadcast
+          </h4>
+          <LiveBroadcastCard profile={ownedProfile.data} />
+        </div>
+      )}
 
+      {/* Profile Section */}
       <div className="space-y-6 pt-0">
         {ownedProfile.data && (
           <div>
@@ -235,15 +270,21 @@ export default function MePage() {
             />
           </div>
         )}
-
-        <div>
-          <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
-            Live Broadcast
-          </h4>
-          <BroadcastControl />
-        </div>
       </div>
 
+      {/* Transactions - now at bottom */}
+      <div>
+        <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
+          Recent Activity
+        </h4>
+        <TransactionList
+          ethPriceUSD={ethPrice}
+          isLoading={transactions.isLoading}
+          transactions={transactions.transactions}
+        />
+      </div>
+
+      {/* Sheets/Drawers */}
       <ShareLinkSheet
         ensName={ensName}
         giftUrl={giftUrl}
@@ -255,6 +296,11 @@ export default function MePage() {
         onOpenChange={setShowSendSheet}
         open={showSendSheet}
         userBalance={balance.balanceNum}
+      />
+
+      <BroadcastSheet
+        onOpenChange={setShowBroadcastSheet}
+        open={showBroadcastSheet}
       />
     </div>
   );

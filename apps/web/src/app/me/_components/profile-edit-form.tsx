@@ -1,10 +1,16 @@
 "use client";
 
+import { ChevronDown, Mail, Share2, User } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ArtistAvatar } from "@/components/artist-avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { OwnedProfile } from "@/hooks/use-owned-profile";
@@ -26,6 +32,8 @@ type ProfileEditFormProps = {
  * - useMemo for expensive calculations (change detection)
  * - Validation in event handlers
  */
+
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT, CODE IS LONG>
 export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   // Get existing text records using constants
   const existingRecords = profile.textRecords || [];
@@ -41,6 +49,11 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Collapsible section state
+  const [identityOpen, setIdentityOpen] = useState(true);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [socialsOpen, setSocialsOpen] = useState(false);
 
   // Social links state - initialize from existing records
   const [socials, setSocials] = useState<Record<string, string>>(() => {
@@ -187,6 +200,10 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   const currentAvatarSrc =
     avatarPreview || (avatarValue ? ipfsToHttp(avatarValue) : null);
 
+  // Count filled fields for progress indicators
+  const socialsFilled = Object.values(socials).filter((v) => v.trim()).length;
+  const contactFilled = (email.trim() ? 1 : 0) + (url.trim() ? 1 : 0);
+
   return (
     <Card className="border-border bg-background/80 p-6 backdrop-blur">
       <div className="mb-6">
@@ -199,118 +216,209 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
         </div>
       </div>
 
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        {/* Avatar */}
-        <div>
-          <Label className="text-foreground">Avatar</Label>
-          <div className="mt-2 flex items-center gap-4">
-            <ArtistAvatar
-              avatarUrl={currentAvatarSrc}
-              className="border-4 border-border"
-              name={profile.subdomain?.name || profile.ensName || "Profile"}
-              size="lg"
-            />
-            <div>
-              <input
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarChange}
-                ref={fileInputRef}
-                type="file"
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        {/* Identity Section */}
+        <Collapsible onOpenChange={setIdentityOpen} open={identityOpen}>
+          <CollapsibleTrigger asChild>
+            <button
+              aria-expanded={identityOpen}
+              aria-label="Toggle identity section"
+              className="flex w-full items-center justify-between rounded-lg border border-border bg-background/50 p-4 text-left transition-colors hover:bg-background/70"
+              type="button"
+            >
+              <div className="flex items-center gap-3">
+                <User className="h-5 w-5 text-brand" />
+                <div>
+                  <h3 className="font-semibold text-foreground text-sm">
+                    Identity
+                  </h3>
+                  <p className="text-muted-foreground text-xs">
+                    Avatar and bio
+                  </p>
+                </div>
+              </div>
+              <ChevronDown
+                className={`h-5 w-5 text-muted-foreground transition-transform ${identityOpen ? "rotate-180" : ""}`}
               />
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                size="sm"
-                type="button"
-                variant="outline"
-              >
-                {avatarFile ? "Change Image" : "Upload Image"}
-              </Button>
-              {avatarFile && (
-                <p className="mt-1 text-md text-muted-foreground">
-                  {avatarFile.name}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=open]:animate-in">
+            <div className="space-y-4 p-4 pt-4">
+              {/* Avatar */}
+              <div>
+                <Label className="text-foreground">Avatar</Label>
+                <div className="mt-2 flex items-center gap-4">
+                  <ArtistAvatar
+                    avatarUrl={currentAvatarSrc}
+                    className="border-4 border-border"
+                    name={
+                      profile.subdomain?.name || profile.ensName || "Profile"
+                    }
+                    size="lg"
+                  />
+                  <div>
+                    <input
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleAvatarChange}
+                      ref={fileInputRef}
+                      type="file"
+                    />
+                    <Button
+                      onClick={() => fileInputRef.current?.click()}
+                      size="sm"
+                      type="button"
+                      variant="outline"
+                    >
+                      {avatarFile ? "Change Image" : "Upload Image"}
+                    </Button>
+                    {avatarFile && (
+                      <p className="mt-1 text-md text-muted-foreground">
+                        {avatarFile.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
 
-        {/* Description/Bio */}
-        <div>
-          <Label className="text-foreground" htmlFor="description">
-            Bio / Description
-          </Label>
-          <Input
-            className="mt-2 border-border bg-background text-foreground"
-            id="description"
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Tell us about yourself..."
-            value={description}
-          />
-        </div>
-
-        {/* Email */}
-        <div>
-          <Label className="text-foreground" htmlFor="email">
-            Email (Optional)
-          </Label>
-          <Input
-            className="mt-2 border-border bg-background text-foreground"
-            id="email"
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
-            type="email"
-            value={email}
-          />
-        </div>
-
-        {/* Website URL */}
-        <div>
-          <Label className="text-foreground" htmlFor="url">
-            Website (Optional)
-          </Label>
-          <Input
-            className="mt-2 border-border bg-background text-foreground"
-            id="url"
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://your-website.com"
-            type="url"
-            value={url}
-          />
-        </div>
-
-        {/* Social Links */}
-        <div>
-          <Label className="mb-3 text-foreground">
-            Social Links (Optional)
-          </Label>
-          <div className="space-y-3">
-            {(
-              [
-                "com.twitter",
-                "com.instagram",
-                "com.youtube",
-                "com.spotify",
-                "com.soundcloud",
-              ] as const
-            ).map((key) => (
-              <div key={key}>
-                <Label className="text-md text-muted-foreground" htmlFor={key}>
-                  {key.replace("com.", "").charAt(0).toUpperCase() +
-                    key.replace("com.", "").slice(1)}
+              {/* Bio */}
+              <div>
+                <Label className="text-foreground" htmlFor="description">
+                  Bio / Description
                 </Label>
                 <Input
-                  className="mt-1 border-border bg-background text-foreground"
-                  id={key}
-                  onChange={(e) => handleSocialChange(key, e.target.value)}
-                  placeholder={`https://${key.replace("com.", "")}.com/yourusername`}
-                  type="url"
-                  value={socials[key] || ""}
+                  className="mt-2 border-border bg-background text-foreground"
+                  id="description"
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Tell us about yourself..."
+                  value={description}
                 />
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Contact Section */}
+        <Collapsible onOpenChange={setContactOpen} open={contactOpen}>
+          <CollapsibleTrigger asChild>
+            <button
+              aria-expanded={contactOpen}
+              aria-label="Toggle contact section"
+              className="flex w-full items-center justify-between rounded-lg border border-border bg-background/50 p-4 text-left transition-colors hover:bg-background/70"
+              type="button"
+            >
+              <div className="flex items-center gap-3">
+                <Mail className="h-5 w-5 text-brand" />
+                <div>
+                  <h3 className="font-semibold text-foreground text-sm">
+                    Contact
+                  </h3>
+                  <p className="text-muted-foreground text-xs">
+                    {contactFilled > 0
+                      ? `${contactFilled}/2 added`
+                      : "Email and website"}
+                  </p>
+                </div>
+              </div>
+              <ChevronDown
+                className={`h-5 w-5 text-muted-foreground transition-transform ${contactOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=open]:animate-in">
+            <div className="space-y-4 p-4 pt-4">
+              {/* Email */}
+              <div>
+                <Label className="text-foreground" htmlFor="email">
+                  Email
+                </Label>
+                <Input
+                  className="mt-2 border-border bg-background text-foreground"
+                  id="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  type="email"
+                  value={email}
+                />
+              </div>
+
+              {/* Website */}
+              <div>
+                <Label className="text-foreground" htmlFor="url">
+                  Website
+                </Label>
+                <Input
+                  className="mt-2 border-border bg-background text-foreground"
+                  id="url"
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="https://your-website.com"
+                  type="url"
+                  value={url}
+                />
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Social Links Section */}
+        <Collapsible onOpenChange={setSocialsOpen} open={socialsOpen}>
+          <CollapsibleTrigger asChild>
+            <button
+              aria-expanded={socialsOpen}
+              aria-label="Toggle social links section"
+              className="flex w-full items-center justify-between rounded-lg border border-border bg-background/50 p-4 text-left transition-colors hover:bg-background/70"
+              type="button"
+            >
+              <div className="flex items-center gap-3">
+                <Share2 className="h-5 w-5 text-brand" />
+                <div>
+                  <h3 className="font-semibold text-foreground text-sm">
+                    Social Links
+                  </h3>
+                  <p className="text-muted-foreground text-xs">
+                    {socialsFilled > 0
+                      ? `${socialsFilled}/5 connected`
+                      : "Connect your platforms"}
+                  </p>
+                </div>
+              </div>
+              <ChevronDown
+                className={`h-5 w-5 text-muted-foreground transition-transform ${socialsOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="space-y-3 p-4 pt-4">
+              {(
+                [
+                  "com.twitter",
+                  "com.instagram",
+                  "com.youtube",
+                  "com.spotify",
+                  "com.soundcloud",
+                ] as const
+              ).map((key) => (
+                <div key={key}>
+                  <Label
+                    className="text-md text-muted-foreground"
+                    htmlFor={key}
+                  >
+                    {key.replace("com.", "").charAt(0).toUpperCase() +
+                      key.replace("com.", "").slice(1)}
+                  </Label>
+                  <Input
+                    className="mt-1 border-border bg-background text-foreground"
+                    id={key}
+                    onChange={(e) => handleSocialChange(key, e.target.value)}
+                    placeholder={`https://${key.replace("com.", "")}.com/yourusername`}
+                    type="url"
+                    value={socials[key] || ""}
+                  />
+                </div>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* Submit Button */}
         <div className="flex gap-3">

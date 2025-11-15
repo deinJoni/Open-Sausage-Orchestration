@@ -9,17 +9,33 @@ import { Label } from "@/components/ui/label";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
 import { detectStreamPlatform, isValidBroadcastUrl } from "@/lib/broadcast";
 
+type StartBroadcastFormProps = {
+  onSuccess?: () => void;
+};
+
 /**
  * Form for starting a new broadcast
  * Validates URL, detects platform, allows tagging collaborators
  */
-export function StartBroadcastForm() {
+export function StartBroadcastForm({
+  onSuccess,
+}: StartBroadcastFormProps = {}) {
   const [streamUrl, setStreamUrl] = useState("");
   const [selectedArtists, setSelectedArtists] = useState<string[]>([]);
   const [urlError, setUrlError] = useState<string | null>(null);
 
   const updateBroadcast = useUpdateBroadcast();
   const platform = detectStreamPlatform(streamUrl);
+
+  // Call onSuccess when broadcast starts successfully
+  useEffect(() => {
+    if (updateBroadcast.isSuccess && onSuccess) {
+      onSuccess();
+      // Reset form
+      setStreamUrl("");
+      setSelectedArtists([]);
+    }
+  }, [updateBroadcast.isSuccess, onSuccess]);
 
   // Validate URL on change
   useEffect(() => {

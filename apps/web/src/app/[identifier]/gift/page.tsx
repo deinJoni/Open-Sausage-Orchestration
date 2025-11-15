@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TipForm } from "@/app/[identifier]/gift/_components/tip-form";
-import { Button } from "@/components/ui/button";
+import { getCurrentEnsEnvironment } from "@/lib/ens-environments";
 import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
 import { createOgImageUrl } from "@/lib/og-utils";
 import { getTextRecord } from "@/lib/utils";
@@ -26,21 +25,14 @@ export default async function GiftPage({ params }: GiftPageProps) {
     notFound();
   }
 
+  const envConfig = getCurrentEnsEnvironment();
   const artistName = profile.subdomain.name;
-  const ensName = `${artistName}.osopit.eth`;
+  const ensName = `${artistName}.${envConfig.domain}`;
   const avatar = getTextRecord(profile.textRecords, "avatar");
   const bio = getTextRecord(profile.textRecords, "description");
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-primary/20 p-4">
-      <Button
-        asChild
-        className="w-full max-w-md justify-start px-0 text-sm hover:bg-transparent hover:opacity-60"
-        size="sm"
-        variant="ghost"
-      >
-        <Link href="/">← Back to Home</Link>
-      </Button>
       <TipForm
         artistAddress={profile.address}
         artistAvatar={avatar}
@@ -65,15 +57,17 @@ export async function generateMetadata({ params }: GiftPageProps) {
     };
   }
 
+  const envConfig = getCurrentEnsEnvironment();
   const artistName = profile.subdomain.name;
+  const fullDomain = `${artistName}.${envConfig.domain}`;
   const ogImageUrl = createOgImageUrl("/api/og/gift", { identifier });
 
   return {
     title: `Send a tip to ${artistName}`,
-    description: `Support ${artistName} with a tip on osopit`,
+    description: `Support ${artistName} (${fullDomain}) with a tip`,
     openGraph: {
       title: `Send a tip to ${artistName}`,
-      description: `Support ${artistName} with a tip on osopit`,
+      description: `Support ${artistName} (${fullDomain}) with a tip`,
       images: [
         {
           url: ogImageUrl,
@@ -87,7 +81,7 @@ export async function generateMetadata({ params }: GiftPageProps) {
     twitter: {
       card: "summary_large_image",
       title: `Send a tip to ${artistName}`,
-      description: `Support ${artistName} with a tip on osopit`,
+      description: `Support ${artistName} (${fullDomain}) with a tip`,
       images: [ogImageUrl],
     },
   };

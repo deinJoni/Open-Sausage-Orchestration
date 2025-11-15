@@ -1,7 +1,9 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
+import { ChevronDown, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Transaction } from "@/hooks/use-transaction-history";
@@ -11,6 +13,8 @@ type TransactionListProps = {
   transactions: Transaction[];
   isLoading: boolean;
   ethPriceUSD?: number;
+  defaultExpanded?: boolean;
+  maxPreview?: number;
 };
 
 // Generate stable keys for skeleton loader
@@ -20,15 +24,16 @@ export function TransactionList({
   transactions,
   isLoading,
   ethPriceUSD = 2000,
+  defaultExpanded = false,
+  maxPreview = 3,
 }: TransactionListProps) {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+
   if (isLoading) {
     return (
       <Card className="p-6">
-        <h3 className="mb-4 font-semibold text-foreground text-lg">
-          Recent Activity
-        </h3>
         <div className="space-y-3">
-          {SKELETON_KEYS.map((key) => (
+          {SKELETON_KEYS.slice(0, maxPreview).map((key) => (
             <div className="flex items-center justify-between" key={key}>
               <div className="space-y-2">
                 <Skeleton className="h-4 w-32" />
@@ -53,13 +58,15 @@ export function TransactionList({
     );
   }
 
+  const displayedTransactions = isExpanded
+    ? transactions
+    : transactions.slice(0, maxPreview);
+  const hasMore = transactions.length > maxPreview;
+
   return (
     <Card className="p-6">
-      <h3 className="mb-4 font-semibold text-foreground text-lg">
-        Recent Activity
-      </h3>
       <div className="space-y-3">
-        {transactions.map((tx) => (
+        {displayedTransactions.map((tx) => (
           <TransactionRow
             ethPriceUSD={ethPriceUSD}
             key={tx.hash}
@@ -67,6 +74,29 @@ export function TransactionList({
           />
         ))}
       </div>
+
+      {hasMore && (
+        <div className="mt-4 flex justify-center">
+          <Button
+            className="gap-2"
+            onClick={() => setIsExpanded(!isExpanded)}
+            size="sm"
+            variant="ghost"
+          >
+            {isExpanded ? (
+              <>
+                Show Less
+                <ChevronDown className="h-4 w-4 rotate-180" />
+              </>
+            ) : (
+              <>
+                Show All ({transactions.length})
+                <ChevronDown className="h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
     </Card>
   );
 }

@@ -111,16 +111,6 @@ export default async function ArtistProfilePage({ params }: PageProps) {
 
   return (
     <Container>
-      {/* Back button */}
-      <Button
-        asChild
-        className="mb-4 px-0 text-sm hover:bg-transparent hover:opacity-60"
-        size="sm"
-        variant="ghost"
-      >
-        <Link href="/">← Back to Home</Link>
-      </Button>
-
       {/* Stream embed (client island - only if streaming) */}
       {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
         <div className="mb-8 overflow-hidden rounded-lg border border-border bg-primary/20 p-0 shadow-md">
@@ -173,8 +163,9 @@ export default async function ArtistProfilePage({ params }: PageProps) {
           </div>
 
           <Link href={`/${displayName}/gift`}>
-            <Button size="lg">
-              <Gift className="h-3 w-3" />
+            <Button className="gap-2" size="lg">
+              <Gift className="h-4 w-4" />
+              Send Gift
             </Button>
           </Link>
         </div>

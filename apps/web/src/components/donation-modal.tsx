@@ -19,7 +19,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useSendTip } from "@/hooks/use-send-tip";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useEthPrice } from "@/hooks/use-eth-price";
+import { useSendEth } from "@/hooks/use-send-eth";
 
 type DonationContentProps = {
   artistEnsName: string;
@@ -55,13 +57,37 @@ function DonationContent({
   const [customAmount, setCustomAmount] = useState("");
   const [copied, setCopied] = useState(false);
   const [showWalletAddress, setShowWalletAddress] = useState(false);
-  const { mutate, isPending } = useSendTip();
+
+  const { ethPrice, isLoading: isPriceLoading } = useEthPrice();
+  const { sendEth, isPending } = useSendEth({
+    onSuccess: () => {
+      toast.success(`Gift sent to ${artistEnsName}! 🎁`);
+      onSuccess?.();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to send gift");
+    },
+  });
 
   const selectedAmount = customAmount || amount;
+  const ethAmountNum = Number.parseFloat(selectedAmount);
+  const usdAmount = ethAmountNum * (ethPrice ?? 0);
 
   const handleSend = async () => {
-    await mutate(artistEnsName, selectedAmount);
-    onSuccess?.();
+    if (!walletAddress) {
+      toast.error("Artist wallet address not found");
+      return;
+    }
+
+    if (ethAmountNum <= 0) {
+      toast.error("Please enter an amount");
+      return;
+    }
+
+    await sendEth({
+      to: walletAddress,
+      amount: selectedAmount,
+    });
   };
 
   const handleCopyAddress = async () => {
@@ -138,33 +164,43 @@ function DonationContent({
 
       <div className="mb-6">
         <div className="mt-3 grid grid-cols-4 gap-2">
-          {PRESET_AMOUNTS.map((presetAmount) => (
-            <button
-              className={`rounded-lg border py-3 font-medium transition-colors ${
-                amount === presetAmount.toString() && !customAmount
-                  ? "border-brand bg-brand/20 text-brand"
-                  : "border-border text-muted-foreground hover:border-border"
-              }`}
-              key={presetAmount}
-              onClick={() => {
-                setAmount(presetAmount.toString());
-                setCustomAmount("");
-              }}
-              type="button"
-            >
-              {presetAmount}
-            </button>
-          ))}
+          {PRESET_AMOUNTS.map((presetAmount) => {
+            const usd = presetAmount * (ethPrice ?? 0);
+            return (
+              <button
+                className={`flex flex-col items-center justify-center rounded-lg border py-2 font-medium transition-colors ${
+                  amount === presetAmount.toString() && !customAmount
+                    ? "border-brand bg-brand/20 text-brand"
+                    : "border-border text-muted-foreground hover:border-border"
+                }`}
+                key={presetAmount}
+                onClick={() => {
+                  setAmount(presetAmount.toString());
+                  setCustomAmount("");
+                }}
+                type="button"
+              >
+                <span className="font-semibold text-sm">{presetAmount}</span>
+                {isPriceLoading ? (
+                  <Skeleton className="mt-0.5 h-3 w-10" />
+                ) : (
+                  <span className="mt-0.5 text-[10px]">
+                    {ethPrice ? `$${usd.toFixed(0)}` : "—"}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         <div className="mt-4">
-          <Label htmlFor="custom">Custom Amount</Label>
+          <Label htmlFor="custom">Custom Amount (ETH)</Label>
           <Input
             className="mt-2"
             id="custom"
             min="0"
             onChange={(e) => setCustomAmount(e.target.value)}
-            placeholder="0.0"
+            placeholder="0.1"
             step="0.001"
             type="number"
             value={customAmount}
@@ -174,25 +210,34 @@ function DonationContent({
         <div className="mt-4 rounded-lg border border-border bg-background/80 p-4">
           <div className="flex justify-between text-md">
             <span className="text-muted-foreground">Amount:</span>
-            <span className="font-mono font-semibold text-foreground">
-              {selectedAmount} ETH
-            </span>
+            <div className="text-right">
+              <div className="font-mono font-semibold text-foreground">
+                {selectedAmount} ETH
+              </div>
+              {isPriceLoading ? (
+                <Skeleton className="mt-0.5 ml-auto h-3 w-16" />
+              ) : (
+                <div className="mt-0.5 text-muted-foreground text-xs">
+                  {ethPrice
+                    ? `~$${usdAmount.toFixed(2)} USD`
+                    : "Price unavailable"}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       <Button
         className="w-full"
-        disabled={
-          isPending || !selectedAmount || Number.parseFloat(selectedAmount) <= 0
-        }
+        disabled={isPending || ethAmountNum <= 0}
         onClick={handleSend}
       >
         {isPending ? "Sending..." : "Send Gift 💜"}
       </Button>
 
       <p className="mt-3 text-center text-muted-foreground text-xs">
-        This will send ETH directly to the artist's wallet
+        This will send ETH directly to the artist's wallet on Base
       </p>
     </div>
   );

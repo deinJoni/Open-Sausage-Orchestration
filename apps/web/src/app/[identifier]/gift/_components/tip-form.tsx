@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useEthPrice } from "@/hooks/use-eth-price";
 import { useSendEth } from "@/hooks/use-send-eth";
 import { formatAddress } from "@/lib/utils";
 
@@ -22,8 +24,7 @@ type TipFormProps = {
   artistAddress: string;
 };
 
-const PRESET_AMOUNTS = [5, 10, 20, 50];
-const ETH_PRICE_USD = 2000; // TODO: Get from price feed
+const PRESET_AMOUNTS = [0.01, 0.05, 0.1, 0.5];
 
 export function TipForm({
   artistName,
@@ -33,12 +34,13 @@ export function TipForm({
   artistAddress,
 }: TipFormProps) {
   const { address: userAddress } = useAccount();
-  const [selectedPreset, setSelectedPreset] = useState<number | null>(10);
+  const [selectedPreset, setSelectedPreset] = useState<number | null>(0.1);
   const [customAmount, setCustomAmount] = useState("");
   const [copiedENS, setCopiedENS] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
 
-  const { sendEth, isSuccess, hash } = useSendEth({
+  const { ethPrice, isLoading: isPriceLoading } = useEthPrice();
+  const { sendEth, isPending, isSuccess, hash } = useSendEth({
     onSuccess: () => {
       toast.success(`Tip sent to ${artistName}!`);
     },
@@ -47,9 +49,9 @@ export function TipForm({
     },
   });
 
-  const amount = customAmount || selectedPreset?.toString() || "0";
-  const amountNum = Number.parseFloat(amount);
-  const ethAmount = amountNum / ETH_PRICE_USD;
+  const ethAmount = customAmount || selectedPreset?.toString() || "0";
+  const ethAmountNum = Number.parseFloat(ethAmount);
+  const usdAmount = ethAmountNum * (ethPrice ?? 0);
 
   // EIP-681 format: ethereum:<address>@<chainId>
   // ChainId 8453 = Base mainnet
@@ -83,13 +85,13 @@ export function TipForm({
       return;
     }
 
-    if (amountNum <= 0) {
+    if (ethAmountNum <= 0) {
       toast.error("Please enter an amount");
       return;
     }
     await sendEth({
       to: artistAddress,
-      amount: ethAmount.toFixed(6),
+      amount: ethAmount,
     });
   };
 
@@ -103,7 +105,7 @@ export function TipForm({
 
         <h2 className="mb-2 font-bold text-2xl">Tip Sent!</h2>
         <p className="mb-6 text-muted-foreground">
-          ${amount} sent to {artistName}
+          {ethAmount} ETH sent to {artistName}
         </p>
 
         <div className="space-y-3">
@@ -132,11 +134,11 @@ export function TipForm({
 
   // Main tip form
   return (
-    <Card className="w-full max-w-md p-8">
+    <Card className="w-full max-w-md p-6">
       {/* Artist Info */}
-      <div className="mb-8 text-center">
-        <div className="mx-auto mb-4 flex justify-center">
-          <ArtistAvatar avatarUrl={artistAvatar} name={artistName} size="md" />
+      <div className="mb-6 text-center">
+        <div className="mx-auto mb-3 flex justify-center">
+          <ArtistAvatar avatarUrl={artistAvatar} name={artistName} size="sm" />
         </div>
 
         <h1 className="mb-2 font-bold text-2xl">Tip {artistName}</h1>
@@ -147,8 +149,8 @@ export function TipForm({
       </div>
 
       {/* Amount Selection */}
-      <div className="mb-6 space-y-4">
-        <Label>Select Amount (USD)</Label>
+      <div className="mb-4 space-y-3">
+        <Label>Select Amount (ETH)</Label>
 
         {/* Preset amounts */}
         <div className="grid grid-cols-4 gap-2">
@@ -166,14 +168,14 @@ export function TipForm({
               }}
               type="button"
             >
-              ${preset}
+              {preset}
             </button>
           ))}
         </div>
 
         {/* Custom amount */}
         <div className="space-y-2">
-          <Label htmlFor="custom">Custom Amount</Label>
+          <Label htmlFor="custom">Custom Amount (ETH)</Label>
           <Input
             id="custom"
             min="0"
@@ -181,29 +183,35 @@ export function TipForm({
               setCustomAmount(e.target.value);
               setSelectedPreset(null);
             }}
-            placeholder="0.00"
-            step="0.01"
+            placeholder="0.1"
+            step="0.001"
             type="number"
             value={customAmount}
           />
         </div>
 
         {/* Amount display */}
-        {amountNum > 0 && (
-          <div className="rounded-lg bg-muted p-4 text-center">
+        {ethAmountNum > 0 && (
+          <div className="rounded-lg bg-muted p-3 text-center">
             <p className="text-muted-foreground text-sm">You're sending</p>
-            <p className="mt-1 font-bold text-2xl">${amount}</p>
-            <p className="mt-1 text-muted-foreground text-xs">
-              ~{ethAmount.toFixed(6)} ETH
-            </p>
+            <p className="mt-1 font-bold text-xl">{ethAmount} ETH</p>
+            {isPriceLoading ? (
+              <Skeleton className="mx-auto mt-1 h-4 w-20" />
+            ) : (
+              <p className="mt-1 text-muted-foreground text-xs">
+                {ethPrice
+                  ? `~$${usdAmount.toFixed(2)} USD`
+                  : "Price unavailable"}
+              </p>
+            )}
           </div>
         )}
       </div>
 
       {/* QR Code Section */}
-      <div className="space-y-4">
-        <div className="flex justify-center rounded-lg bg-white p-6">
-          <Cuer color="black" size={200} value={qrValue} />
+      <div className="space-y-3">
+        <div className="flex justify-center rounded-lg bg-white p-4">
+          <Cuer color="black" size={150} value={qrValue} />
         </div>
 
         {/* ENS Name with copy */}
@@ -249,16 +257,15 @@ export function TipForm({
         </p>
       </div>
 
-      {/* Send button (disabled) */}
+      {/* Send button */}
       {userAddress ? (
         <Button
           className="w-full"
-          disabled={true}
+          disabled={isPending || ethAmountNum <= 0}
           onClick={handleSend}
           size="lg"
-          variant="outline"
         >
-          Send Tip (Coming Soon)
+          {isPending ? "Sending..." : `Send ${ethAmount} ETH`}
         </Button>
       ) : (
         <div className="space-y-3">
@@ -270,8 +277,8 @@ export function TipForm({
       )}
 
       {/* Footer */}
-      <p className="mt-6 text-center text-muted-foreground text-xs">
-        💸 Tips sent directly to artist • Powered by osopit
+      <p className="mt-4 text-center text-muted-foreground text-xs">
+        💸 Tips sent directly to artist
       </p>
     </Card>
   );
