@@ -1,4 +1,19 @@
-import { Gift } from "lucide-react";
+import {
+  Gift,
+  Music,
+  Headphones,
+  Tv,
+  Youtube,
+  Twitter,
+  Instagram,
+  Github,
+  MessageCircle,
+  Send,
+  Facebook,
+  Linkedin,
+  Pin,
+  type LucideIcon,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,21 +31,21 @@ type PageProps = {
   params: Promise<{ identifier: string }>;
 };
 
-const SOCIAL_ICONS: Record<SocialKey, string> = {
-  "com.spotify": "🎵",
-  "com.soundcloud": "🎧",
-  "com.twitch": "📺",
-  "com.youtube": "▶️",
-  "com.twitter": "🐦",
-  "com.instagram": "📷",
-  "com.github": "🔧",
-  "com.discord": "🔗",
-  "com.telegram": "🔗",
-  "com.tiktok": "🔗",
-  "com.facebook": "🔗",
-  "com.linkedin": "🔗",
-  "com.pinterest": "🔗",
-  "com.reddit": "🔗",
+const SOCIAL_ICONS: Record<SocialKey, LucideIcon> = {
+  "com.spotify": Music,
+  "com.soundcloud": Headphones,
+  "com.twitch": Tv,
+  "com.youtube": Youtube,
+  "com.twitter": Twitter,
+  "com.instagram": Instagram,
+  "com.github": Github,
+  "com.discord": MessageCircle,
+  "com.telegram": Send,
+  "com.tiktok": Music,
+  "com.facebook": Facebook,
+  "com.linkedin": Linkedin,
+  "com.pinterest": Pin,
+  "com.reddit": MessageCircle,
 };
 
 /**
@@ -179,30 +194,36 @@ export default async function ArtistProfilePage({ params }: PageProps) {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {artist.textRecords
             .filter((record) => SocialKey.safeParse(record.key).success)
-            .map((record) => (
-              <a
-                className="hover:-translate-y-0.5 flex w-full flex-nowrap items-center gap-2 rounded-lg border border-border bg-primary/20 px-3 py-2.5 shadow-sm transition-all duration-200 hover:shadow-md sm:gap-3 sm:px-4 sm:py-3"
-                href={record.value}
-                key={`${record.key}-${record.value}`}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <span className="flex flex-shrink-0 items-center justify-center text-lg leading-none sm:text-2xl">
-                  {SOCIAL_ICONS[SocialKey.parse(record.key)] || "🔗"}
-                </span>
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5 overflow-hidden">
-                  <div className="min-w-0 truncate font-semibold text-foreground text-sm capitalize leading-tight sm:text-base">
-                    {record.key}
+            .map((record) => {
+              const Icon =
+                SOCIAL_ICONS[SocialKey.parse(record.key)] || MessageCircle;
+              const platformName = record.key.replace("com.", "");
+
+              return (
+                <a
+                  className="hover:-translate-y-0.5 flex w-full flex-nowrap items-center gap-3 rounded-lg border border-border bg-primary/20 px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md"
+                  href={record.value}
+                  key={`${record.key}-${record.value}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <div className="flex flex-shrink-0 items-center justify-center">
+                    <Icon className="h-5 w-5 text-foreground sm:h-6 sm:w-6" />
                   </div>
-                  <div className="min-w-0 truncate text-[10px] text-muted-foreground leading-tight sm:text-xs">
-                    {record.value}
+                  <div className="flex min-w-0 flex-1 flex-col gap-0.5 overflow-hidden">
+                    <div className="min-w-0 truncate font-semibold text-foreground text-sm capitalize leading-tight sm:text-base">
+                      {platformName}
+                    </div>
+                    <div className="min-w-0 truncate text-[10px] text-muted-foreground leading-tight sm:text-xs">
+                      {record.value}
+                    </div>
                   </div>
-                </div>
-                <span className="flex-shrink-0 text-muted-foreground text-sm sm:text-base">
-                  →
-                </span>
-              </a>
-            ))}
+                  <span className="flex-shrink-0 text-muted-foreground text-sm sm:text-base">
+                    →
+                  </span>
+                </a>
+              );
+            })}
         </div>
       </div>
     </Container>
