@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { PortoConnectButton } from "./porto-connect-button";
 
 export function Header() {
   return (
@@ -22,8 +21,12 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          {/* <ThemeSwitcher /> */}
-          <PortoConnectButton />
+          <Link
+            href="/me"
+            className="rounded-md bg-brand px-4 py-2 font-medium text-brand-foreground transition-all hover:scale-105"
+          >
+            Artist
+          </Link>
         </div>
       </div>
     </header>

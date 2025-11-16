@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../index.css";
 import { headers } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { ArtistBottomBar } from "@/components/artist-bottom-bar";
 import { Header } from "@/components/header";
 import Providers from "@/components/providers";
 
@@ -38,11 +37,9 @@ export default async function RootLayout({
         <NuqsAdapter>
           <Providers cookies={cookies}>
             <div className="flex min-h-screen flex-col bg-background text-foreground">
-              {/* Header - navigation and connect button */}
+              {/* Header - navigation and artist link */}
               <Header />
               <main className="flex-1">{children}</main>
-              {/* Footer - context-aware artist nav + theme switcher */}
-              <ArtistBottomBar />
             </div>
           </Providers>
         </NuqsAdapter>
