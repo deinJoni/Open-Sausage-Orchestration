@@ -64,15 +64,21 @@ export async function GET(request: Request) {
                 background:
                   "linear-gradient(135deg, rgba(139, 92, 246, 0.4) 0%, rgba(99, 102, 241, 0.4) 100%)",
               }}
-              tw="w-40 h-40 rounded-full flex items-center justify-center text-[80px] border-4 border-[rgba(139,92,246,0.4)]"
+              tw="w-[200px] h-[200px] rounded-full flex items-center justify-center text-[100px] border-4 border-[rgba(139,92,246,0.4)]"
             >
               {avatarDataUrl ? (
                 // biome-ignore lint/performance/noImgElement: <TODO>
                 <img
                   alt={displayName}
-                  height={128}
+                  height={200}
                   src={avatarDataUrl}
-                  width={128}
+                  style={{
+                    width: 200,
+                    height: 200,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                  width={200}
                 />
               ) : (
                 "👤"
@@ -83,11 +89,11 @@ export async function GET(request: Request) {
             <div tw="flex flex-col gap-3">
               <h1
                 style={{ lineHeight: 1.2 }}
-                tw="text-[64px] font-bold text-white m-0"
+                tw="text-[80px] font-bold text-white m-0"
               >
                 {displayName}
               </h1>
-              <p tw="text-[32px] text-white/60 m-0 font-normal">{fullDomain}</p>
+              <p tw="text-[40px] text-white/60 m-0 font-normal">{fullDomain}</p>
             </div>
           </div>
 

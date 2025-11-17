@@ -2,13 +2,11 @@ import { readFile } from "node:fs/promises";
 import { ImageResponse } from "@takumi-rs/image-response";
 import { OgGradientBackground } from "@/components/og/og-gradient-background";
 
-const LOGO_IMAGE = {
-  src: "devconnect.png",
-  data: (await readFile("public/devconnect.png")).buffer,
-};
-
-export function GET() {
+export async function GET() {
   try {
+    const imageBuffer = await readFile("public/devconnect.png");
+    const logoDataUrl = `data:image/png;base64,${imageBuffer.toString("base64")}`;
+
     return new ImageResponse(
       <OgGradientBackground variant="default">
         {/* Main content */}
@@ -19,7 +17,7 @@ export function GET() {
           <img
             alt="Opensource Orchestra PIT Logo"
             height={128}
-            src={LOGO_IMAGE.src}
+            src={logoDataUrl}
             style={{
               width: 128,
               height: 128,
