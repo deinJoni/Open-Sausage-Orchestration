@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Cuer } from "cuer";
 import { CheckCheck, ChevronDown, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -256,6 +257,16 @@ export function DonationPopover({
   walletAddress,
   children,
 }: DonationPopoverProps) {
+  // Redirect to gift page instead of showing modal
+  return <Link href={`/${ensName}/gift`}>{children}</Link>;
+}
+
+/* OLD MODAL IMPLEMENTATION - KEPT FOR REFERENCE
+export function DonationPopover({
+  ensName,
+  walletAddress,
+  children,
+}: DonationPopoverProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -308,3 +319,4 @@ export function DonationPopover({
     </Popover>
   );
 }
+*/
