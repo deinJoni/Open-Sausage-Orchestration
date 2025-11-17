@@ -14,14 +14,15 @@ import {
   scalarsEnumsHash,
   type GeneratedSchema,
 } from "./schema.generated";
-import { getCurrentEnsEnvironment } from "@/lib/ens-environments";
+import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
+import { env } from "@/env";
 
 const queryFetcher: QueryFetcher = async function (
   { query, variables, operationName },
   fetchOptions
 ) {
   // Subgraph URL is dynamic based on ENS environment (catmisha.eth vs osopit.eth)
-  const subgraphUrl = getCurrentEnsEnvironment().subgraphUrl;
+  const subgraphUrl = ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].subgraphUrl;
 
   const response = await fetch(subgraphUrl, {
     method: "POST",

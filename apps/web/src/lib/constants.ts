@@ -2,7 +2,6 @@
  * Application constants and configuration values
  */
 import { z } from "zod";
-import { getCurrentEnsEnvironment } from "./ens-environments";
 
 // Subdomain validation rules
 export const SUBDOMAIN_VALIDATION = {
@@ -28,13 +27,6 @@ export const TIME = {
   MS_PER_2_DAYS: 172_800_000,
   MS_PER_WEEK: 604_800_000,
   MS_PER_2_WEEKS: 1_209_600_000,
-} as const;
-
-// ENS configuration (dynamic based on environment)
-export const ENS = {
-  get PARENT_DOMAIN() {
-    return getCurrentEnsEnvironment().domain;
-  },
 } as const;
 
 // ENS text record keys

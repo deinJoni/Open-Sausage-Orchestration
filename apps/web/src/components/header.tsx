@@ -22,8 +22,8 @@ export function Header() {
         {/* Actions */}
         <div className="flex items-center gap-3">
           <Link
-            href="/me"
             className="rounded-md bg-brand px-4 py-2 font-medium text-brand-foreground transition-all hover:scale-105"
+            href="/me"
           >
             Artist
           </Link>

@@ -1,10 +1,8 @@
 import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
-import {
-  ADDRESS_PREFIX_LENGTH,
-  ADDRESS_SUFFIX_LENGTH,
-  ENS,
-} from "@/lib/constants";
+import { env } from "@/env";
+import { ADDRESS_PREFIX_LENGTH, ADDRESS_SUFFIX_LENGTH } from "@/lib/constants";
+import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
 
 type InviteData = {
   label: string;
@@ -40,7 +38,7 @@ export function ClaimSubdomainStep({
           ✨ You're invited to claim
         </p>
         <p className="font-mono text-2xl text-brand">
-          {ensName}.{ENS.PARENT_DOMAIN}
+          {ensName}.{ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain}
         </p>
         <p className="mt-2 text-muted-foreground text-xs">
           Invited by {inviteData.inviter.slice(0, ADDRESS_PREFIX_LENGTH)}...
@@ -67,7 +65,8 @@ export function ClaimSubdomainStep({
             Ready to claim your domain! This won't require any popups.
           </p>
           <Button className="w-full" onClick={onClaim} size="lg">
-            Claim {ensName}.{ENS.PARENT_DOMAIN}
+            Claim {ensName}.
+            {ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain}
           </Button>
         </div>
       )}
@@ -89,7 +88,8 @@ export function ClaimSubdomainStep({
               ✅ Domain Claimed Successfully!
             </p>
             <p className="font-mono text-success text-xl">
-              {ensName}.{ENS.PARENT_DOMAIN}
+              {ensName}.
+              {ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain}✓
             </p>
           </div>
           <Button className="w-full" onClick={onNext} size="lg">

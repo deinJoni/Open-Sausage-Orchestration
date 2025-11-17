@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { TipForm } from "@/app/[identifier]/gift/_components/tip-form";
-import { getCurrentEnsEnvironment } from "@/lib/ens-environments";
+import { env } from "@/env";
+import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
 import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
 import { createOgImageUrl } from "@/lib/og-utils";
 import { getTextRecord } from "@/lib/utils";
@@ -25,7 +26,7 @@ export default async function GiftPage({ params }: GiftPageProps) {
     notFound();
   }
 
-  const envConfig = getCurrentEnsEnvironment();
+  const envConfig = ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT];
   const artistName = profile.subdomain.name;
   const ensName = `${artistName}.${envConfig.domain}`;
   const avatar = getTextRecord(profile.textRecords, "avatar");
@@ -57,10 +58,10 @@ export async function generateMetadata({ params }: GiftPageProps) {
     };
   }
 
-  const envConfig = getCurrentEnsEnvironment();
+  const envConfig = ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT];
   const artistName = profile.subdomain.name;
   const fullDomain = `${artistName}.${envConfig.domain}`;
-  const ogImageUrl = createOgImageUrl("/api/og/gift", { identifier });
+  const ogImageUrl = createOgImageUrl("/api/og/artist", { identifier });
 
   return {
     title: `Send a tip to ${artistName}`,

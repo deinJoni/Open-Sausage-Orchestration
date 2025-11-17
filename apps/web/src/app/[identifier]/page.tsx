@@ -1,18 +1,18 @@
 import {
-  Gift,
-  Music,
-  Headphones,
-  Tv,
-  Youtube,
-  Twitter,
-  Instagram,
-  Github,
-  MessageCircle,
-  Send,
   Facebook,
+  Gift,
+  Github,
+  Headphones,
+  Instagram,
   Linkedin,
-  Pin,
   type LucideIcon,
+  MessageCircle,
+  Music,
+  Pin,
+  Send,
+  Tv,
+  Twitter,
+  Youtube,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -21,8 +21,9 @@ import { notFound } from "next/navigation";
 import { StreamEmbed } from "@/components/stream-embed";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { env } from "@/env";
 import { SocialKey } from "@/lib/constants";
-import { getCurrentEnsEnvironment } from "@/lib/ens-environments";
+import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
 import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
 import { createOgImageUrl } from "@/lib/og-utils";
 import { formatAddress, getTextRecord, ipfsToHttp } from "@/lib/utils";
@@ -65,7 +66,7 @@ export async function generateMetadata({
     };
   }
 
-  const envConfig = getCurrentEnsEnvironment();
+  const envConfig = ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT];
   const displayName = profile.subdomain?.name || identifier;
   const description = getTextRecord(profile.textRecords, "description") || "";
   const fullDomain = profile.subdomain

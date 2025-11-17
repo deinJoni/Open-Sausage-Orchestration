@@ -2,14 +2,18 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { isAddress, keccak256, toBytes } from "viem";
 import { namehash } from "viem/ens";
-import { type AllValidKeys, ENS } from "./constants";
+import { env } from "@/env";
+import type { AllValidKeys } from "./constants";
+import { ENS_ENVIRONMENTS } from "./ens-environments";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function calculateNodeHash(label: string) {
-  const fullName = `${label}.${ENS.PARENT_DOMAIN}`;
+  const fullName = `${label}.${
+    ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain
+  }`;
   return namehash(fullName);
 }
 
@@ -53,7 +57,7 @@ export function ipfsToHttp(url: string | undefined | null): string {
   }
   if (url.startsWith("ipfs://")) {
     const hash = url.replace("ipfs://", "");
-    return `https://ipfs.io/ipfs/${hash}`;
+    return `https://bear.mypinata.cloud/ipfs/${hash}`;
   }
   return url;
 }

@@ -1,5 +1,6 @@
 import { resolve } from "@/gqty";
 import { detectStreamPlatform } from "./broadcast";
+import { parseBroadcast } from "./og-utils";
 import {
   calculateNodeHash,
   getTextRecord,
@@ -26,33 +27,6 @@ export type ArtistProfile = {
   streamPlatform?: "youtube" | "twitch";
   taggedArtists: string[];
 };
-
-/**
- * Parse broadcast text record value
- * Format: "true|url|userId1|userId2|..."
- */
-function parseBroadcast(value: string | undefined): {
-  isLive: boolean;
-  url?: string;
-  taggedArtists?: string[];
-} {
-  if (!value) {
-    return { isLive: false };
-  }
-
-  const parts = value.split("|");
-  const isLive = parts[0] === "true";
-
-  if (!isLive) {
-    return { isLive: false };
-  }
-
-  return {
-    isLive: true,
-    url: parts[1] || undefined,
-    taggedArtists: parts.slice(2).filter(Boolean),
-  };
-}
 
 function normalizeTextRecords(
   records:
@@ -195,7 +169,7 @@ function fetchProfileBySubdomain(
 
 export async function getArtistProfileServer(
   identifier: string
-): Promise<ArtistProfile | null> {
+): Promise<ArtistProfile> {
   const normalized = normalizeIdentifier(identifier);
   const isAddress = isEthereumAddress(normalized);
 
@@ -206,9 +180,13 @@ export async function getArtistProfileServer(
         : fetchProfileBySubdomain(query, normalized)
     );
 
+    if (!result) {
+      throw new Error("Profile not found");
+    }
+
     return result;
   } catch (error) {
-    console.error("Error fetching artist profile:", error);
-    return null;
+    console.error(JSON.stringify(error, null, 2));
+    throw error;
   }
 }

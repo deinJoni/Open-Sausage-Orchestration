@@ -1,13 +1,14 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAccount, useCapabilities, useSendCalls } from "wagmi";
+import { env } from "@/env";
 import { L2RegistrarABI } from "@/lib/abi/l2-registrar";
 import { ReverseRegistrarABI } from "@/lib/abi/reverse-registrar";
-import { ENS } from "@/lib/constants";
 import {
   L2_REGISTRAR_ADDRESS,
   REVERSE_REGISTRAR_ADDRESS,
 } from "@/lib/contracts";
+import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
 import { parseContractError } from "@/lib/parse-contract-error";
 
 type InviteData = {
@@ -65,7 +66,7 @@ export function useRegisterSubdomain() {
           capabilities?.[chainId]?.atomicBatch?.supported;
 
         // Construct the full ENS name
-        const fullName = `${input.label}.${ENS.PARENT_DOMAIN}`;
+        const fullName = `${input.label}.${ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain}`;
 
         const result = await sendCallsAsync({
           calls: [

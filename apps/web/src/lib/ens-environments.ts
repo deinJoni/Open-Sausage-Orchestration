@@ -5,7 +5,11 @@
  * controlled by NEXT_PUBLIC_ENS_ENVIRONMENT variable.
  */
 
-export type EnsEnvironmentName = "catmisha" | "osopit";
+import z from "zod";
+
+export const ENS_ENVIRONMENT_NAMES = ["catmisha", "osopit"] as const;
+export const EnsEnvironmentName = z.enum(ENS_ENVIRONMENT_NAMES);
+export type EnsEnvironmentName = z.infer<typeof EnsEnvironmentName>;
 
 export type EnsEnvironment = {
   /** Parent ENS domain (e.g., "catmisha.eth" or "osopit.eth") */
@@ -55,35 +59,3 @@ export const ENS_ENVIRONMENTS: Record<EnsEnvironmentName, EnsEnvironment> = {
       "https://api.studio.thegraph.com/query/1714097/osopit-subgraphv-1/version/latest",
   },
 } as const;
-
-/**
- * Get the current ENS environment based on NEXT_PUBLIC_ENS_ENVIRONMENT
- * Defaults to "osopit" (production) if not set
- */
-export function getCurrentEnsEnvironment(): EnsEnvironment {
-  const envName =
-    (process.env.NEXT_PUBLIC_ENS_ENVIRONMENT as EnsEnvironmentName) || "osopit";
-
-  if (!(envName in ENS_ENVIRONMENTS)) {
-    console.warn(
-      `Invalid NEXT_PUBLIC_ENS_ENVIRONMENT: "${envName}". Defaulting to "osopit".`
-    );
-    return ENS_ENVIRONMENTS.osopit;
-  }
-
-  return ENS_ENVIRONMENTS[envName];
-}
-
-/**
- * Get the current ENS environment name
- */
-export function getCurrentEnsEnvironmentName(): EnsEnvironmentName {
-  const envName =
-    (process.env.NEXT_PUBLIC_ENS_ENVIRONMENT as EnsEnvironmentName) || "osopit";
-
-  if (!(envName in ENS_ENVIRONMENTS)) {
-    return "osopit";
-  }
-
-  return envName;
-}

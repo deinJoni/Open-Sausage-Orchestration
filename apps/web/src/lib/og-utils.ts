@@ -35,39 +35,6 @@ export function parseBroadcast(value: string | undefined): {
 }
 
 /**
- * Fetch image with timeout to prevent hanging OG generation
- * IPFS can be slow, so we timeout after 2s and use fallback
- */
-export async function fetchImageWithTimeout(
-  url: string,
-  timeoutMs = 2000
-): Promise<string | null> {
-  if (!url) {
-    return null;
-  }
-
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-    const response = await fetch(url, {
-      signal: controller.signal,
-      // Only fetch headers to check if image exists
-      method: "HEAD",
-    });
-
-    clearTimeout(timeout);
-
-    // If image exists and is accessible, return the URL
-    return response.ok ? url : null;
-  } catch (error) {
-    // Timeout or network error - use fallback
-    console.warn(`Image fetch timeout/error for ${url}:`, error);
-    return null;
-  }
-}
-
-/**
  * Validation schema for OG image identifier parameter
  */
 export const OgIdentifierSchema = z
@@ -135,4 +102,32 @@ export function createOgImageUrl(
   }
 
   return url.toString();
+}
+
+/**
+ * Fetch remote image and convert to base64 data URL
+ * Required for OG image generation with remote images
+ */
+export async function fetchImageAsDataUrl(
+  imageUrl: string
+): Promise<string | null> {
+  try {
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      console.error(`Failed to fetch image: ${response.statusText}`);
+      return null;
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64 = buffer.toString("base64");
+
+    // Detect content type from response headers
+    const contentType = response.headers.get("content-type") || "image/png";
+
+    return `data:${contentType};base64,${base64}`;
+  } catch (error) {
+    console.error("Error fetching image:", error);
+    return null;
+  }
 }

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { env } from "@/env";
 import { useCheckSubdomainAvailability } from "@/hooks/use-check-subdomain-availability";
 import { useGenerateInvite } from "@/hooks/use-generate-profile";
 import { L2RegistrarABI } from "@/lib/abi/l2-registrar";
@@ -17,11 +18,11 @@ import {
   ADDRESS_SUFFIX_LENGTH,
   ADDRESSES,
   DEBOUNCE_TIME,
-  ENS,
   SUBDOMAIN_VALIDATION,
   TIME,
 } from "@/lib/constants";
 import { L2_REGISTRAR_ADDRESS } from "@/lib/contracts";
+import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
 import { parseContractError } from "@/lib/parse-contract-error";
 
 export default function InvitePage() {
@@ -309,7 +310,8 @@ export default function InvitePage() {
               <div className="space-y-1 text-muted-foreground text-xs">
                 <p>
                   <span className="text-muted-foreground">Subdomain:</span>{" "}
-                  {label}.{ENS.PARENT_DOMAIN}
+                  {label}.
+                  {ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain}
                 </p>
                 <p>
                   <span className="text-muted-foreground">Expires in:</span>{" "}
@@ -332,7 +334,7 @@ export default function InvitePage() {
                   value={label}
                 />
                 <span className="-translate-y-1/2 absolute top-1/2 right-3 text-md text-muted-foreground">
-                  .{ENS.PARENT_DOMAIN}
+                  .{ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain}
                 </span>
               </div>
               {getAvailabilityMessage()}
