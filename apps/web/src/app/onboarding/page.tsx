@@ -40,8 +40,7 @@ export default function OnboardingPage() {
 
   const { hasSubdomain, isLoading: isCheckingOwnership } =
     useHasSubdomainContract(address);
-  const { hasProfileSetup, isLoading: isCheckingProfile } =
-    useHasProfileSetup(address);
+  const { hasProfileSetup } = useHasProfileSetup(address);
 
   // Only show "already has profile" if BOTH subdomain exists AND profile setup is complete
   const hasCompleteProfile = hasSubdomain && hasProfileSetup;
@@ -100,7 +99,7 @@ export default function OnboardingPage() {
   };
 
   // Loading state
-  if (isCheckingOwnership || isCheckingProfile) {
+  if (isCheckingOwnership) {
     return <LoadingState />;
   }
 

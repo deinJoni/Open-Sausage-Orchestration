@@ -8,12 +8,11 @@ import { getTextRecord } from "@/lib/utils";
  * This distinguishes between "has registered subdomain" and "has complete profile"
  */
 export function useHasProfileSetup(address: string | undefined) {
-  const { user, $state } = useGqtyQuery({ suspense: false });
+  const { user } = useGqtyQuery({ suspense: false });
 
   if (!address) {
     return {
       hasProfileSetup: false,
-      isLoading: false,
     };
   }
 
@@ -36,6 +35,5 @@ export function useHasProfileSetup(address: string | undefined) {
 
   return {
     hasProfileSetup,
-    isLoading: $state.isLoading,
   };
 }

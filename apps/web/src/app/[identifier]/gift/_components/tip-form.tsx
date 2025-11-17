@@ -24,8 +24,54 @@ type TipFormProps = {
   artistAddress: string;
 };
 
-const PRESET_AMOUNTS = [0.01, 0.05, 0.1, 0.5];
+// ETH preset amounts from small to large donations
+const PRESET_AMOUNTS = [
+  0.001, // ~$3-4
+  0.002, // ~$6-8
+  0.005, // ~$15-20
+  0.01, // ~$30-40
+  0.02, // ~$60-80
+  0.05, // ~$150-200
+  0.1, // ~$300-400
+  0.5, // ~$1500-2000
+];
 
+// Regex patterns for formatting
+const TRAILING_ZEROS_REGEX = /0+$/;
+const TRAILING_DOT_REGEX = /\.$/;
+
+// Format ETH amount (remove trailing zeros)
+const formatEth = (amount: number) => {
+  if (amount >= 0.1) {
+    return amount
+      .toFixed(2)
+      .replace(TRAILING_ZEROS_REGEX, "")
+      .replace(TRAILING_DOT_REGEX, "");
+  }
+  if (amount >= 0.01) {
+    return amount
+      .toFixed(3)
+      .replace(TRAILING_ZEROS_REGEX, "")
+      .replace(TRAILING_DOT_REGEX, "");
+  }
+  return amount
+    .toFixed(4)
+    .replace(TRAILING_ZEROS_REGEX, "")
+    .replace(TRAILING_DOT_REGEX, "");
+};
+
+// Format USD amount
+const formatUsd = (amount: number) => {
+  if (amount < 1) {
+    return amount.toFixed(2);
+  }
+  if (amount < 10) {
+    return amount.toFixed(1);
+  }
+  return Math.round(amount).toString();
+};
+
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT>
 export function TipForm({
   artistName,
   ensName,
@@ -34,7 +80,9 @@ export function TipForm({
   artistAddress,
 }: TipFormProps) {
   const { address: userAddress } = useAccount();
-  const [selectedPreset, setSelectedPreset] = useState<number | null>(0.1);
+  const [selectedPreset, setSelectedPreset] = useState<number | null>(
+    PRESET_AMOUNTS[3] // Default to 0.01 ETH
+  );
   const [customAmount, setCustomAmount] = useState("");
   const [copiedENS, setCopiedENS] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
@@ -49,6 +97,7 @@ export function TipForm({
     },
   });
 
+  // Calculate ETH amount based on selection
   const ethAmount = customAmount || selectedPreset?.toString() || "0";
   const ethAmountNum = Number.parseFloat(ethAmount);
   const usdAmount = ethAmountNum * (ethPrice ?? 0);
@@ -150,27 +199,51 @@ export function TipForm({
 
       {/* Amount Selection */}
       <div className="mb-4 space-y-3">
-        <Label>Select Amount (ETH)</Label>
+        <Label>Select Amount</Label>
 
         {/* Preset amounts */}
-        <div className="grid grid-cols-4 gap-2">
-          {PRESET_AMOUNTS.map((preset) => (
-            <button
-              className={`rounded-lg border py-3 font-semibold transition-colors ${
-                selectedPreset === preset && !customAmount
-                  ? "border-brand bg-brand/20 text-brand"
-                  : "border-border hover:bg-accent"
-              }`}
-              key={preset}
-              onClick={() => {
-                setSelectedPreset(preset);
-                setCustomAmount("");
-              }}
-              type="button"
-            >
-              {preset}
-            </button>
-          ))}
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-4">
+          {PRESET_AMOUNTS.map((preset) => {
+            // Calculate USD value for this preset
+            const presetUsdValue = preset * (ethPrice ?? 0);
+
+            return (
+              <button
+                className={`flex flex-col items-center justify-center rounded-lg border px-3 py-3 transition-colors ${
+                  selectedPreset === preset && !customAmount
+                    ? "border-brand bg-brand/20 text-brand"
+                    : "border-border hover:bg-accent"
+                }`}
+                key={preset}
+                onClick={() => {
+                  setSelectedPreset(preset);
+                  setCustomAmount("");
+                }}
+                type="button"
+              >
+                <span className="font-semibold text-sm">
+                  {formatEth(preset)} ETH
+                </span>
+                {(() => {
+                  if (isPriceLoading) {
+                    return (
+                      <span className="mt-0.5 text-muted-foreground text-xs">
+                        ...
+                      </span>
+                    );
+                  }
+                  if (ethPrice) {
+                    return (
+                      <span className="mt-0.5 text-muted-foreground text-xs">
+                        ~${formatUsd(presetUsdValue)}
+                      </span>
+                    );
+                  }
+                  return null;
+                })()}
+              </button>
+            );
+          })}
         </div>
 
         {/* Custom amount */}
@@ -194,16 +267,26 @@ export function TipForm({
         {ethAmountNum > 0 && (
           <div className="rounded-lg bg-muted p-3 text-center">
             <p className="text-muted-foreground text-sm">You're sending</p>
-            <p className="mt-1 font-bold text-xl">{ethAmount} ETH</p>
-            {isPriceLoading ? (
-              <Skeleton className="mx-auto mt-1 h-4 w-20" />
-            ) : (
-              <p className="mt-1 text-muted-foreground text-xs">
-                {ethPrice
-                  ? `~$${usdAmount.toFixed(2)} USD`
-                  : "Price unavailable"}
-              </p>
-            )}
+            <p className="mt-1 font-bold text-xl">
+              {formatEth(ethAmountNum)} ETH
+            </p>
+            {(() => {
+              if (isPriceLoading) {
+                return <Skeleton className="mx-auto mt-1 h-4 w-20" />;
+              }
+              if (ethPrice) {
+                return (
+                  <p className="mt-1 text-muted-foreground text-xs">
+                    ~${formatUsd(usdAmount)}
+                  </p>
+                );
+              }
+              return (
+                <p className="mt-1 text-muted-foreground text-xs">
+                  Price unavailable
+                </p>
+              );
+            })()}
           </div>
         )}
       </div>
@@ -265,7 +348,14 @@ export function TipForm({
           onClick={handleSend}
           size="lg"
         >
-          {isPending ? "Sending..." : `Send ${ethAmount} ETH`}
+          {isPending ? (
+            "Sending..."
+          ) : (
+            <>
+              Send {formatEth(ethAmountNum)} ETH
+              {ethPrice && ` (~$${formatUsd(usdAmount)})`}
+            </>
+          )}
         </Button>
       ) : (
         <div className="space-y-3">

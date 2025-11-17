@@ -89,9 +89,9 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
         </Button>
         <Link href={`/${artist.subdomain ?? ""}/gift`}>
           <Button size="sm">
-              <Gift className="h-3 w-3" />
-            </Button>
-          </Link>
+            <Gift className="h-3 w-3" />
+          </Button>
+        </Link>
       </div>
     </>
   );

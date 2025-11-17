@@ -8,7 +8,7 @@ import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
  * to handle cases where the subgraph is out of sync
  */
 export function useHasSubdomainContract(address: string | undefined) {
-  const { data: balance, isLoading } = useReadContract({
+  const { data: balance, isPending } = useReadContract({
     address: L2_REGISTRY_ADDRESS,
     abi: L2RegistryABI,
     functionName: "balanceOf",
@@ -22,6 +22,6 @@ export function useHasSubdomainContract(address: string | undefined) {
   return {
     hasSubdomain: balance ? balance > BigInt(0) : false,
     balance: balance ?? BigInt(0),
-    isLoading,
+    isLoading: isPending,
   };
 }

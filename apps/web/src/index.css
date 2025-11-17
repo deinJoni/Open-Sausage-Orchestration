@@ -52,6 +52,9 @@ body {
   --live-foreground: oklch(0.985 0 0);
   --success: oklch(0.65 0.2 145);
   --warning: oklch(0.75 0.2 85);
+
+  --popover: oklch(0.97 0 0);
+  --popover-foreground: oklch(0.145 0 0);
 }
 
 [data-theme="dark-midnight"] {
@@ -76,6 +79,9 @@ body {
   --live-foreground: oklch(0.985 0 0);
   --success: oklch(0.7 0.2 145);
   --warning: oklch(0.8 0.2 85);
+
+  --popover: oklch(0.22 0.1 262.866);
+  --popover-foreground: oklch(0.95 0.02 0);
 }
 
 [data-theme="light-sunset"] {
@@ -101,6 +107,9 @@ body {
   --live-foreground: oklch(0.985 0 0);
   --success: oklch(0.65 0.2 145);
   --warning: oklch(0.75 0.2 85);
+
+  --popover: oklch(0.97 0 0);
+  --popover-foreground: oklch(0.145 0 0);
 }
 
 [data-theme="dark-sunset"] {
@@ -125,6 +134,9 @@ body {
   --live-foreground: oklch(0.985 0 0);
   --success: oklch(0.7 0.2 145);
   --warning: oklch(0.8 0.2 85);
+
+  --popover: oklch(0.22 0.1 0);
+  --popover-foreground: oklch(0.95 0.02 0);
 }
 
 [data-theme="light-ocean"] {
@@ -149,6 +161,9 @@ body {
   --live-foreground: oklch(0.985 0 0);
   --success: oklch(0.65 0.2 145);
   --warning: oklch(0.75 0.2 85);
+
+  --popover: oklch(0.97 0 0);
+  --popover-foreground: oklch(0.145 0 0);
 }
 
 [data-theme="dark-ocean"] {
@@ -173,6 +188,9 @@ body {
   --live-foreground: oklch(0.985 0 0);
   --success: oklch(0.7 0.2 145);
   --warning: oklch(0.8 0.2 85);
+
+  --popover: oklch(0.22 0.1 0);
+  --popover-foreground: oklch(0.95 0.02 0);
 }
 
 [data-theme="light-forest"] {
@@ -197,6 +215,9 @@ body {
   --live-foreground: oklch(0.985 0 0);
   --success: oklch(0.65 0.2 145);
   --warning: oklch(0.75 0.2 85);
+
+  --popover: oklch(0.97 0 0);
+  --popover-foreground: oklch(0.145 0 0);
 }
 
 [data-theme="dark-forest"] {
@@ -221,6 +242,9 @@ body {
   --live-foreground: oklch(0.985 0 0);
   --success: oklch(0.7 0.2 145);
   --warning: oklch(0.8 0.2 85);
+
+  --popover: oklch(0.22 0.1 0);
+  --popover-foreground: oklch(0.95 0.02 0);
 }
 
 @theme inline {
@@ -259,4 +283,9 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Toast positioning */
+.toaster {
+  z-index: 9999;
 }
