@@ -4,6 +4,8 @@
  */
 
 import { z } from "zod";
+import { env } from "@/env";
+import { APP_URLS } from "./constants";
 import { isEthereumAddress } from "./utils";
 
 /**
@@ -67,32 +69,13 @@ export function truncateText(text: string, maxLength: number): string {
 }
 
 /**
- * Get base URL for OG image generation
- * Uses NEXT_PUBLIC_URL, VERCEL_URL, or localhost fallback
- */
-export function getBaseUrl(): string {
-  // Explicit public URL (production)
-  if (process.env.NEXT_PUBLIC_URL) {
-    return process.env.NEXT_PUBLIC_URL;
-  }
-
-  // Vercel deployment URL (preview/production)
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-
-  // Local development
-  return "http://localhost:3001";
-}
-
-/**
  * Create OG image URL with proper base URL
  */
 export function createOgImageUrl(
   path: string,
   params?: Record<string, string>
 ): string {
-  const baseUrl = getBaseUrl();
+  const baseUrl = APP_URLS[env.NEXT_PUBLIC_APP_ENV];
   const url = new URL(path, baseUrl);
 
   if (params) {

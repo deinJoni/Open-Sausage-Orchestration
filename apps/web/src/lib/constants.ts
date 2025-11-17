@@ -170,3 +170,8 @@ export const GRAPH_POOLS = {
   // Ethereum mainnet USDC/WETH pool (ETH price is universal across chains)
   ETH_USDC_MAINNET: "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640",
 } as const;
+
+export const APP_URLS: Record<"local" | "prod", string> = {
+  local: "https://localhost:3001",
+  prod: "https://osopit.com",
+} as const;
