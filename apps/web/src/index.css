@@ -292,13 +292,13 @@ body {
 }
 
 /* Override Sonner's default colors with our theme variables */
-[data-sonner-toaster][data-theme='light'] {
+[data-sonner-toaster][data-theme="light"] {
   --normal-bg: var(--popover);
   --normal-border: var(--border);
   --normal-text: var(--popover-foreground);
 }
 
-[data-sonner-toaster][data-theme='dark'] {
+[data-sonner-toaster][data-theme="dark"] {
   --normal-bg: var(--popover);
   --normal-border: var(--border);
   --normal-text: var(--popover-foreground);

@@ -2,7 +2,7 @@
 
 import { AppKitButton } from "@reown/appkit/react";
 import { Cuer } from "cuer";
-import { Check, Copy, ExternalLink } from "lucide-react";
+import { Check, Copy, ExternalLink, QrCode, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
@@ -71,7 +71,6 @@ const formatUsd = (amount: number) => {
   return Math.round(amount).toString();
 };
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <LIFE IS SHORT>
 export function TipForm({
   artistName,
   ensName,
@@ -84,7 +83,6 @@ export function TipForm({
     PRESET_AMOUNTS[3] // Default to 0.01 ETH
   );
   const [customAmount, setCustomAmount] = useState("");
-  const [copiedENS, setCopiedENS] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
 
   const { ethPrice, isLoading: isPriceLoading } = useEthPrice();
@@ -105,17 +103,6 @@ export function TipForm({
   // EIP-681 format: ethereum:<address>@<chainId>
   // ChainId 8453 = Base mainnet
   const qrValue = `ethereum:${artistAddress}@8453`;
-
-  const handleCopyENS = async () => {
-    try {
-      await navigator.clipboard.writeText(ensName);
-      setCopiedENS(true);
-      toast.success("ENS name copied!");
-      setTimeout(() => setCopiedENS(false), 2000);
-    } catch (_err) {
-      toast.error("Failed to copy");
-    }
-  };
 
   const handleCopyAddress = async () => {
     try {
@@ -291,55 +278,6 @@ export function TipForm({
         )}
       </div>
 
-      {/* QR Code Section */}
-      <div className="space-y-3">
-        <div className="flex justify-center rounded-lg bg-white p-4">
-          <Cuer color="black" size={150} value={qrValue} />
-        </div>
-
-        {/* ENS Name with copy */}
-        <div className="flex items-center justify-between gap-2 rounded-lg border bg-muted p-3">
-          <p className="flex-1 text-center font-medium text-brand text-xs uppercase tracking-wide">
-            {ensName}
-          </p>
-          <Button
-            className="size-8 shrink-0"
-            onClick={handleCopyENS}
-            size="icon"
-            variant="ghost"
-          >
-            {copiedENS ? (
-              <Check className="size-3.5 text-success" />
-            ) : (
-              <Copy className="size-3.5" />
-            )}
-          </Button>
-        </div>
-
-        {/* Wallet Address with copy */}
-        <div className="flex items-center justify-between gap-2 rounded-lg border bg-muted p-3">
-          <p className="flex-1 text-center font-mono text-muted-foreground text-xs">
-            {formatAddress(artistAddress, 10, 10)}
-          </p>
-          <Button
-            className="size-8 shrink-0"
-            onClick={handleCopyAddress}
-            size="icon"
-            variant="ghost"
-          >
-            {copiedAddress ? (
-              <Check className="size-3.5 text-success" />
-            ) : (
-              <Copy className="size-3.5" />
-            )}
-          </Button>
-        </div>
-
-        <p className="text-center text-muted-foreground text-xs">
-          Scan with your mobile wallet to send a tip on Base
-        </p>
-      </div>
-
       {/* Send button */}
       {userAddress ? (
         <Button
@@ -370,6 +308,67 @@ export function TipForm({
       <p className="mt-4 text-center text-muted-foreground text-xs">
         💸 Tips sent directly to artist
       </p>
+
+      {/* QR Code Section - At bottom of form */}
+      <div className="mt-6 overflow-hidden rounded-xl border border-border/50 bg-gradient-to-b from-background/50 to-muted/20">
+        {/* Header */}
+        <div className="flex items-center gap-2 border-border/30 border-b bg-muted/10 px-4 py-3">
+          <QrCode className="h-4 w-4 text-brand" />
+          <span className="font-medium text-foreground text-sm">
+            Wallet QR Code
+          </span>
+          <Sparkles className="ml-auto h-3 w-3 text-brand/60" />
+        </div>
+
+        {/* QR Code Content */}
+        <div className="flex flex-col items-center gap-4 p-6 sm:flex-row sm:gap-6">
+          {/* QR Code */}
+          <div className="relative flex-shrink-0">
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-brand/20 to-brand-secondary/20 blur-xl" />
+            <div className="relative rounded-lg bg-white p-3 shadow-lg">
+              <Cuer color="black" size={120} value={qrValue} />
+            </div>
+          </div>
+
+          {/* Info */}
+          <div className="flex-1 space-y-3 text-center sm:text-left">
+            <div>
+              <p className="font-medium text-foreground text-sm">
+                Direct wallet transfer
+              </p>
+              <p className="mt-1 text-muted-foreground text-xs">
+                Scan with your crypto wallet to send ETH on Base
+              </p>
+            </div>
+
+            {/* ENS Name */}
+            <div className="rounded-lg border border-border/50 bg-background/50 px-3 py-2">
+              <p className="font-medium text-brand text-xs uppercase tracking-wide">
+                {ensName}
+              </p>
+            </div>
+
+            {/* Wallet Address with copy */}
+            <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-background/50 px-3 py-2">
+              <span className="flex-1 truncate font-mono text-muted-foreground text-xs">
+                {formatAddress(artistAddress, 6, 4)}
+              </span>
+              <Button
+                className="h-6 w-6 shrink-0"
+                onClick={handleCopyAddress}
+                size="icon"
+                variant="ghost"
+              >
+                {copiedAddress ? (
+                  <Check className="h-3 w-3 text-success" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </Card>
   );
 }
