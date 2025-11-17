@@ -98,6 +98,7 @@ export default function OnboardingPage() {
     });
   };
 
+  console.log("isCheckingOwnership", isCheckingOwnership);
   // Loading state
   if (isCheckingOwnership) {
     return <LoadingState />;

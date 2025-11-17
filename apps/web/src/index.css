@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "sonner/dist/styles.css";
 
 @custom-variant dark (&:where([data-theme^="dark-"], [data-theme^="dark-"] *));
 
@@ -288,4 +289,27 @@ body {
 /* Toast positioning */
 .toaster {
   z-index: 9999;
+}
+
+/* Override Sonner's default colors with our theme variables */
+[data-sonner-toaster][data-theme='light'] {
+  --normal-bg: var(--popover);
+  --normal-border: var(--border);
+  --normal-text: var(--popover-foreground);
+}
+
+[data-sonner-toaster][data-theme='dark'] {
+  --normal-bg: var(--popover);
+  --normal-border: var(--border);
+  --normal-text: var(--popover-foreground);
+}
+
+/* Ensure toasts use our theme colors */
+[data-sonner-toast] {
+  --normal-bg: var(--popover);
+  --normal-border: var(--border);
+  --normal-text: var(--popover-foreground);
+  background: var(--popover) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--popover-foreground) !important;
 }

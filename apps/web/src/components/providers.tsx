@@ -31,7 +31,7 @@ export default function Providers({
         ]}
       >
         <NuqsAdapter>{children}</NuqsAdapter>
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-right" />
       </ThemeProvider>
     </AppKitProvider>
   );
