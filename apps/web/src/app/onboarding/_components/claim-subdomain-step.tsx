@@ -48,14 +48,7 @@ export function ClaimSubdomainStep({
 
       {!isPorto && (
         <div className="space-y-4 text-center">
-          <p className="text-muted-foreground">
-            Connect with Porto to claim your domain
-          </p>
           <PortoConnectButton className="mx-auto" size="lg" />
-          <p className="text-muted-foreground text-xs">
-            No wallet popups after connecting - all transactions are
-            pre-authorized
-          </p>
         </div>
       )}
 

@@ -121,7 +121,7 @@ export function PortoConnectButton({
             Connecting...
           </>
         ) : (
-          <>Sign In</>
+          <>Connect</>
         )}
       </span>
     </Button>

@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
 import { getTextRecord } from "@/lib/utils";
 import { ArtistAvatar } from "./artist-avatar";
-import { DonationPopover } from "./donation-modal";
 import { Button } from "./ui/button";
 import {
   Drawer,
@@ -88,14 +87,11 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
         <Button asChild className="flex-1" size="sm" variant="outline">
           <Link href={`/${artist.subdomain ?? ""}`}>View Profile</Link>
         </Button>
-        <DonationPopover
-          ensName={artist.subdomain ?? ""}
-          walletAddress={artist.user?.address}
-        >
+        <Link href={`/${artist.subdomain ?? ""}/gift`}>
           <Button size="sm">
-            <Gift className="h-3 w-3" />
-          </Button>
-        </DonationPopover>
+              <Gift className="h-3 w-3" />
+            </Button>
+          </Link>
       </div>
     </>
   );

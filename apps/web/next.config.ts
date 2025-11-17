@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "ipfs.io",
       },
+      {
+        protocol: "https",
+        hostname: "bear.mypinata.cloud",
+      },
     ],
   },
 };

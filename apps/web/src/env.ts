@@ -12,9 +12,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ENS_ENVIRONMENT: z
       .enum(["catmisha", "osopit"])
       .default("osopit"),
-    NEXT_PUBLIC_APP_ENV: z
-      .enum(["local", "prod"])
-      .default("local"),
+    NEXT_PUBLIC_APP_ENV: z.enum(["local", "prod"]).default("local"),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:

@@ -1,12 +1,12 @@
 "use client";
 
+import { AppKitButton } from "@reown/appkit/react";
 import { Cuer } from "cuer";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import { ArtistAvatar } from "@/components/artist-avatar";
-import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -269,7 +269,7 @@ export function TipForm({
         </Button>
       ) : (
         <div className="space-y-3">
-          <PortoConnectButton className="w-full" />
+          <AppKitButton size="md" />
           <p className="text-center text-muted-foreground text-xs">
             Connect your wallet to send a tip
           </p>

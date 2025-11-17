@@ -1,9 +1,9 @@
 "use client";
 
 import { Gift } from "lucide-react";
+import Link from "next/link";
 import { ArtistAvatar } from "@/components/artist-avatar";
 import { ArtistQuickActions } from "@/components/artist-quick-actions";
-import { DonationPopover } from "@/components/donation-modal";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -25,7 +25,6 @@ type StreamEmbedProps = {
 export function StreamEmbed({
   streamUrl,
   artistName,
-  walletAddress,
   showPlatformBadge = true,
   taggedArtists = [],
 }: StreamEmbedProps) {
@@ -96,18 +95,11 @@ export function StreamEmbed({
                   )}
 
                   {artistName && (
-                    <DonationPopover
-                      ensName={artistName}
-                      walletAddress={walletAddress}
-                    >
-                      <Button
-                        className="h-7 gap-1.5 text-xs"
-                        size="sm"
-                        variant="outline"
-                      >
+                    <Link href={`/${artistName}/gift`}>
+                      <Button size="sm">
                         <Gift className="h-3 w-3" />
                       </Button>
-                    </DonationPopover>
+                    </Link>
                   )}
                 </div>
               )}
