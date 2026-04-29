@@ -1,10 +1,9 @@
 import { ImageResponse } from "@takumi-rs/image-response";
 import { OgGradientBackground } from "@/components/og/og-gradient-background";
-import { env } from "@/env";
-import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
+import { getEnsConfig } from "@/lib/ens-config";
 import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
 import { fetchImageAsDataUrl, OgIdentifierSchema } from "@/lib/og-utils";
-import { formatAddress, getTextRecord, ipfsToHttp } from "@/lib/utils";
+import { formatAddress } from "@/lib/utils";
 
 export async function GET(request: Request) {
   try {
@@ -31,16 +30,12 @@ export async function GET(request: Request) {
     // Fetch profile data
     const profile = await getArtistProfileServer(identifier);
 
-    const avatar = getTextRecord(profile?.textRecords, "avatar");
-
-    const ipfsAvatar = ipfsToHttp(avatar);
-
     // Fetch and convert avatar to data URL for OG image
-    const avatarDataUrl = ipfsAvatar
-      ? await fetchImageAsDataUrl(ipfsAvatar)
+    const avatarDataUrl = profile?.avatar
+      ? await fetchImageAsDataUrl(profile.avatar)
       : null;
 
-    const envConfig = ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT];
+    const envConfig = getEnsConfig();
     const displayName = profile.subdomain?.name;
 
     const fullDomain = profile.subdomain

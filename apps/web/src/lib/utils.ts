@@ -2,18 +2,15 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { isAddress, keccak256, toBytes } from "viem";
 import { namehash } from "viem/ens";
-import { env } from "@/env";
 import type { AllValidKeys } from "./constants";
-import { ENS_ENVIRONMENTS } from "./ens-environments";
+import { getEnsConfig } from "./ens-config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function calculateNodeHash(label: string) {
-  const fullName = `${label}.${
-    ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain
-  }`;
+  const fullName = `${label}.${getEnsConfig().domain}`;
   return namehash(fullName);
 }
 

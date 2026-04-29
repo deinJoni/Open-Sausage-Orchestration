@@ -3,9 +3,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { env } from "@/env";
 import { FILE_UPLOAD } from "@/lib/constants";
-import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
+import { getEnsConfig } from "@/lib/ens-config";
 import type { SocialLink } from "@/types/artist";
 
 type ProfileSetupStepProps = {
@@ -60,8 +59,7 @@ export function ProfileSetupStep({
     <div className="space-y-6">
       <div className="rounded-lg border border-success/40 bg-background/80 px-4 py-5 shadow-sm">
         <p className="mb-1 font-semibold text-sm text-success">
-          Your Domain: {ensName}.
-          {ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain} ✓
+          Your Domain: {ensName}.{getEnsConfig().domain} ✓
         </p>
       </div>
 

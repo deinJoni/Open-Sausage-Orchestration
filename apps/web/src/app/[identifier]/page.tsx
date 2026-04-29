@@ -24,10 +24,10 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { env } from "@/env";
 import { APP_URLS, SocialKey } from "@/lib/constants";
-import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
+import { getEnsConfig } from "@/lib/ens-config";
 import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
 import { createOgImageUrl } from "@/lib/og-utils";
-import { formatAddress, getTextRecord, ipfsToHttp } from "@/lib/utils";
+import { formatAddress } from "@/lib/utils";
 
 type PageProps = {
   params: Promise<{ identifier: string }>;
@@ -67,9 +67,9 @@ export async function generateMetadata({
     };
   }
 
-  const envConfig = ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT];
+  const envConfig = getEnsConfig();
   const displayName = profile.subdomain?.name || identifier;
-  const description = getTextRecord(profile.textRecords, "description") || "";
+  const description = profile.description;
   const fullDomain = profile.subdomain
     ? `${profile.subdomain.name}.${envConfig.domain}`
     : formatAddress(profile.address);
@@ -122,8 +122,8 @@ export default async function ArtistProfilePage({ params }: PageProps) {
   }
 
   // Extract profile data
-  const avatar = getTextRecord(artist.textRecords, "avatar");
-  const description = getTextRecord(artist.textRecords, "description");
+  const avatar = artist.avatar;
+  const description = artist.description;
   const displayName = artist.subdomain?.name || identifier;
 
   return (
@@ -158,7 +158,7 @@ export default async function ArtistProfilePage({ params }: PageProps) {
                       : "border-border shadow-lg"
                   }`}
                   height={128}
-                  src={ipfsToHttp(avatar)}
+                  src={avatar}
                   width={128}
                 />
               ) : (

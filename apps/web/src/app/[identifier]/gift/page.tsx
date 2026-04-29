@@ -1,10 +1,8 @@
 import { notFound } from "next/navigation";
 import { TipForm } from "@/app/[identifier]/gift/_components/tip-form";
-import { env } from "@/env";
-import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
+import { getEnsConfig } from "@/lib/ens-config";
 import { getArtistProfileServer } from "@/lib/get-artist-profile-server";
 import { createOgImageUrl } from "@/lib/og-utils";
-import { getTextRecord } from "@/lib/utils";
 
 type GiftPageProps = {
   params: Promise<{
@@ -26,18 +24,16 @@ export default async function GiftPage({ params }: GiftPageProps) {
     notFound();
   }
 
-  const envConfig = ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT];
+  const envConfig = getEnsConfig();
   const artistName = profile.subdomain.name;
   const ensName = `${artistName}.${envConfig.domain}`;
-  const avatar = getTextRecord(profile.textRecords, "avatar");
-  const bio = getTextRecord(profile.textRecords, "description");
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-primary/20 p-4">
       <TipForm
         artistAddress={profile.address}
-        artistAvatar={avatar}
-        artistBio={bio}
+        artistAvatar={profile.avatar}
+        artistBio={profile.description}
         artistName={artistName}
         ensName={ensName}
       />
@@ -58,7 +54,7 @@ export async function generateMetadata({ params }: GiftPageProps) {
     };
   }
 
-  const envConfig = ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT];
+  const envConfig = getEnsConfig();
   const artistName = profile.subdomain.name;
   const fullDomain = `${artistName}.${envConfig.domain}`;
   const ogImageUrl = createOgImageUrl("/api/og/artist", { identifier });

@@ -1,6 +1,6 @@
 import { useQuery as useGqtyQuery } from "@/gqty";
 import { _SubgraphErrorPolicy_ } from "@/gqty/schema.generated";
-import { getTextRecord } from "@/lib/utils";
+import { buildProfile } from "@/lib/profile";
 
 /**
  * Hook to check if a user has completed profile setup
@@ -22,16 +22,14 @@ export function useHasProfileSetup(address: string | undefined) {
   });
 
   const subdomainData = result?.subdomain;
-
-  // Check if key profile text records exist
-  const description = getTextRecord(
-    subdomainData?.textRecords?.(),
-    "description"
-  );
-  const avatar = getTextRecord(subdomainData?.textRecords?.(), "avatar");
+  const profile = buildProfile({
+    ownerAddress: address.toLowerCase(),
+    subdomain: null,
+    rawTextRecords: subdomainData?.textRecords?.(),
+  });
 
   // Profile is considered "setup" if at least one key text record exists
-  const hasProfileSetup = !!(description || avatar);
+  const hasProfileSetup = !!(profile.description || profile.avatar);
 
   return {
     hasProfileSetup,

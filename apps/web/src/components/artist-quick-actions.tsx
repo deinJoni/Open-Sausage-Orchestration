@@ -4,7 +4,6 @@ import { Gift } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
-import { getTextRecord } from "@/lib/utils";
 import { ArtistAvatar } from "./artist-avatar";
 import { Button } from "./ui/button";
 import {
@@ -47,15 +46,13 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
     );
   }
 
-  const avatar = getTextRecord(artist.textRecords, "avatar");
-  const description = getTextRecord(artist.textRecords, "description");
   const name = artist.subdomain?.name ?? "";
 
   return (
     <>
       <div className="mb-4 flex items-center gap-3">
         <ArtistAvatar
-          avatarUrl={avatar}
+          avatarUrl={artist.avatar}
           className="border-2 border-border"
           name={name}
           size="md"
@@ -73,7 +70,7 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
       </div>
 
       <p className="mb-4 line-clamp-3 text-md text-muted-foreground">
-        {description || "Description"}
+        {artist.description || "Description"}
       </p>
 
       <div className="flex gap-2">

@@ -1,7 +1,6 @@
 import { useAccount } from "wagmi";
-import { env } from "@/env";
 import { useQuery as useGqtyQuery } from "@/gqty";
-import { ENS_ENVIRONMENTS } from "@/lib/ens-environments";
+import { getEnsConfig } from "@/lib/ens-config";
 
 /**
  * Hook to detect which profile the connected wallet owns
@@ -31,7 +30,7 @@ export function useOwnedProfile() {
   const textRecordsData = subdomainData?.textRecords?.();
 
   const ensName = subdomainData?.name
-    ? `${subdomainData.name}.${ENS_ENVIRONMENTS[env.NEXT_PUBLIC_ENS_ENVIRONMENT].domain}`
+    ? `${subdomainData.name}.${getEnsConfig().domain}`
     : null;
 
   return {

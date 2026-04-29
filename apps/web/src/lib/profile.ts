@@ -1,10 +1,18 @@
 import { type ParsedBroadcast, parseBroadcastPayload } from "./broadcast";
-import { getTextRecord } from "./utils";
+import {
+  SOCIAL_KEYS,
+  type SocialKey,
+  WEB3_SOCIAL_KEYS,
+  type Web3SocialKey,
+} from "./constants";
+import { getTextRecord, ipfsToHttp } from "./utils";
 
 export type TextRecord = {
   key: string;
   value: string;
 };
+
+export type ProfileSocials = Partial<Record<SocialKey | Web3SocialKey, string>>;
 
 export type ProfileInput = {
   ownerAddress: string;
@@ -18,10 +26,19 @@ export type ProfileInput = {
 export type ArtistProfile = {
   address: string;
   subdomain: { name: string; node: string } | null;
-  textRecords: TextRecord[];
+  /** Resolved (IPFS → HTTPS) avatar URL; "" if none. */
+  avatar: string;
+  description: string;
+  email: string;
+  /** Personal website. */
+  url: string;
+  /** Resolved header/banner image URL; "" if none. */
+  header: string;
+  socials: ProfileSocials;
   broadcast: ParsedBroadcast;
+  /** Raw records — only used by the profile edit form for diff/dirty tracking. */
+  textRecords: TextRecord[];
   // Back-compat fields (flattened from `broadcast`).
-  // Prefer `broadcast` in new code.
   isStreaming: boolean;
   streamUrl?: string;
   streamPlatform?: "youtube" | "twitch";
@@ -40,6 +57,23 @@ function normalizeTextRecords(
   }));
 }
 
+function buildSocials(records: TextRecord[]): ProfileSocials {
+  const socials: ProfileSocials = {};
+  for (const key of SOCIAL_KEYS) {
+    const value = getTextRecord(records, key);
+    if (value) {
+      socials[key] = value;
+    }
+  }
+  for (const key of WEB3_SOCIAL_KEYS) {
+    const value = getTextRecord(records, key);
+    if (value) {
+      socials[key] = value;
+    }
+  }
+  return socials;
+}
+
 /**
  * Build the canonical profile object from raw subgraph data.
  * Single source of truth for shape + broadcast parsing — used by both
@@ -53,8 +87,14 @@ export function buildProfile(input: ProfileInput): ArtistProfile {
   return {
     address: input.ownerAddress,
     subdomain: input.subdomain,
-    textRecords,
+    avatar: ipfsToHttp(getTextRecord(textRecords, "avatar")),
+    description: getTextRecord(textRecords, "description"),
+    email: getTextRecord(textRecords, "email"),
+    url: getTextRecord(textRecords, "url"),
+    header: ipfsToHttp(getTextRecord(textRecords, "header")),
+    socials: buildSocials(textRecords),
     broadcast,
+    textRecords,
     isStreaming: broadcast.isLive,
     streamUrl: broadcast.url ?? undefined,
     streamPlatform: broadcast.platform ?? undefined,

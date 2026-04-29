@@ -4,19 +4,23 @@ import Link from "next/link";
 import { ArtistAvatar } from "@/components/artist-avatar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { User } from "@/gqty";
-import { getTextRecord } from "@/lib/utils";
+import { buildProfile } from "@/lib/profile";
 
 type ArtistCardProps = {
   artist: User;
 };
 
 export const ArtistCard = ({ artist }: ArtistCardProps) => {
-  const avatar = getTextRecord(artist.subdomain?.textRecords?.(), "avatar");
+  const subdomain = artist.subdomain;
+  const name = subdomain?.name ?? undefined;
+  const node = subdomain?.node ?? undefined;
+  const profile = buildProfile({
+    ownerAddress: subdomain?.owner?.address ?? "",
+    subdomain: name && node ? { name, node } : null,
+    rawTextRecords: subdomain?.textRecords?.(),
+  });
+
   const isLive = artist.activeBroadcast?.isLive;
-  const description = getTextRecord(
-    artist.subdomain?.textRecords?.(),
-    "description"
-  );
   const cardClassName = [
     "group relative flex h-full flex-col overflow-hidden rounded-lg border bg-primary/20 px-6 pb-6 pt-6 text-left shadow-sm transition-all duration-200  shadow shadow-primary/50 hover:shadow-md",
     isLive ? "border-live/50 ring-2 ring-live/20" : "border-border",
@@ -28,10 +32,7 @@ export const ArtistCard = ({ artist }: ArtistCardProps) => {
     <TooltipProvider>
       <div className="h-full">
         <article className={cardClassName}>
-          <Link
-            className="flex h-full flex-col gap-5"
-            href={`/${artist.subdomain?.name ?? ""}`}
-          >
+          <Link className="flex h-full flex-col gap-5" href={`/${name ?? ""}`}>
             <div className="flex items-center justify-between gap-4">
               <div
                 className={
@@ -39,11 +40,11 @@ export const ArtistCard = ({ artist }: ArtistCardProps) => {
                 }
               >
                 <ArtistAvatar
-                  avatarUrl={avatar}
+                  avatarUrl={profile.avatar}
                   className={`size-16 rounded-2xl border-2 ${
                     isLive ? "border-live" : "border-border"
                   }`}
-                  name={artist.subdomain?.name ?? ""}
+                  name={name ?? ""}
                   size="lg"
                 />
               </div>
@@ -59,10 +60,10 @@ export const ArtistCard = ({ artist }: ArtistCardProps) => {
             </div>
             <div>
               <h3 className="font-bold text-foreground text-xl">
-                {artist.subdomain?.name ?? ""}
+                {name ?? ""}
               </h3>
               <p className="mt-2 line-clamp-2 text-muted-foreground text-sm leading-relaxed">
-                {description ? description : "No description"}
+                {profile.description || "No description"}
               </p>
             </div>
           </Link>

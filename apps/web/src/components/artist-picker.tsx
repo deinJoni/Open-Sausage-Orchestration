@@ -2,8 +2,9 @@
 
 import { X } from "lucide-react";
 import { useState } from "react";
+import type { User } from "@/gqty";
 import { useAllArtists } from "@/hooks/use-all-artists";
-import { getTextRecord } from "@/lib/utils";
+import { type ArtistProfile, buildProfile } from "@/lib/profile";
 import { ArtistAvatar } from "./artist-avatar";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
@@ -15,6 +16,17 @@ type ArtistPickerProps = {
   onSelectionChange: (addresses: string[]) => void;
   maxSelections?: number;
 };
+
+function profileFromUser(artist: User): ArtistProfile {
+  const subdomain = artist.subdomain;
+  const name = subdomain?.name ?? undefined;
+  const node = subdomain?.node ?? undefined;
+  return buildProfile({
+    ownerAddress: subdomain?.owner?.address ?? "",
+    subdomain: name && node ? { name, node } : null,
+    rawTextRecords: subdomain?.textRecords?.(),
+  });
+}
 
 /**
  * Multi-select artist picker with autocomplete
@@ -68,19 +80,20 @@ export function ArtistPicker({
       {selectedArtists.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedArtists.map((artist) => {
-            const address = artist.subdomain?.owner?.address || "";
-            const name = artist.subdomain?.name || "";
-            const avatar = getTextRecord(
-              artist.subdomain?.textRecords?.(),
-              "avatar"
-            );
+            const profile = profileFromUser(artist);
+            const address = profile.address;
+            const name = profile.subdomain?.name || "";
 
             return (
               <div
                 className="flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1.5"
                 key={address}
               >
-                <ArtistAvatar avatarUrl={avatar} name={name} size="xs" />
+                <ArtistAvatar
+                  avatarUrl={profile.avatar}
+                  name={name}
+                  size="xs"
+                />
                 <span className="text-brand text-md">{name}</span>
                 <button
                   className="text-brand hover:text-brand"
@@ -116,12 +129,9 @@ export function ArtistPicker({
           {showDropdown && filteredArtists.length > 0 && (
             <Card className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto border-border bg-background/80 p-2">
               {filteredArtists.slice(0, 10).map((artist) => {
-                const address = artist.subdomain?.owner?.address || "";
-                const name = artist.subdomain?.name || "";
-                const avatar = getTextRecord(
-                  artist.subdomain?.textRecords?.(),
-                  "avatar"
-                );
+                const profile = profileFromUser(artist);
+                const address = profile.address;
+                const name = profile.subdomain?.name || "";
 
                 return (
                   <button
@@ -130,7 +140,11 @@ export function ArtistPicker({
                     onClick={() => handleSelect(address)}
                     type="button"
                   >
-                    <ArtistAvatar avatarUrl={avatar} name={name} size="sm" />
+                    <ArtistAvatar
+                      avatarUrl={profile.avatar}
+                      name={name}
+                      size="sm"
+                    />
                     <span className="text-foreground text-md">{name}</span>
                   </button>
                 );
