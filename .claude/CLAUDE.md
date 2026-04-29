@@ -117,12 +117,12 @@ The app supports two ENS environments, controlled by `NEXT_PUBLIC_ENS_ENVIRONMEN
 **osopit.eth (production, default):**
 - `L2Registry`: `0x8c77dd23735dbe20c3cae29250bdd3bf80e6f9b1`
 - `L2Registrar`: `0xb2576cD3Cfcc023e4A48c79BaF23A8787dc372ff`
-- Subgraph: `osopit-subgraphv-1`
+- Subgraph: `open-sausage-orchestration-alpha`
 
 **catmisha.eth (dev/testing):**
 - `L2Registry`: `0xa609955257eacbbd566a1fa654e6c5f4b1fdc9e2`
 - `L2Registrar`: `0x63e7b8F8A8d42b043fe58Be1243d7cBcb1Ca5514`
-- Subgraph: `catmisha-subgraph`
+- Subgraph: `open-sausage-orchestration-alpha`
 
 **Environment Variables:**
 Required in `apps/web/.env`:
@@ -191,7 +191,7 @@ Indexes blockchain events from Base mainnet contracts to provide queryable data 
 
 **Deployment:**
 - Network: Base mainnet
-- Graph Studio project: osopit-subgraphv-1
+- Graph Studio project: open-sausage-orchestration-alpha
 - Start blocks configured in `subgraph.yaml`
 
 ---
