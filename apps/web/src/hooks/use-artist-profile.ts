@@ -1,52 +1,26 @@
 import { useQuery as useGqtyQuery } from "@/gqty";
 import { _SubgraphErrorPolicy_ } from "@/gqty/schema.generated";
-import { detectStreamPlatform } from "@/lib/broadcast";
+import { type ArtistProfile, buildProfile } from "@/lib/profile";
 import {
   calculateNodeHash,
-  getTextRecord,
   isEthereumAddress,
   normalizeIdentifier,
   parseEnsLabel,
 } from "@/lib/utils";
 
-/**
- * Parse broadcast text record value
- * Format: "true|url|userId1|userId2|..."
- */
-function parseBroadcast(value: string | undefined): {
-  isLive: boolean;
-  url?: string;
-  taggedArtists?: string[];
-} {
-  if (!value) {
-    return { isLive: false };
-  }
-
-  const parts = value.split("|");
-  const isLive = parts[0] === "true";
-
-  if (!isLive) {
-    return { isLive: false };
-  }
-
-  return {
-    isLive: true,
-    url: parts[1] || undefined,
-    taggedArtists: parts.slice(2).filter(Boolean),
-  };
-}
+export type { ArtistProfile } from "@/lib/profile";
 
 /**
  * Hook to fetch a single artist profile by identifier
  * Supports both ENS names (e.g., "kris" or "kris.osopit.eth") and Ethereum addresses (e.g., "0x123...")
- * Returns GQty subdomain data with streaming info
+ * Returns the canonical ArtistProfile shape from `lib/profile`.
  */
 export function useArtistProfile(identifier?: string) {
   const { subdomain, user, $state } = useGqtyQuery({ suspense: false });
 
   if (!identifier) {
     return {
-      data: undefined,
+      data: undefined as ArtistProfile | undefined,
       isLoading: false,
       error: null,
     };
@@ -54,7 +28,7 @@ export function useArtistProfile(identifier?: string) {
 
   const normalized = normalizeIdentifier(identifier);
 
-  const result = isEthereumAddress(normalized)
+  const subdomainEntity = isEthereumAddress(normalized)
     ? user({
         id: normalized,
         subgraphError: _SubgraphErrorPolicy_.deny,
@@ -64,22 +38,17 @@ export function useArtistProfile(identifier?: string) {
         subgraphError: _SubgraphErrorPolicy_.deny,
       });
 
-  // Parse broadcast data
-  const broadcastValue = getTextRecord(
-    result?.textRecords?.(),
-    "app.osopit.broadcast"
-  );
-  const broadcast = parseBroadcast(broadcastValue);
+  const name = subdomainEntity?.name ?? undefined;
+  const node = subdomainEntity?.node ?? undefined;
+  const ownerAddress = subdomainEntity?.owner?.address ?? "";
 
-  const data = {
-    user: result?.owner,
-    subdomain: result?.name,
-    textRecords: result?.textRecords,
-    isStreaming: broadcast.isLive,
-    streamUrl: broadcast.url,
-    streamPlatform: detectStreamPlatform(broadcast.url ?? "") ?? undefined,
-    taggedArtists: broadcast.taggedArtists,
-  };
+  const data: ArtistProfile | undefined = subdomainEntity
+    ? buildProfile({
+        ownerAddress,
+        subdomain: name && node ? { name, node } : null,
+        rawTextRecords: subdomainEntity.textRecords?.(),
+      })
+    : undefined;
 
   return {
     data,
@@ -87,7 +56,3 @@ export function useArtistProfile(identifier?: string) {
     error: $state.error,
   };
 }
-
-export type ArtistProfile = NonNullable<
-  Awaited<ReturnType<typeof useArtistProfile>>["data"]
->;

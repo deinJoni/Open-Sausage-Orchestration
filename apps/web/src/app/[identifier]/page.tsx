@@ -133,10 +133,8 @@ export default async function ArtistProfilePage({ params }: PageProps) {
         <div className="mb-8 overflow-hidden rounded-lg border border-border bg-primary/20 p-0 shadow-md">
           <StreamEmbed
             artistName={displayName}
-            streamPlatform={artist.streamPlatform}
             streamUrl={artist.streamUrl}
             taggedArtists={artist.taggedArtists}
-            walletAddress={artist.address}
           />
         </div>
       )}

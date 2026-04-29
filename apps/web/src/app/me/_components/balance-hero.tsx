@@ -17,7 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatAddress } from "@/lib/utils";
 
 type BalanceHeroProps = {
-  balanceUSD: string;
+  balanceUSD: string | null;
   balanceETH: string;
   ensName: string;
   walletAddress: string;
@@ -94,9 +94,15 @@ export function BalanceHero({
 
         {/* USD Balance - Primary */}
         <div className="space-y-1">
-          <p className="font-bold text-5xl text-foreground md:text-6xl">
-            {balanceUSD}
-          </p>
+          {balanceUSD ? (
+            <p className="font-bold text-5xl text-foreground md:text-6xl">
+              {balanceUSD}
+            </p>
+          ) : (
+            <p className="font-bold text-5xl text-muted-foreground md:text-6xl">
+              —
+            </p>
+          )}
           <p className="text-muted-foreground text-sm">{balanceETH}</p>
         </div>
 

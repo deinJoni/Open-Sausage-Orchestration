@@ -6,10 +6,11 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import type { ActiveBroadcasts } from "@/hooks/use-active-broadcast";
+import type { Artist } from "@/hooks/use-all-artists";
+import { detectStreamPlatform } from "@/lib/broadcast";
 
 type LivestreamCarouselProps = {
-  broadcasts: ActiveBroadcasts;
+  broadcasts: Artist[];
 };
 
 export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
@@ -28,32 +29,38 @@ export function LivestreamCarousel({ broadcasts }: LivestreamCarouselProps) {
         }}
       >
         <CarouselContent className="md:-ml-4 ml-0">
-          {broadcasts.map((broadcast, index) => (
-            <CarouselItem
-              className="basis-full pl-0 md:basis-1/3 md:pl-4"
-              key={broadcast.subdomain?.name ?? `broadcast-${index}`}
-            >
-              <div className="h-[400px]">
-                {broadcast.activeBroadcast?.broadcastUrl ? (
-                  <StreamEmbed
-                    artistName={broadcast.subdomain?.name ?? ""}
-                    showPlatformBadge
-                    streamPlatform={"youtube"}
-                    streamUrl={broadcast.activeBroadcast?.broadcastUrl}
-                    taggedArtists={
-                      broadcast.activeBroadcast
-                        ?.broadcastWith?.()
-                        ?.map((b) => b.subdomain?.name ?? "") ?? []
-                    }
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center rounded-lg bg-background">
-                    <p className="text-muted-foreground">Stream unavailable</p>
-                  </div>
-                )}
-              </div>
-            </CarouselItem>
-          ))}
+          {broadcasts.map((broadcast, index) => {
+            const streamUrl = broadcast.activeBroadcast?.broadcastUrl;
+            const platform = streamUrl ? detectStreamPlatform(streamUrl) : null;
+
+            return (
+              <CarouselItem
+                className="basis-full pl-0 md:basis-1/3 md:pl-4"
+                key={broadcast.subdomain?.name ?? `broadcast-${index}`}
+              >
+                <div className="h-[400px]">
+                  {streamUrl && platform ? (
+                    <StreamEmbed
+                      artistName={broadcast.subdomain?.name ?? ""}
+                      showPlatformBadge
+                      streamUrl={streamUrl}
+                      taggedArtists={
+                        broadcast.activeBroadcast
+                          ?.broadcastWith?.()
+                          ?.map((b) => b.subdomain?.name ?? "") ?? []
+                      }
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center rounded-lg bg-background">
+                      <p className="text-muted-foreground">
+                        Stream unavailable
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CarouselItem>
+            );
+          })}
         </CarouselContent>
       </Carousel>
     </div>

@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { AlreadyHasProfile } from "@/app/onboarding/_components/already-has-profile";
 import { ClaimSubdomainStep } from "@/app/onboarding/_components/claim-subdomain-step";
 import { LoadingState } from "@/app/onboarding/_components/loading-state";
@@ -12,9 +12,10 @@ import { ProfileSetupStep } from "@/app/onboarding/_components/profile-setup-ste
 import { Card } from "@/components/ui/card";
 import { useCreateProfile } from "@/hooks/use-create-profile";
 import { useHasProfileSetup } from "@/hooks/use-has-profile-setup";
-import { useHasSubdomainContract } from "@/hooks/use-has-subdomain-contract";
 import { useRegisterSubdomain } from "@/hooks/use-register-subdomain";
+import { L2RegistryABI } from "@/lib/abi/l2-registry";
 import type { AllValidKeys } from "@/lib/constants";
+import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
 import { socialLinksToTextRecords } from "@/lib/social-platform-mapping";
 import type { SocialLink } from "@/types/artist";
 
@@ -38,8 +39,14 @@ export default function OnboardingPage() {
   const { address, connector } = useAccount();
   const isPorto = connector?.name === "Porto";
 
-  const { hasSubdomain, isLoading: isCheckingOwnership } =
-    useHasSubdomainContract(address);
+  const { data: balance, isLoading: isCheckingOwnership } = useReadContract({
+    address: L2_REGISTRY_ADDRESS,
+    abi: L2RegistryABI,
+    functionName: "balanceOf",
+    args: address ? [address as `0x${string}`] : undefined,
+    query: { enabled: !!address },
+  });
+  const hasSubdomain = balance ? balance > BigInt(0) : false;
   const { hasProfileSetup } = useHasProfileSetup(address);
 
   // Only show "already has profile" if BOTH subdomain exists AND profile setup is complete
@@ -98,7 +105,6 @@ export default function OnboardingPage() {
     });
   };
 
-  console.log("isCheckingOwnership", isCheckingOwnership);
   // Loading state
   if (isCheckingOwnership) {
     return <LoadingState />;

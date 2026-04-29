@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useEthPrice } from "@/hooks/use-eth-price";
 import { useSendEth } from "@/hooks/use-send-eth";
 
 type SendMoneySheetProps = {
@@ -68,9 +69,9 @@ export function SendMoneySheet({
     },
   });
 
+  const { ethPrice } = useEthPrice();
   const selectedAmount = customAmount || amount;
   const amountNum = Number.parseFloat(selectedAmount) || 0;
-  const ETH_PRICE_USD = 2000; // TODO: Get from price feed
 
   const handleReset = () => {
     setStep("recipient");
@@ -85,10 +86,14 @@ export function SendMoneySheet({
   };
 
   const handleSend = async () => {
+    if (ethPrice === null) {
+      toast.error("Price feed unavailable. Try again in a moment.");
+      return;
+    }
     try {
       await sendEth({
         to: recipient,
-        amount: (amountNum / ETH_PRICE_USD).toFixed(6), // Convert USD to ETH
+        amount: (amountNum / ethPrice).toFixed(6), // Convert USD to ETH
       });
     } catch (_error) {
       // Error handled in hook
@@ -97,7 +102,7 @@ export function SendMoneySheet({
 
   const isValidRecipient = recipient.endsWith(".eth") || isAddress(recipient);
   const isValidAmount =
-    amountNum > 0 && amountNum <= userBalance * ETH_PRICE_USD;
+    ethPrice !== null && amountNum > 0 && amountNum <= userBalance * ethPrice;
 
   const stepMeta = STEP_METADATA[step];
 
@@ -126,7 +131,7 @@ export function SendMoneySheet({
               amount={amount}
               amountNum={amountNum}
               customAmount={customAmount}
-              ethPriceUSD={ETH_PRICE_USD}
+              ethPriceUSD={ethPrice}
               isValidAmount={isValidAmount}
               onBack={() => setStep("recipient")}
               onNext={() => setStep("confirm")}
@@ -139,7 +144,7 @@ export function SendMoneySheet({
           {step === "confirm" && (
             <ConfirmStep
               amountNum={amountNum}
-              ethPriceUSD={ETH_PRICE_USD}
+              ethPriceUSD={ethPrice}
               isPending={isPending}
               onBack={() => setStep("amount")}
               onSend={handleSend}
@@ -212,7 +217,7 @@ type AmountStepProps = {
   setCustomAmount: (value: string) => void;
   selectedAmount: string;
   amountNum: number;
-  ethPriceUSD: number;
+  ethPriceUSD: number | null;
   isValidAmount: boolean;
   onBack: () => void;
   onNext: () => void;
@@ -278,7 +283,9 @@ function AmountStep({
             <p className="text-muted-foreground">You're sending</p>
             <p className="mt-1 font-bold text-2xl">${selectedAmount}</p>
             <p className="mt-1 text-muted-foreground text-xs">
-              ~{(amountNum / ethPriceUSD).toFixed(6)} ETH
+              {ethPriceUSD === null
+                ? "Loading price…"
+                : `~${(amountNum / ethPriceUSD).toFixed(6)} ETH`}
             </p>
           </div>
         )}
@@ -292,9 +299,14 @@ function AmountStep({
           Next
         </Button>
 
-        {!isValidAmount && amountNum > 0 && (
+        {!isValidAmount && amountNum > 0 && ethPriceUSD !== null && (
           <p className="text-center text-destructive text-sm">
             Insufficient balance
+          </p>
+        )}
+        {ethPriceUSD === null && (
+          <p className="text-center text-muted-foreground text-sm">
+            Waiting for ETH price…
           </p>
         )}
       </div>
@@ -306,7 +318,7 @@ type ConfirmStepProps = {
   recipient: string;
   selectedAmount: string;
   amountNum: number;
-  ethPriceUSD: number;
+  ethPriceUSD: number | null;
   isPending: boolean;
   onBack: () => void;
   onSend: () => void;
@@ -339,7 +351,9 @@ function ConfirmStep({
             <div className="text-right">
               <p className="font-semibold">${selectedAmount}</p>
               <p className="text-muted-foreground text-xs">
-                ~{(amountNum / ethPriceUSD).toFixed(6)} ETH
+                {ethPriceUSD === null
+                  ? "Loading price…"
+                  : `~${(amountNum / ethPriceUSD).toFixed(6)} ETH`}
               </p>
             </div>
           </div>
@@ -347,7 +361,7 @@ function ConfirmStep({
 
         <Button
           className="w-full"
-          disabled={isPending}
+          disabled={isPending || ethPriceUSD === null}
           onClick={onSend}
           size="lg"
         >

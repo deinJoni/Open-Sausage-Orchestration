@@ -1,5 +1,3 @@
-import { isAddress } from "viem";
-
 /**
  * Broadcast parameters for starting/ending a broadcast
  */
@@ -35,6 +33,53 @@ export function constructBroadcastPayload(params: BroadcastParams): string {
 }
 
 /**
+ * Parsed shape of the `app.osopit.broadcast` text record.
+ * Single source of truth — do not duplicate elsewhere.
+ */
+export type ParsedBroadcast = {
+  isLive: boolean;
+  url: string | null;
+  taggedArtists: string[];
+  platform: "youtube" | "twitch" | null;
+};
+
+const NOT_LIVE: ParsedBroadcast = {
+  isLive: false,
+  url: null,
+  taggedArtists: [],
+  platform: null,
+};
+
+/**
+ * Parse a pipe-delimited broadcast text record value.
+ * Format: "isLive|broadcastUrl|guestAddress1|guestAddress2|..."
+ */
+export function parseBroadcastPayload(
+  value: string | null | undefined
+): ParsedBroadcast {
+  if (!value) {
+    return NOT_LIVE;
+  }
+
+  const parts = value.split("|");
+  const isLive = parts[0] === "true";
+
+  if (!isLive) {
+    return NOT_LIVE;
+  }
+
+  const url = parts[1] || null;
+  const taggedArtists = parts.slice(2).filter(Boolean);
+
+  return {
+    isLive: true,
+    url,
+    taggedArtists,
+    platform: url ? detectStreamPlatform(url) : null,
+  };
+}
+
+/**
  * Validates a broadcast URL format
  *
  * @param url - The URL to validate
@@ -50,42 +95,6 @@ export function isValidBroadcastUrl(url: string): boolean {
     return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
   } catch {
     return false;
-  }
-}
-
-/**
- * Validates an array of Ethereum wallet addresses
- *
- * @param addresses - Array of addresses to validate
- * @returns true if all addresses are valid, false otherwise
- */
-export function areValidWalletAddresses(addresses: string[]): boolean {
-  if (addresses.length === 0) {
-    return true; // Empty array is valid (no guests)
-  }
-
-  for (const address of addresses) {
-    if (!isAddress(address)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-/**
- * Validates broadcast parameters before constructing payload
- *
- * @param params - Broadcast parameters to validate
- * @throws Error if parameters are invalid
- */
-export function validateBroadcastParams(params: BroadcastParams): void {
-  if (params.isLive && !isValidBroadcastUrl(params.broadcastUrl)) {
-    throw new Error("Invalid broadcast URL format");
-  }
-
-  if (!areValidWalletAddresses(params.guestWalletAddresses)) {
-    throw new Error("Invalid guest wallet address");
   }
 }
 

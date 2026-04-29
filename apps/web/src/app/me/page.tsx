@@ -31,7 +31,7 @@ export default function MePage() {
   const { isConnected, address } = useAccount();
   const ownedProfile = useOwnedProfile();
   const ethPriceQuery = useEthPrice();
-  const ethPrice = ethPriceQuery.ethPrice ?? 2000; // Fallback to $2000 if loading
+  const ethPrice = ethPriceQuery.ethPrice;
   const balance = useWalletBalance(address, ethPrice);
   const transactions = useTransactionHistory(address);
 
@@ -279,7 +279,7 @@ export default function MePage() {
         </h4>
         <TransactionList
           ethPriceUSD={ethPrice}
-          isLoading={transactions.isLoading}
+          isLoading={transactions.isLoading || ethPriceQuery.isLoading}
           transactions={transactions.transactions}
         />
       </div>

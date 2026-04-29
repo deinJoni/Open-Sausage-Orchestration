@@ -35,8 +35,6 @@ export async function GET(request: Request) {
 
     const ipfsAvatar = ipfsToHttp(avatar);
 
-    console.log("ipfsAvatar", ipfsAvatar);
-
     // Fetch and convert avatar to data URL for OG image
     const avatarDataUrl = ipfsAvatar
       ? await fetchImageAsDataUrl(ipfsAvatar)

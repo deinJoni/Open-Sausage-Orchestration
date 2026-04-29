@@ -12,7 +12,7 @@ import { formatAddress } from "@/lib/utils";
 type TransactionListProps = {
   transactions: Transaction[];
   isLoading: boolean;
-  ethPriceUSD?: number;
+  ethPriceUSD: number | null;
   defaultExpanded?: boolean;
   maxPreview?: number;
 };
@@ -23,7 +23,7 @@ const SKELETON_KEYS = Array.from({ length: 5 }, (_, _i) => crypto.randomUUID());
 export function TransactionList({
   transactions,
   isLoading,
-  ethPriceUSD = 2000,
+  ethPriceUSD,
   defaultExpanded = false,
   maxPreview = 3,
 }: TransactionListProps) {
@@ -106,11 +106,12 @@ function TransactionRow({
   ethPriceUSD,
 }: {
   transaction: Transaction;
-  ethPriceUSD: number;
+  ethPriceUSD: number | null;
 }) {
   const isIncoming = transaction.direction === "incoming";
   const otherAddress = isIncoming ? transaction.from : transaction.to;
-  const usdValue = transaction.valueETHNum * ethPriceUSD;
+  const usdValue =
+    ethPriceUSD === null ? null : transaction.valueETHNum * ethPriceUSD;
 
   // Format timestamp to relative time
   const timestamp = new Date(transaction.timestamp * 1000);
@@ -161,7 +162,8 @@ function TransactionRow({
           <p
             className={`font-semibold text-sm ${isIncoming ? "text-success" : "text-foreground"}`}
           >
-            {isIncoming ? "+" : "-"}${usdValue.toFixed(2)}
+            {isIncoming ? "+" : "-"}
+            {usdValue === null ? "—" : `$${usdValue.toFixed(2)}`}
           </p>
           <p className="text-muted-foreground text-xs">
             {transaction.valueETH.substring(0, 8)} ETH

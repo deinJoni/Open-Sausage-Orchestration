@@ -15,9 +15,7 @@ import { convertToEmbedUrl } from "@/lib/broadcast";
 
 type StreamEmbedProps = {
   streamUrl: string;
-  streamPlatform: string;
   artistName?: string;
-  walletAddress?: string;
   showPlatformBadge?: boolean;
   taggedArtists?: string[];
 };
@@ -55,7 +53,6 @@ export function StreamEmbed({
                       type="button"
                     >
                       <ArtistAvatar
-                        avatarUrl={`https://avatars.jakerunzer.com/${artistName}`}
                         className="border border-border"
                         name={artistName}
                         size="xs"
@@ -78,7 +75,6 @@ export function StreamEmbed({
                                 type="button"
                               >
                                 <ArtistAvatar
-                                  avatarUrl={`https://avatars.jakerunzer.com/${artist}`}
                                   className="border border-brand"
                                   name={artist}
                                   size="xs"

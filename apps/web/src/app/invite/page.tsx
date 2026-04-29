@@ -10,7 +10,6 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { env } from "@/env";
-import { useCheckSubdomainAvailability } from "@/hooks/use-check-subdomain-availability";
 import { useGenerateInvite } from "@/hooks/use-generate-profile";
 import { L2RegistrarABI } from "@/lib/abi/l2-registrar";
 import {
@@ -43,8 +42,18 @@ export default function InvitePage() {
   const [debouncedLabel] = useDebounceValue(label, DEBOUNCE_TIME);
 
   // Check if subdomain is available
-  const { isAvailable, error: availabilityError } =
-    useCheckSubdomainAvailability(debouncedLabel);
+  const { data: isAvailable, isError: availabilityError } = useReadContract({
+    address: L2_REGISTRAR_ADDRESS,
+    abi: L2RegistrarABI,
+    functionName: "available",
+    args:
+      debouncedLabel && debouncedLabel.length > 0
+        ? [debouncedLabel]
+        : undefined,
+    query: {
+      enabled: !!debouncedLabel && debouncedLabel.length > 0,
+    },
+  });
 
   // Track if we're waiting for debounced value to update
   const isChecking = label !== debouncedLabel && label.length > 0;

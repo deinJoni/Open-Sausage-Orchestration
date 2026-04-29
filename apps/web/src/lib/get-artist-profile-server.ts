@@ -1,132 +1,19 @@
 import { resolve } from "@/gqty";
-import { detectStreamPlatform } from "./broadcast";
-import { parseBroadcast } from "./og-utils";
+import { QUERY } from "./constants";
+import { type ArtistProfile, buildProfile } from "./profile";
 import {
   calculateNodeHash,
-  getTextRecord,
   isEthereumAddress,
   normalizeIdentifier,
   parseEnsLabel,
 } from "./utils";
 
-type TextRecord = {
-  key: string;
-  value: string;
-};
+export type { ArtistProfile } from "./profile";
 
-export type ArtistProfile = {
-  address: string;
-  subdomain: {
-    name: string;
-    node: string;
-  } | null;
-  textRecords: TextRecord[];
-  // Broadcast/streaming data
-  isStreaming: boolean;
-  streamUrl?: string;
-  streamPlatform?: "youtube" | "twitch";
-  taggedArtists: string[];
-};
-
-function normalizeTextRecords(
-  records:
-    | Array<{ key?: string | null; value?: string | null }>
-    | null
-    | undefined
-): TextRecord[] {
-  if (!records) {
-    return [];
-  }
-
-  return records.map((record) => ({
-    key: record?.key ?? "",
-    value: record?.value ?? "",
-  }));
-}
-
-function buildArtistProfileFromUser(
-  user: {
-    address?: string | null;
-    subdomain?: {
-      name?: string | null;
-      node?: string | null;
-      textRecords?: (args: { first: number }) => Array<{
-        key?: string | null;
-        value?: string | null;
-      }> | null;
-    } | null;
-  } | null
-): ArtistProfile | null {
-  if (!user) {
-    return null;
-  }
-
-  const subdomain = user.subdomain;
-  const name = subdomain?.name ?? undefined;
-  const node = subdomain?.node ?? undefined;
-  const textRecords = subdomain?.textRecords?.({ first: 100 });
-  const normalizedRecords = normalizeTextRecords(textRecords);
-
-  // Parse broadcast data
-  const broadcastValue = getTextRecord(
-    normalizedRecords,
-    "app.osopit.broadcast"
-  );
-  const broadcast = parseBroadcast(broadcastValue);
-
-  return {
-    address: user.address ?? "",
-    subdomain: name && node ? { name, node } : null,
-    textRecords: normalizedRecords,
-    isStreaming: broadcast.isLive,
-    streamUrl: broadcast.url,
-    streamPlatform: broadcast.url
-      ? (detectStreamPlatform(broadcast.url) ?? undefined)
-      : undefined,
-    taggedArtists: broadcast.taggedArtists ?? [],
-  };
-}
-
-function buildArtistProfileFromSubdomain(
-  subdomain: {
-    name?: string | null;
-    node?: string | null;
-    owner?: { address?: string | null } | null;
-    textRecords: (args: { first: number }) => Array<{
-      key?: string | null;
-      value?: string | null;
-    }> | null;
-  } | null
-): ArtistProfile | null {
-  if (!subdomain) {
-    return null;
-  }
-
-  const name = subdomain.name ?? undefined;
-  const node = subdomain.node ?? undefined;
-  const ownerAddress = subdomain.owner?.address ?? "";
-  const textRecords = subdomain.textRecords({ first: 100 });
-  const normalizedRecords = normalizeTextRecords(textRecords);
-
-  // Parse broadcast data
-  const broadcastValue = getTextRecord(
-    normalizedRecords,
-    "app.osopit.broadcast"
-  );
-  const broadcast = parseBroadcast(broadcastValue);
-
-  return {
-    address: ownerAddress,
-    subdomain: name && node ? { name, node } : null,
-    textRecords: normalizedRecords,
-    isStreaming: broadcast.isLive,
-    streamUrl: broadcast.url,
-    streamPlatform: broadcast.url
-      ? (detectStreamPlatform(broadcast.url) ?? undefined)
-      : undefined,
-    taggedArtists: broadcast.taggedArtists ?? [],
-  };
-}
+type RawTextRecords =
+  | Array<{ key?: string | null; value?: string | null }>
+  | null
+  | undefined;
 
 function fetchProfileByAddress(
   query: {
@@ -135,17 +22,27 @@ function fetchProfileByAddress(
       subdomain?: {
         name?: string | null;
         node?: string | null;
-        textRecords?: (args: { first: number }) => Array<{
-          key?: string | null;
-          value?: string | null;
-        }> | null;
+        textRecords?: (args: { first: number }) => RawTextRecords;
       } | null;
     } | null;
   },
-  normalized: string
+  normalized: string,
+  textRecordLimit: number
 ): ArtistProfile | null {
   const user = query.user({ id: normalized });
-  return buildArtistProfileFromUser(user);
+  if (!user) {
+    return null;
+  }
+
+  const subdomain = user.subdomain;
+  const name = subdomain?.name ?? undefined;
+  const node = subdomain?.node ?? undefined;
+
+  return buildProfile({
+    ownerAddress: user.address ?? "",
+    subdomain: name && node ? { name, node } : null,
+    rawTextRecords: subdomain?.textRecords?.({ first: textRecordLimit }),
+  });
 }
 
 function fetchProfileBySubdomain(
@@ -154,30 +51,42 @@ function fetchProfileBySubdomain(
       name?: string | null;
       node?: string | null;
       owner?: { address?: string | null } | null;
-      textRecords: (args: { first: number }) => Array<{
-        key?: string | null;
-        value?: string | null;
-      }> | null;
+      textRecords: (args: { first: number }) => RawTextRecords;
     } | null;
   },
-  normalized: string
+  normalized: string,
+  textRecordLimit: number
 ): ArtistProfile | null {
   const nodeHash = calculateNodeHash(parseEnsLabel(normalized));
   const subdomain = query.subdomain({ id: nodeHash });
-  return buildArtistProfileFromSubdomain(subdomain);
+  if (!subdomain) {
+    return null;
+  }
+
+  const name = subdomain.name ?? undefined;
+  const node = subdomain.node ?? undefined;
+
+  return buildProfile({
+    ownerAddress: subdomain.owner?.address ?? "",
+    subdomain: name && node ? { name, node } : null,
+    rawTextRecords: subdomain.textRecords({ first: textRecordLimit }),
+  });
 }
 
 export async function getArtistProfileServer(
-  identifier: string
+  identifier: string,
+  options: { textRecordLimit?: number } = {}
 ): Promise<ArtistProfile> {
+  const textRecordLimit =
+    options.textRecordLimit ?? QUERY.SUBGRAPH_DEFAULT_LIMIT;
   const normalized = normalizeIdentifier(identifier);
   const isAddress = isEthereumAddress(normalized);
 
   try {
     const result = await resolve(({ query }) =>
       isAddress
-        ? fetchProfileByAddress(query, normalized)
-        : fetchProfileBySubdomain(query, normalized)
+        ? fetchProfileByAddress(query, normalized, textRecordLimit)
+        : fetchProfileBySubdomain(query, normalized, textRecordLimit)
     );
 
     if (!result) {

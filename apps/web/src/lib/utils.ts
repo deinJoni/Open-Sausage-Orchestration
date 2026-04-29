@@ -53,7 +53,7 @@ export function normalizeIdentifier(identifier: string): string {
 
 export function ipfsToHttp(url: string | undefined | null): string {
   if (!url || url.trim() === "") {
-    return "https://avatars.jakerunzer.com/placeholder";
+    return "";
   }
   if (url.startsWith("ipfs://")) {
     const hash = url.replace("ipfs://", "");

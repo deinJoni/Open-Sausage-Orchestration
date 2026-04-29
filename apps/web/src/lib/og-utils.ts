@@ -9,34 +9,6 @@ import { APP_URLS } from "./constants";
 import { isEthereumAddress } from "./utils";
 
 /**
- * Parse broadcast text record value
- * Format: "true|url|userId1|userId2|..."
- * Reused from hooks/use-artist-profile.ts
- */
-export function parseBroadcast(value: string | undefined): {
-  isLive: boolean;
-  url?: string;
-  taggedArtists?: string[];
-} {
-  if (!value) {
-    return { isLive: false };
-  }
-
-  const parts = value.split("|");
-  const isLive = parts[0] === "true";
-
-  if (!isLive) {
-    return { isLive: false };
-  }
-
-  return {
-    isLive: true,
-    url: parts[1] || undefined,
-    taggedArtists: parts.slice(2).filter(Boolean),
-  };
-}
-
-/**
  * Validation schema for OG image identifier parameter
  */
 export const OgIdentifierSchema = z
@@ -56,17 +28,6 @@ export const OgIdentifierSchema = z
         "Invalid identifier format (must be ENS name or Ethereum address)",
     }
   );
-
-/**
- * Truncate text with ellipsis for OG images
- * Prevents overflow in OG image layouts
- */
-export function truncateText(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) {
-    return text;
-  }
-  return `${text.slice(0, maxLength).trim()}...`;
-}
 
 /**
  * Create OG image URL with proper base URL

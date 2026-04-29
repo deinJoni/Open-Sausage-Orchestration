@@ -33,10 +33,21 @@ osopit/
 │       │   └── env.ts    # Environment variable validation
 ├── packages/
 │   └── osopit-subgraph/  # The Graph protocol subgraph
-│       ├── schema.graphql # GraphQL schema for subgraph
-│       ├── subgraph.yaml # Subgraph manifest
-│       └── src/          # Event handlers (AssemblyScript)
+│       ├── schema.graphql        # GraphQL schema
+│       ├── subgraph.yaml         # Active manifest (symlink/copy of one of the below)
+│       ├── subgraph.osopit.yaml  # Manifest for osopit.eth contracts
+│       ├── subgraph.catmisha.yaml # Manifest for catmisha.eth contracts
+│       ├── scripts/              # Helper scripts (see Subgraph Development)
+│       └── src/                  # Event handlers (AssemblyScript)
 ```
+
+**App Router routes** (`apps/web/src/app/`):
+- `page.tsx` — landing
+- `[identifier]/` — public artist profile by ENS subdomain
+- `me/` — logged-in user dashboard (balance, send money, transactions)
+- `onboarding/` — Porto.sh smart wallet + ENS subdomain setup
+- `invite/` — invite redemption flow
+- `api/` — server route handlers
 
 ---
 
@@ -51,6 +62,8 @@ bun dev:web              # Run only the web app (https://localhost:3001)
 bun build                # Build all apps
 ```
 
+The web dev server runs over HTTPS via Next.js `--experimental-https`. Local certs live in `apps/web/certificates/` and are generated on first run; the dev URL is `https://localhost:3001`.
+
 ### Code Quality
 
 ```bash
@@ -61,27 +74,32 @@ bun fix:unsafe           # Auto-fix all issues including unsafe ones
 bun check                # Run both lint and typecheck
 ```
 
-### Database (if applicable)
+### Database
 
-```bash
-bun db:push              # Push schema changes
-bun db:studio            # Open database studio
-bun db:generate          # Generate migrations
-bun db:migrate           # Run migrations
-bun db:start             # Start database
-bun db:stop              # Stop database
-bun db:down              # Tear down database
-```
+The root `package.json` exposes `bun db:*` scripts that target a `@osopit/db` workspace, but **no such package exists yet** — those commands will fail. Treat them as reserved for a future db package.
 
 ### Subgraph Development
 
 ```bash
 cd packages/osopit-subgraph
 bun codegen              # Generate TypeScript types from schema
-bun build                # Build subgraph
-bun deploy               # Deploy to The Graph Studio
-bun deploy-local         # Deploy to local Graph node
-bun test                 # Run subgraph tests
+bun build                # Build with the active subgraph.yaml
+bun build:osopit         # Build against subgraph.osopit.yaml
+bun build:catmisha       # Build against subgraph.catmisha.yaml
+bun deploy:osopit        # Deploy osopit manifest to Graph Studio
+bun deploy:catmisha      # Deploy catmisha manifest to Graph Studio
+bun deploy-local         # Deploy to a local Graph node (see docker-compose.yml)
+bun test                 # Run matchstick-as tests
+```
+
+Helper scripts in `packages/osopit-subgraph/scripts/`:
+
+```bash
+bun check-events         # Inspect on-chain events from the Base RPC
+bun check-ownership      # Verify subdomain ownership for a wallet
+bun calculate-namehash   # Compute ENS namehash for a label
+bun register-name        # Register a test subdomain
+bun emit-test-event      # Emit a TextChanged event for local testing
 ```
 
 ---
@@ -198,227 +216,44 @@ Indexes blockchain events from Base mainnet contracts to provide queryable data 
 
 ## Theming System
 
-The app uses a **two-dimensional theme system** with full type safety and dynamic color palettes.
+Two-dimensional theme system: **mode** (`light` | `dark`) × **color** (`midnight` | `sunset` | `ocean` | `forest`), composited as `data-theme="<mode>-<color>"`. Built on `next-themes` + TailwindCSS 4 CSS variables in OKLCH.
 
-### Architecture
+**Key files** (read these to extend the system):
+- `src/lib/theme-config.ts` — type-safe theme definitions and `COLOR_THEMES` map
+- `src/index.css` — CSS variables for all 8 composite themes
+- `src/components/providers.tsx` — ThemeProvider setup (must list every composite theme)
+- `src/components/color-theme-provider.tsx` — `useColorTheme()` hook (`mode`, `color`, `setMode`, `setColor`)
+- `src/components/theme-switcher.tsx` — picker UI
 
-**Composite Themes:**
-- **Mode**: `light` | `dark` (controls brightness)
-- **Color**: `midnight` | `sunset` | `ocean` | `forest` (controls color palette)
-- **Combined**: `light-midnight`, `dark-midnight`, `light-sunset`, `dark-sunset`, etc.
+**Available semantic tokens** (use these via Tailwind, never hardcode hex):
+- Base: `background`, `foreground`, `card`, `popover`
+- Semantic: `primary`, `secondary`, `muted`, `accent`, `destructive`
+- Brand: `brand`, `brand-secondary` (palette-specific)
+- State: `live`, `success`, `info`, `warning`
+- Surfaces: `surface-elevated`, `surface-glass`
+- UI: `border`, `input`, `ring`
 
-**Tech Stack:**
-- `next-themes` for theme management and persistence
-- OKLCH color space for perceptually uniform colors
-- TailwindCSS 4 with CSS variables
-- Type-safe theme configuration in TypeScript
-
-### Key Files
-
-**Configuration:**
-- `src/lib/theme-config.ts` - TypeScript theme definitions, helper functions
-- `src/index.css` - CSS variable definitions for all themes (8 themes × 40+ tokens)
-- `src/components/providers.tsx` - ThemeProvider setup
-- `src/app/layout.tsx` - Global theme switcher placement
-
-**Components:**
-- `src/components/theme-switcher.tsx` - Theme picker UI (fixed bottom-right)
-- `src/components/color-theme-provider.tsx` - `useColorTheme()` hook
-
-### Using Themes
-
-**In Components:**
-```tsx
-// Use semantic tokens via Tailwind classes
-<div className="bg-background text-foreground">
-  <h1 className="text-brand">Heading</h1>
-  <button className="bg-brand text-brand-foreground">Click me</button>
-  <div className="bg-surface-elevated border-border">Elevated surface</div>
-</div>
-```
-
-**Available Tokens:**
-- **Base**: `background`, `foreground`, `card`, `popover`
-- **Semantic**: `primary`, `secondary`, `muted`, `accent`, `destructive`
-- **Brand**: `brand`, `brand-secondary` (theme-specific colors)
-- **State**: `live`, `success`, `info`, `warning`
-- **Surfaces**: `surface-elevated`, `surface-glass`
-- **UI**: `border`, `input`, `ring`
-
-**Using the Hook:**
-```tsx
-import { useColorTheme } from "@/components/color-theme-provider";
-
-function MyComponent() {
-  const { mode, color, setMode, setColor } = useColorTheme();
-
-  // mode = "light" | "dark"
-  // color = "midnight" | "sunset" | "ocean" | "forest"
-
-  setMode("dark");        // Changes to dark mode, preserves color
-  setColor("ocean");      // Changes to ocean, preserves mode
-}
-```
-
-### Adding a New Color Theme
-
-1. **Add to theme config** (`src/lib/theme-config.ts`):
-   ```ts
-   export type ThemeColor = "midnight" | "sunset" | "ocean" | "forest" | "yourtheme";
-
-   export const COLOR_THEMES = {
-     yourtheme: {
-       label: "Your Theme",
-       description: "Description of color palette",
-       brandHue: 180,    // OKLCH hue for primary brand color
-       accentHue: 210,   // OKLCH hue for secondary color
-     },
-   };
-   ```
-
-2. **Define CSS variables** (`src/index.css`):
-   ```css
-   /* Light Your Theme */
-   [data-theme="light-yourtheme"] {
-     /* Copy all tokens from light-midnight */
-     /* Change only brand colors: */
-     --brand: oklch(0.6 0.2 180);           /* Your primary color */
-     --brand-secondary: oklch(0.65 0.22 210); /* Your accent color */
-   }
-
-   /* Dark Your Theme */
-   [data-theme="dark-yourtheme"] {
-     /* Copy all tokens from dark-midnight */
-     /* Change only brand colors (slightly brighter for dark): */
-     --brand: oklch(0.7 0.2 180);
-     --brand-secondary: oklch(0.75 0.22 210);
-   }
-   ```
-
-3. **Update providers** (`src/components/providers.tsx`):
-   ```tsx
-   themes={[
-     "light-midnight",
-     "dark-midnight",
-     // ... other themes
-     "light-yourtheme",
-     "dark-yourtheme",
-   ]}
-   ```
-
-### Color System
-
-**OKLCH Format:**
-- `oklch(lightness chroma hue)`
-- Lightness: 0-1 (0 = black, 1 = white)
-- Chroma: 0-0.4 (saturation/colorfulness)
-- Hue: 0-360 (color angle)
-
-**Examples:**
-- Purple: `oklch(0.6 0.2 270)`
-- Orange: `oklch(0.65 0.2 30)`
-- Blue: `oklch(0.6 0.2 230)`
-- Green: `oklch(0.6 0.2 145)`
-
-**Benefits:**
-- Perceptually uniform (equal changes look equally different)
-- Wide color gamut support
-- Predictable lightness adjustments
-
-### Theme Switcher
-
-**Location:** Fixed bottom-right corner on all pages
-
-**Features:**
-- Mode toggle (Light/Dark) with icons
-- Color picker with multi-color preview (brand, brand-secondary, live)
-- Persists to localStorage automatically
-- Accessible via keyboard
-
-**Customization:**
-Preview shows 3 colors per theme. Edit `src/components/theme-switcher.tsx` to change preview colors.
-
-### Best Practices
-
-1. **Always use semantic tokens** - Never hardcode colors
-   - ✅ `className="bg-brand text-foreground"`
-   - ❌ `className="bg-purple-500 text-white"`
-
-2. **Pair colors with foregrounds** - Ensures readability
-   - ✅ `className="bg-brand text-brand-foreground"`
-   - ❌ `className="bg-brand text-white"`
-
-3. **Use opacity modifiers** for variations
-   - `bg-brand/50` - 50% opacity
-   - `border-border/60` - 60% opacity
-
-4. **Test in all themes** - Verify appearance in light/dark modes
-
-5. **Prefer semantic over brand** for UI elements
-   - Buttons: `bg-primary` (unless specifically branded)
-   - Backgrounds: `bg-background`, `bg-card`
-   - Text: `text-foreground`, `text-muted-foreground`
+**Rules:**
+- Always pair a background token with its `*-foreground` (e.g. `bg-brand text-brand-foreground`).
+- Prefer semantic tokens (`bg-primary`) over brand tokens for generic UI; reserve `brand` for explicitly branded surfaces.
+- To add a new color: extend `COLOR_THEMES` in `theme-config.ts`, add `[data-theme="light-<name>"]` and `[data-theme="dark-<name>"]` blocks to `index.css` (only `--brand` and `--brand-secondary` need to change vs. `midnight`), then register both in `providers.tsx`.
 
 ---
 
-## Core Principles
+## Project Conventions
 
-Write code that is **accessible, performant, type-safe, and maintainable**. Focus on clarity and explicit intent over brevity.
+These are non-obvious project rules. General JS/TS/React best practices are enforced by Ultracite — run `bun fix` and trust the linter.
 
-### Type Safety & Explicitness
-
-- Use explicit types for function parameters and return values when they enhance clarity
-- Prefer `unknown` over `any` when the type is genuinely unknown
-- Use const assertions (`as const`) for immutable values and literal types
-- Leverage TypeScript's type narrowing instead of type assertions
-- Use meaningful variable names instead of magic numbers - extract constants with descriptive names
-
-### Modern JavaScript/TypeScript
-
-- Use arrow functions for callbacks and short functions
-- Prefer `for...of` loops over `.forEach()` and indexed `for` loops
-- Use optional chaining (`?.`) and nullish coalescing (`??`) for safer property access
-- Prefer template literals over string concatenation
-- **Avoid destructuring** - use explicit variable names for better traceability and context:
-  - ✅ `const generateInvite = useGenerateInvite();` then `generateInvite()`
+- **Avoid destructuring.** Use explicit variable names so call sites carry context:
+  - ✅ `const generateInvite = useGenerateInvite(); generateInvite();`
   - ❌ `const { mutate, isPending } = useMutation();`
-  - ✅ `const user = getUserData();` then `user.name`
+  - ✅ `const user = getUserData(); user.name`
   - ❌ `const { name } = getUserData();`
-  - This applies to objects, arrays, and all variable declarations
-- Use `const` by default, `let` only when reassignment is needed, never `var`
-- Types over Interfaces
-
-### React & JSX
-
-- Use function components over class components
-- Call hooks at the top level only, never conditionally
-- Specify all dependencies in hook dependency arrays correctly
-- Use the `key` prop for elements in iterables (prefer unique IDs over array indices)
-- Nest children between opening and closing tags instead of passing as props
-- Don't define components inside other components
-- Use semantic HTML and ARIA attributes for accessibility
-- Use React 19 features (ref as prop, no forwardRef needed)
-
-### Next.js Specific
-
-- Use App Router patterns (Server Components by default)
-- Use Next.js `<Image>` component for images
-- Use typed routes (enabled via `typedRoutes: true`)
-- React Compiler is enabled - avoid manual memoization
-
-### Error Handling
-
-- Remove `console.log`, `debugger`, and `alert` statements from production code
-- Throw `Error` objects with descriptive messages
-- Use `try-catch` blocks meaningfully
-- Prefer early returns over nested conditionals
-
-### Security
-
-- Add `rel="noopener"` when using `target="_blank"` on links
-- Avoid `dangerouslySetInnerHTML` unless absolutely necessary
-- Validate and sanitize user input
-- Never commit sensitive keys to `.env` (use `.env.example` for templates)
+  - Applies to objects, arrays, and hook return values throughout the codebase.
+- **Types over interfaces.**
+- **React Compiler is enabled** (`babel-plugin-react-compiler`) — do not add manual `useMemo` / `useCallback` / `memo` unless profiling shows a regression.
+- **Typed routes are on** (`typedRoutes: true` in `next.config.ts`) — prefer typed `Link href` over string concatenation.
+- Hooks follow the `src/hooks/use-<feature>.ts` pattern and **return explicit variables, not destructured tuples** (consistent with the no-destructuring rule above).
 
 ---
 

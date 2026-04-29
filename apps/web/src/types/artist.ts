@@ -19,13 +19,3 @@ export type SocialLink = {
   label?: string;
   url: string;
 };
-
-/**
- * Artist profile type
- * Contains all editable profile information
- */
-export type ArtistProfile = {
-  bio?: string;
-  avatar?: string;
-  socials?: SocialLink[];
-};

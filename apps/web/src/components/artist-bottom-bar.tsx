@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { useEthPrice } from "@/hooks/use-eth-price";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
 
 export function ArtistBottomBar() {
   const { isConnected, address } = useAccount();
   const ownedProfile = useOwnedProfile();
-  const balance = useWalletBalance(address);
+  const { ethPrice } = useEthPrice();
+  const balance = useWalletBalance(address, ethPrice);
 
   // State 1: No wallet connected
   if (!isConnected) {

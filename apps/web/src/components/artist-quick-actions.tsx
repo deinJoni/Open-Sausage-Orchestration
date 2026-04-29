@@ -47,14 +47,9 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
     );
   }
 
-  const avatar = getTextRecord(
-    artist.user?.subdomain?.textRecords?.(),
-    "avatar"
-  );
-  const description = getTextRecord(
-    artist.user?.subdomain?.textRecords?.(),
-    "description"
-  );
+  const avatar = getTextRecord(artist.textRecords, "avatar");
+  const description = getTextRecord(artist.textRecords, "description");
+  const name = artist.subdomain?.name ?? "";
 
   return (
     <>
@@ -62,15 +57,13 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
         <ArtistAvatar
           avatarUrl={avatar}
           className="border-2 border-border"
-          name={artist.subdomain ?? ""}
+          name={name}
           size="md"
         />
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-foreground">
-              {artist.subdomain ?? ""}
-            </h4>
-            {artist.user?.activeBroadcast?.isLive && (
+            <h4 className="font-semibold text-foreground">{name}</h4>
+            {artist.isStreaming && (
               <span className="rounded-full bg-live/20 px-2 py-0.5 text-live text-xs">
                 LIVE
               </span>
@@ -85,9 +78,9 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
 
       <div className="flex gap-2">
         <Button asChild className="flex-1" size="sm" variant="outline">
-          <Link href={`/${artist.subdomain ?? ""}`}>View Profile</Link>
+          <Link href={`/${name}`}>View Profile</Link>
         </Button>
-        <Link href={`/${artist.subdomain ?? ""}/gift`}>
+        <Link href={`/${name}/gift`}>
           <Button size="sm">
             <Gift className="h-3 w-3" />
           </Button>

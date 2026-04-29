@@ -1,10 +1,7 @@
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import type { BroadcastParams } from "@/lib/broadcast";
-import {
-  constructBroadcastPayload,
-  validateBroadcastParams,
-} from "@/lib/broadcast";
+import { constructBroadcastPayload } from "@/lib/broadcast";
 import { useOwnedProfile } from "./use-owned-profile";
 import { useUpdateTextRecords } from "./use-update-text-record";
 
@@ -45,10 +42,6 @@ export function useUpdateBroadcast() {
       return;
     }
 
-    // Validate broadcast parameters
-    validateBroadcastParams(params);
-
-    // Construct broadcast payload
     const payload = constructBroadcastPayload(params);
 
     // Custom toast for broadcast-specific messaging

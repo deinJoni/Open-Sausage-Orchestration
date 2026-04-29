@@ -3,11 +3,10 @@
 import { type ComponentProps, useState } from "react";
 import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
 import { getOnboardingPermissions } from "@/lib/onboarding-permissions";
+import { formatAddress } from "@/lib/utils";
 import { Button } from "./ui/button";
 
 const COPIED_TIMEOUT_MS = 2000;
-const ADDRESS_PREFIX_LENGTH = 6;
-const ADDRESS_SUFFIX_LENGTH = 4;
 
 type PortoConnectButtonProps = {
   size?: ComponentProps<typeof Button>["size"];
@@ -31,11 +30,6 @@ export function PortoConnectButton({
       setTimeout(() => setCopied(false), COPIED_TIMEOUT_MS);
     }
   };
-
-  const formatAddress = (addr: string) =>
-    `${addr.slice(0, ADDRESS_PREFIX_LENGTH)}...${addr.slice(
-      -ADDRESS_SUFFIX_LENGTH
-    )}`;
 
   if (isConnected && address) {
     return (
