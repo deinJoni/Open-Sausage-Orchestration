@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo_Black, Geist_Mono, Inter } from "next/font/google";
 import "../index.css";
 import { headers } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Header } from "@/components/header";
 import Providers from "@/components/providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const archivoBlack = Archivo_Black({
+  variable: "--font-archivo-black",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -32,7 +38,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${archivoBlack.variable} ${geistMono.variable} antialiased`}
       >
         <NuqsAdapter>
           <Providers cookies={cookies}>

@@ -16,19 +16,10 @@ export default function Providers({
     <AppKitProvider cookies={cookies}>
       <ThemeProvider
         attribute="data-theme"
-        defaultTheme="light-midnight"
+        defaultTheme="default"
         disableTransitionOnChange
         enableSystem={false}
-        themes={[
-          "light-midnight",
-          "dark-midnight",
-          "light-sunset",
-          "dark-sunset",
-          "light-ocean",
-          "dark-ocean",
-          "light-forest",
-          "dark-forest",
-        ]}
+        themes={["default"]}
       >
         <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster position="top-right" />

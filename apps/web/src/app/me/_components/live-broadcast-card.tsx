@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, Radio, Youtube } from "lucide-react";
+import { ExternalLink, Radio, Tv, Youtube } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -36,7 +36,7 @@ function getProviderLabel(broadcast: ResolvedBroadcast): {
     return { name: "YouTube", icon: <Youtube className="h-4 w-4" /> };
   }
   if (url.includes("twitch.tv")) {
-    return { name: "Twitch", icon: <span className="text-lg">📺</span> };
+    return { name: "Twitch", icon: <Tv className="h-4 w-4" /> };
   }
   return { name: "External", icon: <ExternalLink className="h-4 w-4" /> };
 }

@@ -209,7 +209,7 @@ function FormBody(props: FormBodyProps) {
         type="submit"
       >
         {props.isStarting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {props.isStarting ? "Starting..." : "Start Streaming 🔴"}
+        {props.isStarting ? "Starting..." : "Start Streaming"}
       </Button>
     </form>
   );

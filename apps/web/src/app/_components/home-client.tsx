@@ -1,5 +1,6 @@
 "use client";
 
+import { Moon, PowerOff, Search, Users } from "lucide-react";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { useMemo } from "react";
 import { ArtistCard } from "@/app/_components/artist-card";
@@ -103,34 +104,36 @@ export function HomeClient() {
   const renderEmptyState = () => {
     const emptyConfig = {
       all: {
-        emoji: "👥",
+        Icon: Users,
         title: "No artists yet",
-        message: "Be the first to join the platform!",
+        message: "Be the first to join the platform",
       },
       live: {
-        emoji: "😴",
+        Icon: Moon,
         title: "No one's live right now",
         message: "Check back later or browse all artists below",
       },
       offline: {
-        emoji: "📴",
-        title: "All artists are live!",
+        Icon: PowerOff,
+        title: "All artists are live",
         message: "Everyone is streaming right now",
       },
     };
 
     const config = searchQuery
       ? {
-          emoji: "🔍",
+          Icon: Search,
           title: "No artists found",
           message: "Try a different search term",
         }
       : emptyConfig[filter];
 
+    const Icon = config.Icon;
+
     return (
-      <div className="py-24 text-center">
-        <div className="mb-4 text-7xl">{config.emoji}</div>
-        <h3 className="mb-2 font-bold text-2xl">{config.title}</h3>
+      <div className="flex flex-col items-center py-24 text-center">
+        <Icon className="mb-6 size-16" strokeWidth={2.5} />
+        <h3 className="mb-2 text-3xl">{config.title}</h3>
         <p className="text-lg text-muted-foreground">{config.message}</p>
       </div>
     );

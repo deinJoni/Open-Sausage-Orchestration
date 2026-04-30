@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
-import type { Dispatch, ReactNode, SetStateAction } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -16,8 +16,6 @@ type StickyFilterBarProps = {
   totalArtists: number;
   liveCount: number;
   offlineCount: number;
-  showThemeSwitcher?: boolean;
-  themeSwitcher?: ReactNode;
 };
 
 export function StickyFilterBar({
@@ -28,8 +26,6 @@ export function StickyFilterBar({
   totalArtists,
   liveCount,
   offlineCount,
-  showThemeSwitcher = false,
-  themeSwitcher,
 }: StickyFilterBarProps) {
   return (
     <div className="z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -85,7 +81,7 @@ export function StickyFilterBar({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 rounded-full border bg-muted/50 px-3 py-1.5 font-medium text-muted-foreground text-xs">
+            <div className="flex items-center gap-2 border bg-muted/50 px-3 py-1.5 font-medium text-muted-foreground text-xs uppercase tracking-wide">
               <span>{totalArtists} artists</span>
               <span className="text-muted-foreground/50">•</span>
               <span className="flex items-center gap-1">
@@ -93,7 +89,6 @@ export function StickyFilterBar({
                 {liveCount} live
               </span>
             </div>
-            {showThemeSwitcher && themeSwitcher}
           </div>
         </div>
       </div>

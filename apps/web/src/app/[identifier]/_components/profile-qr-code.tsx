@@ -39,7 +39,7 @@ export function ProfileQrCode({ giftUrl, artistName }: ProfileQrCodeProps) {
   };
 
   return (
-    <div className="border-border/30 border-t bg-gradient-to-b from-background/30 to-muted/10">
+    <div className="border-border border-t-2 bg-muted">
       {/* Header - Clickable */}
       <button
         className="flex w-full items-center gap-2 border-border/30 border-b bg-muted/10 px-4 py-3 transition-colors hover:bg-muted/20"
@@ -67,8 +67,7 @@ export function ProfileQrCode({ giftUrl, artistName }: ProfileQrCodeProps) {
         <div className="flex flex-col items-center p-6 sm:flex-row sm:gap-6">
           {/* QR Code */}
           <div className="relative">
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-brand/20 to-brand-secondary/20 blur-xl" />
-            <div className="relative rounded-lg bg-white p-3 shadow-lg">
+            <div className="relative border-2 border-border bg-white p-3 shadow-md">
               <Cuer color="black" size={120} value={giftUrl} />
             </div>
           </div>

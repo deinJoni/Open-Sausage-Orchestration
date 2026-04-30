@@ -44,7 +44,7 @@ export function ShareLinkSheet({
       try {
         await navigator.share({
           title: `Send a tip to ${ensName}`,
-          text: "Support me with a tip! 🎵",
+          text: "Support me with a tip",
           url: giftUrl,
         });
       } catch (_err) {

@@ -1,3 +1,12 @@
+import {
+  Headphones,
+  Instagram,
+  type LucideIcon,
+  Music,
+  Tv,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -57,9 +66,9 @@ export function ProfileSetupStep({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border border-success/40 bg-background/80 px-4 py-5 shadow-sm">
-        <p className="mb-1 font-semibold text-sm text-success">
-          Your Domain: {ensName}.{getEnsConfig().domain} ✓
+      <div className="border-2 border-success bg-card px-4 py-5 shadow-sm">
+        <p className="mb-1 font-bold text-sm text-success uppercase tracking-wide">
+          Your Domain: {ensName}.{getEnsConfig().domain}
         </p>
       </div>
 
@@ -131,24 +140,27 @@ export function ProfileSetupStep({
         </p>
 
         <div className="space-y-3">
-          {[
-            { platform: "spotify", label: "Spotify", icon: "🎵" },
-            { platform: "soundcloud", label: "SoundCloud", icon: "🎧" },
-            { platform: "twitch", label: "Twitch", icon: "📺" },
-            { platform: "youtube", label: "YouTube", icon: "▶️" },
-            { platform: "twitter", label: "Twitter/X", icon: "🐦" },
-            { platform: "instagram", label: "Instagram", icon: "📷" },
-          ].map((social) => {
+          {(
+            [
+              { platform: "spotify", label: "Spotify", Icon: Music },
+              { platform: "soundcloud", label: "SoundCloud", Icon: Headphones },
+              { platform: "twitch", label: "Twitch", Icon: Tv },
+              { platform: "youtube", label: "YouTube", Icon: Youtube },
+              { platform: "twitter", label: "Twitter/X", Icon: Twitter },
+              { platform: "instagram", label: "Instagram", Icon: Instagram },
+            ] as const
+          ).map((social) => {
             const existingLink = socials.find(
               (s) => s.platform === social.platform
             );
+            const Icon: LucideIcon = social.Icon;
 
             return (
               <div
-                className="flex items-center gap-2 rounded-lg border border-border bg-background/80 px-4 py-3 shadow-sm"
+                className="flex items-center gap-3 border-2 border-border bg-card px-4 py-3 shadow-sm"
                 key={social.platform}
               >
-                <span className="text-2xl">{social.icon}</span>
+                <Icon className="size-5 flex-shrink-0" strokeWidth={2.5} />
                 <Input
                   className="border-none bg-transparent focus-visible:ring-0"
                   onChange={(e) => {
@@ -174,7 +186,7 @@ export function ProfileSetupStep({
           onClick={onSubmit}
           size="lg"
         >
-          {isPending ? "Creating Profile..." : "Create Profile ✨"}
+          {isPending ? "Creating Profile..." : "Create Profile"}
         </Button>
         <p className="text-center text-muted-foreground text-xs">
           No popup required - using pre-authorized permissions

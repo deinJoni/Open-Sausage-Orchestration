@@ -305,27 +305,26 @@ export function TipForm({
       )}
 
       {/* Footer */}
-      <p className="mt-4 text-center text-muted-foreground text-xs">
-        💸 Tips sent directly to artist
+      <p className="mt-4 text-center text-muted-foreground text-xs uppercase tracking-wide">
+        Tips sent directly to artist
       </p>
 
       {/* QR Code Section - At bottom of form */}
-      <div className="mt-6 overflow-hidden rounded-xl border border-border/50 bg-gradient-to-b from-background/50 to-muted/20">
+      <div className="mt-6 overflow-hidden border-2 border-border bg-card">
         {/* Header */}
-        <div className="flex items-center gap-2 border-border/30 border-b bg-muted/10 px-4 py-3">
-          <QrCode className="h-4 w-4 text-brand" />
-          <span className="font-medium text-foreground text-sm">
+        <div className="flex items-center gap-2 border-border border-b-2 bg-muted px-4 py-3">
+          <QrCode className="h-4 w-4" strokeWidth={2.5} />
+          <span className="font-bold text-foreground text-sm uppercase tracking-wide">
             Wallet QR Code
           </span>
-          <Sparkles className="ml-auto h-3 w-3 text-brand/60" />
+          <Sparkles className="ml-auto h-3 w-3" strokeWidth={2.5} />
         </div>
 
         {/* QR Code Content */}
         <div className="flex flex-col items-center gap-4 p-6 sm:flex-row sm:gap-6">
           {/* QR Code */}
           <div className="relative flex-shrink-0">
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-brand/20 to-brand-secondary/20 blur-xl" />
-            <div className="relative rounded-lg bg-white p-3 shadow-lg">
+            <div className="relative border-2 border-border bg-white p-3 shadow-md">
               <Cuer color="black" size={120} value={qrValue} />
             </div>
           </div>

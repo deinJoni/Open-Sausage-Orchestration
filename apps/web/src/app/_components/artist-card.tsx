@@ -22,8 +22,8 @@ export const ArtistCard = ({ artist, isLive = false }: ArtistCardProps) => {
   });
 
   const cardClassName = [
-    "group relative flex h-full flex-col overflow-hidden rounded-lg border bg-primary/20 px-6 pb-6 pt-6 text-left shadow-sm transition-all duration-200  shadow shadow-primary/50 hover:shadow-md",
-    isLive ? "border-live/50 ring-2 ring-live/20" : "border-border",
+    "group relative flex h-full flex-col overflow-hidden border-2 bg-card px-6 pb-6 pt-6 text-left shadow-md transition-transform duration-100 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-lg",
+    isLive ? "border-live ring-2 ring-live/20" : "border-border",
   ]
     .filter(Boolean)
     .join(" ");
@@ -32,7 +32,10 @@ export const ArtistCard = ({ artist, isLive = false }: ArtistCardProps) => {
     <TooltipProvider>
       <div className="h-full">
         <article className={cardClassName}>
-          <Link className="flex h-full flex-col gap-5" href={`/${name ?? ""}`}>
+          <Link
+            className="flex h-full flex-col gap-5"
+            href={isLive ? `/${name ?? ""}/live` : `/${name ?? ""}`}
+          >
             <div className="flex items-center justify-between gap-4">
               <div
                 className={

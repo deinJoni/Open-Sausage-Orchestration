@@ -1,8 +1,8 @@
 "use client";
 
+import { Gem } from "lucide-react";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { useEthPrice } from "@/hooks/use-eth-price";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
 import { useWalletBalance } from "@/hooks/use-wallet-balance";
@@ -19,12 +19,11 @@ export function ArtistBottomBar() {
       <div className="border-border border-t bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4">
           <Link
-            className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+            className="text-muted-foreground text-xs uppercase tracking-wide transition-colors hover:text-foreground"
             href="/me"
           >
             Artist?
           </Link>
-          <ThemeSwitcher />
         </div>
       </div>
     );
@@ -36,12 +35,11 @@ export function ArtistBottomBar() {
       <div className="border-border border-t bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4">
           <Link
-            className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+            className="text-muted-foreground text-xs uppercase tracking-wide transition-colors hover:text-foreground"
             href="/me"
           >
             Artist? Join
           </Link>
-          <ThemeSwitcher />
         </div>
       </div>
     );
@@ -54,7 +52,7 @@ export function ArtistBottomBar() {
           className="flex items-center gap-2 text-xs transition-colors hover:text-brand"
           href="/me"
         >
-          <span className="text-brand">💎</span>
+          <Gem className="size-3.5 text-brand" />
           <span className="font-medium text-foreground">
             {balance.isLoading ? "..." : balance.formatted}
           </span>
@@ -64,8 +62,6 @@ export function ArtistBottomBar() {
             </span>
           )}
         </Link>
-
-        <ThemeSwitcher />
       </div>
     </div>
   );

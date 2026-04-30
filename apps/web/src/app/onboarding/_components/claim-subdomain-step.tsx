@@ -1,3 +1,4 @@
+import { ArrowRight, Check } from "lucide-react";
 import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
 import { ADDRESS_PREFIX_LENGTH, ADDRESS_SUFFIX_LENGTH } from "@/lib/constants";
@@ -32,9 +33,9 @@ export function ClaimSubdomainStep({
 }: ClaimSubdomainStepProps) {
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border border-brand/40 bg-background/80 px-4 py-5 shadow-sm">
-        <p className="mb-1 font-semibold text-brand text-sm">
-          ✨ You're invited to claim
+      <div className="border-2 border-brand bg-card px-4 py-5 shadow-md">
+        <p className="mb-1 font-bold text-brand text-sm uppercase tracking-wide">
+          You're invited to claim
         </p>
         <p className="font-mono text-2xl text-brand">
           {ensName}.{getEnsConfig().domain}
@@ -74,16 +75,18 @@ export function ClaimSubdomainStep({
 
       {isPorto && isRegistered && (
         <div className="space-y-4">
-          <div className="rounded-lg border border-success/40 bg-background/80 px-4 py-5 text-center shadow-sm">
-            <p className="mb-1 font-semibold text-sm text-success">
-              ✅ Domain Claimed Successfully!
+          <div className="border-2 border-success bg-card px-4 py-5 text-center shadow-md">
+            <p className="mb-1 flex items-center justify-center gap-2 font-bold text-sm text-success uppercase tracking-wide">
+              <Check className="size-4" strokeWidth={3} />
+              Domain Claimed Successfully
             </p>
             <p className="font-mono text-success text-xl">
-              {ensName}.{getEnsConfig().domain}✓
+              {ensName}.{getEnsConfig().domain}
             </p>
           </div>
           <Button className="w-full" onClick={onNext} size="lg">
-            Next: Setup Your Profile →
+            Next: Setup Your Profile
+            <ArrowRight className="size-4" />
           </Button>
         </div>
       )}

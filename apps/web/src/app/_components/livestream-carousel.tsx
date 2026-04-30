@@ -1,8 +1,8 @@
 "use client";
 
-import Hls from "hls.js";
 import { ExternalLink, Radio } from "lucide-react";
-import { useEffect, useRef } from "react";
+import Link from "next/link";
+import { HlsPlayer } from "@/components/hls-player";
 import { StreamEmbed } from "@/components/stream-embed";
 import {
   Carousel,
@@ -21,38 +21,11 @@ type LivestreamCarouselProps = {
   items: LivestreamCarouselItem[];
 };
 
-function HlsPlayer({ src, title }: { src: string; title: string }) {
-  const ref = useRef<HTMLVideoElement | null>(null);
-  useEffect(() => {
-    const video = ref.current;
-    if (!video) {
-      return;
-    }
-    if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = src;
-      return;
-    }
-    if (Hls.isSupported()) {
-      const hls = new Hls();
-      hls.loadSource(src);
-      hls.attachMedia(video);
-      return () => hls.destroy();
-    }
-  }, [src]);
-  return (
-    <video
-      autoPlay
-      className="h-full w-full bg-background"
-      controls
-      muted
-      playsInline
-      ref={ref}
-      title={title}
-    />
-  );
-}
+type CarouselTileProps = {
+  item: LivestreamCarouselItem;
+};
 
-function CarouselTile({ item }: { item: LivestreamCarouselItem }) {
+function CarouselTile({ item }: CarouselTileProps) {
   const broadcast = item.broadcast;
   const artistName = item.artist?.subdomain?.name ?? "Artist";
   const playback = broadcast.playback;
@@ -70,7 +43,10 @@ function CarouselTile({ item }: { item: LivestreamCarouselItem }) {
 
   if (playback?.type === "hls") {
     return (
-      <div className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-background/80">
+      <Link
+        className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-background/80 transition-colors hover:border-brand"
+        href={`/${artistName}/live`}
+      >
         <div className="relative flex-1">
           <HlsPlayer src={playback.src} title={`${artistName} livestream`} />
         </div>
@@ -78,7 +54,7 @@ function CarouselTile({ item }: { item: LivestreamCarouselItem }) {
           <Radio className="h-3 w-3" />
           <span>{artistName} • Livepeer</span>
         </div>
-      </div>
+      </Link>
     );
   }
 

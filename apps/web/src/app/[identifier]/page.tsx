@@ -1,9 +1,11 @@
 import {
+  ArrowRight,
   Facebook,
   Gift,
   Github,
   Headphones,
   Instagram,
+  Link2,
   Linkedin,
   type LucideIcon,
   MessageCircle,
@@ -12,6 +14,7 @@ import {
   Send,
   Tv,
   Twitter,
+  User,
   Youtube,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -130,32 +133,43 @@ export default async function ArtistProfilePage({ params }: PageProps) {
     <Container>
       {/* Stream embed (only if streaming via embeddable iframe provider) */}
       {artist.liveBroadcast?.playback?.type === "iframe" && (
-        <div className="mb-8 overflow-hidden rounded-lg border border-border bg-primary/20 p-0 shadow-md">
-          <StreamEmbed
-            artistName={displayName}
-            streamUrl={artist.liveBroadcast.streamId}
-            taggedArtists={artist.liveBroadcast.guests}
-          />
+        <div className="mb-8 space-y-2">
+          <div className="overflow-hidden border-2 border-border bg-card p-0 shadow-md">
+            <StreamEmbed
+              artistName={displayName}
+              streamUrl={artist.liveBroadcast.streamId}
+              taggedArtists={artist.liveBroadcast.guests}
+            />
+          </div>
+          <div className="flex justify-end">
+            <Link
+              className="inline-flex items-center gap-1.5 font-bold text-brand text-sm uppercase tracking-wide hover:underline"
+              href={`/${displayName}/live`}
+            >
+              Watch fullscreen
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
         </div>
       )}
 
       {/* Profile section (server-rendered) */}
-      <div className="mb-8 overflow-hidden rounded-xl border border-border bg-gradient-to-b from-primary/30 to-primary/10 shadow-lg">
+      <div className="mb-8 overflow-hidden border-2 border-border bg-card shadow-lg">
         {/* Main Profile Content */}
         <div className="flex flex-col gap-6 px-6 py-8 sm:px-8 sm:py-10 md:flex-row md:items-start">
           {/* Avatar */}
           <div className="flex-shrink-0">
             <div className="relative">
               {artist.liveBroadcast?.isLive && (
-                <div className="-inset-1 absolute animate-pulse rounded-full bg-gradient-to-r from-live via-brand to-live opacity-75 blur" />
+                <div className="-inset-1 absolute animate-pulse rounded-full bg-live opacity-60" />
               )}
               {avatar ? (
                 <Image
                   alt={displayName}
-                  className={`relative h-32 w-32 rounded-full border-3 ${
+                  className={`relative h-32 w-32 rounded-full border-2 ${
                     artist.liveBroadcast?.isLive
-                      ? "border-live shadow-live/20 shadow-xl"
-                      : "border-border shadow-lg"
+                      ? "border-live"
+                      : "border-border"
                   }`}
                   height={128}
                   src={avatar}
@@ -163,13 +177,13 @@ export default async function ArtistProfilePage({ params }: PageProps) {
                 />
               ) : (
                 <div
-                  className={`relative flex h-32 w-32 items-center justify-center rounded-full border-3 ${
+                  className={`relative flex h-32 w-32 items-center justify-center rounded-full border-2 bg-muted ${
                     artist.liveBroadcast?.isLive
-                      ? "border-live shadow-live/20 shadow-xl"
-                      : "border-border shadow-lg"
-                  } bg-gradient-to-br from-background to-muted text-4xl`}
+                      ? "border-live"
+                      : "border-border"
+                  }`}
                 >
-                  👤
+                  <User className="size-12" strokeWidth={2.5} />
                 </div>
               )}
               {artist.liveBroadcast?.isLive && (
@@ -184,17 +198,21 @@ export default async function ArtistProfilePage({ params }: PageProps) {
           <div className="flex-1 space-y-5">
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <h1 className="font-black text-3xl text-foreground leading-tight sm:text-4xl">
+                <h1 className="text-4xl text-foreground sm:text-6xl">
                   {displayName}
                 </h1>
                 {artist.liveBroadcast?.isLive && (
-                  <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-live px-2 py-0.5 font-medium text-white text-xs">
+                  <Link
+                    aria-label="Watch fullscreen"
+                    className="mt-2 inline-flex items-center gap-1 border-2 border-border bg-live px-2 py-0.5 font-bold text-white text-xs uppercase tracking-wide"
+                    href={`/${displayName}/live`}
+                  >
                     <span className="relative flex h-2 w-2">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
                     </span>
                     LIVE
-                  </span>
+                  </Link>
                 )}
               </div>
               {description && (
@@ -230,10 +248,10 @@ export default async function ArtistProfilePage({ params }: PageProps) {
       </div>
 
       {/* Social links (server-rendered) */}
-      <div className="overflow-hidden rounded-xl border border-border bg-gradient-to-b from-primary/20 to-primary/5 shadow-lg">
-        <div className="border-border/30 border-b bg-muted/10 px-6 py-4">
-          <h3 className="flex items-center gap-2 font-black text-foreground text-xl">
-            <span className="text-2xl">🔗</span>
+      <div className="overflow-hidden border-2 border-border bg-card shadow-lg">
+        <div className="border-border border-b-2 bg-muted px-6 py-4">
+          <h3 className="flex items-center gap-3 text-foreground text-xl">
+            <Link2 className="size-5" strokeWidth={2.5} />
             Connect & Listen
           </h3>
         </div>
@@ -247,27 +265,24 @@ export default async function ArtistProfilePage({ params }: PageProps) {
 
               return (
                 <a
-                  className="group relative flex items-center gap-3 overflow-hidden rounded-lg border border-border/50 bg-gradient-to-r from-background/50 to-muted/30 px-4 py-3 transition-all duration-200 hover:border-brand/50 hover:shadow-brand/5 hover:shadow-md"
+                  className="group relative flex items-center gap-3 overflow-hidden border-2 border-border bg-card px-4 py-3 transition-colors duration-100 hover:bg-brand hover:text-brand-foreground"
                   href={record.value}
                   key={`${record.key}-${record.value}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-brand/0 via-brand/5 to-brand/0 opacity-0 transition-opacity group-hover:opacity-100" />
                   <div className="relative flex flex-shrink-0 items-center justify-center">
-                    <Icon className="h-5 w-5 text-brand transition-transform group-hover:scale-110" />
+                    <Icon className="h-5 w-5" strokeWidth={2.5} />
                   </div>
                   <div className="relative flex min-w-0 flex-1 flex-col gap-0.5 overflow-hidden">
-                    <div className="truncate font-semibold text-foreground text-sm capitalize">
+                    <div className="truncate font-bold text-sm uppercase tracking-wide">
                       {platformName}
                     </div>
-                    <div className="truncate text-muted-foreground text-xs">
+                    <div className="truncate text-muted-foreground text-xs group-hover:text-brand-foreground/80">
                       {record.value}
                     </div>
                   </div>
-                  <span className="relative flex-shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5">
-                    →
-                  </span>
+                  <ArrowRight className="size-4 flex-shrink-0 transition-transform group-hover:translate-x-0.5" />
                 </a>
               );
             })}
