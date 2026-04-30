@@ -128,13 +128,13 @@ export default async function ArtistProfilePage({ params }: PageProps) {
 
   return (
     <Container>
-      {/* Stream embed (client island - only if streaming) */}
-      {artist.isStreaming && artist.streamUrl && artist.streamPlatform && (
+      {/* Stream embed (only if streaming via embeddable iframe provider) */}
+      {artist.liveBroadcast?.playback?.type === "iframe" && (
         <div className="mb-8 overflow-hidden rounded-lg border border-border bg-primary/20 p-0 shadow-md">
           <StreamEmbed
             artistName={displayName}
-            streamUrl={artist.streamUrl}
-            taggedArtists={artist.taggedArtists}
+            streamUrl={artist.liveBroadcast.streamId}
+            taggedArtists={artist.liveBroadcast.guests}
           />
         </div>
       )}
@@ -146,14 +146,14 @@ export default async function ArtistProfilePage({ params }: PageProps) {
           {/* Avatar */}
           <div className="flex-shrink-0">
             <div className="relative">
-              {artist.isStreaming && (
+              {artist.liveBroadcast?.isLive && (
                 <div className="-inset-1 absolute animate-pulse rounded-full bg-gradient-to-r from-live via-brand to-live opacity-75 blur" />
               )}
               {avatar ? (
                 <Image
                   alt={displayName}
                   className={`relative h-32 w-32 rounded-full border-3 ${
-                    artist.isStreaming
+                    artist.liveBroadcast?.isLive
                       ? "border-live shadow-live/20 shadow-xl"
                       : "border-border shadow-lg"
                   }`}
@@ -164,7 +164,7 @@ export default async function ArtistProfilePage({ params }: PageProps) {
               ) : (
                 <div
                   className={`relative flex h-32 w-32 items-center justify-center rounded-full border-3 ${
-                    artist.isStreaming
+                    artist.liveBroadcast?.isLive
                       ? "border-live shadow-live/20 shadow-xl"
                       : "border-border shadow-lg"
                   } bg-gradient-to-br from-background to-muted text-4xl`}
@@ -172,7 +172,7 @@ export default async function ArtistProfilePage({ params }: PageProps) {
                   👤
                 </div>
               )}
-              {artist.isStreaming && (
+              {artist.liveBroadcast?.isLive && (
                 <div className="-bottom-1 -right-1 absolute flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-live">
                   <div className="h-2 w-2 animate-pulse rounded-full bg-white" />
                 </div>
@@ -187,7 +187,7 @@ export default async function ArtistProfilePage({ params }: PageProps) {
                 <h1 className="font-black text-3xl text-foreground leading-tight sm:text-4xl">
                   {displayName}
                 </h1>
-                {artist.isStreaming && (
+                {artist.liveBroadcast?.isLive && (
                   <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-live px-2 py-0.5 font-medium text-white text-xs">
                     <span className="relative flex h-2 w-2">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
@@ -213,9 +213,9 @@ export default async function ArtistProfilePage({ params }: PageProps) {
               </Link>
 
               {/* Additional stats/info could go here */}
-              {artist.isStreaming && (
+              {artist.liveBroadcast?.isLive && (
                 <span className="text-muted-foreground text-sm">
-                  Streaming now on {artist.streamPlatform}
+                  Streaming now via {artist.liveBroadcast.provider}
                 </span>
               )}
             </div>

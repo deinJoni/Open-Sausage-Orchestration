@@ -6,7 +6,17 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-      "env": ["PINATA_JWT", "MERCHANT_ADDRESS", "MERCHANT_PRIVATE_KEY", "GRAPH_JWT"]
+      "env": [
+        "PINATA_JWT",
+        "MERCHANT_ADDRESS",
+        "MERCHANT_PRIVATE_KEY",
+        "GRAPH_JWT",
+        "DATABASE_URL",
+        "SESSION_SECRET",
+        "LIVEPEER_API_KEY",
+        "LIVEPEER_WEBHOOK_SECRET",
+        "CRON_SECRET"
+      ]
     },
     "dev": {
       "cache": false,
@@ -38,19 +48,23 @@
     },
     "db:push": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["DATABASE_URL"]
     },
     "db:studio": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["DATABASE_URL"]
     },
     "db:migrate": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["DATABASE_URL"]
     },
     "db:generate": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["DATABASE_URL"]
     },
     "db:start": {
       "cache": false,

@@ -13,7 +13,7 @@ const GraphOHLCDataSchema = z.object({
   low: z.number(),
   close: z.number(),
   volume: z.number(),
-  uaw: z.number(),
+  uaw: z.number().optional(),
   transactions: z.number(),
 });
 

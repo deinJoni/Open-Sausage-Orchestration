@@ -8,9 +8,10 @@ import { buildProfile } from "@/lib/profile";
 
 type ArtistCardProps = {
   artist: User;
+  isLive?: boolean;
 };
 
-export const ArtistCard = ({ artist }: ArtistCardProps) => {
+export const ArtistCard = ({ artist, isLive = false }: ArtistCardProps) => {
   const subdomain = artist.subdomain;
   const name = subdomain?.name ?? undefined;
   const node = subdomain?.node ?? undefined;
@@ -20,7 +21,6 @@ export const ArtistCard = ({ artist }: ArtistCardProps) => {
     rawTextRecords: subdomain?.textRecords?.(),
   });
 
-  const isLive = artist.activeBroadcast?.isLive;
   const cardClassName = [
     "group relative flex h-full flex-col overflow-hidden rounded-lg border bg-primary/20 px-6 pb-6 pt-6 text-left shadow-sm transition-all duration-200  shadow shadow-primary/50 hover:shadow-md",
     isLive ? "border-live/50 ring-2 ring-live/20" : "border-border",

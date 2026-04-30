@@ -16,6 +16,7 @@ import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useActiveBroadcast } from "@/hooks/use-active-broadcast";
 import { useEthPrice } from "@/hooks/use-eth-price";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
 import { useTransactionHistory } from "@/hooks/use-transaction-history";
@@ -30,6 +31,7 @@ import { useWalletBalance } from "@/hooks/use-wallet-balance";
 export default function MePage() {
   const { isConnected, address } = useAccount();
   const ownedProfile = useOwnedProfile();
+  const activeBroadcast = useActiveBroadcast(address);
   const ethPriceQuery = useEthPrice();
   const ethPrice = ethPriceQuery.ethPrice;
   const balance = useWalletBalance(address, ethPrice);
@@ -197,7 +199,8 @@ export default function MePage() {
     );
   }
 
-  const isLive = ownedProfile.data?.user?.activeBroadcast?.isLive ?? false;
+  const isLive = activeBroadcast.isLive;
+  const liveBroadcast = activeBroadcast.data;
 
   const handleGoLive = () => {
     if (isLive && broadcastCardRef.current) {
@@ -224,10 +227,10 @@ export default function MePage() {
   return (
     <div className="mx-auto min-h-screen max-w-4xl space-y-6 p-4 pb-safe">
       {/* Live Status Banner - Only show when streaming */}
-      {isLive && ownedProfile.data && (
+      {isLive && liveBroadcast && (
         <LiveStatusBanner
+          broadcast={liveBroadcast}
           onViewDetails={handleViewBroadcastDetails}
-          profile={ownedProfile.data}
         />
       )}
 
@@ -248,12 +251,12 @@ export default function MePage() {
       />
 
       {/* Live Broadcast Card - Only show when streaming */}
-      {isLive && ownedProfile.data && (
+      {isLive && liveBroadcast && (
         <div ref={broadcastCardRef}>
           <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
             Live Broadcast
           </h4>
-          <LiveBroadcastCard profile={ownedProfile.data} />
+          <LiveBroadcastCard broadcast={liveBroadcast} />
         </div>
       )}
 

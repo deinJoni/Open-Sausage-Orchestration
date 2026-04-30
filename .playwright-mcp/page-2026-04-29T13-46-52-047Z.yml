@@ -1,0 +1,45 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img [ref=e4]
+    - button "Open Tanstack query devtools" [ref=e52] [cursor=pointer]:
+      - img [ref=e53]
+  - generic [ref=e101]:
+    - banner [ref=e102]:
+      - generic [ref=e103]:
+        - link "Osopit" [ref=e105] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e106]: Osopit
+        - link "Artist" [ref=e108] [cursor=pointer]:
+          - /url: /me
+    - main [ref=e109]:
+      - generic [ref=e110]:
+        - link "Skip to artists" [ref=e111] [cursor=pointer]:
+          - /url: "#artist-grid"
+        - generic [ref=e114]:
+          - generic [ref=e116]:
+            - generic [ref=e117]:
+              - img [ref=e118]
+              - searchbox "Search artists by name" [ref=e121]
+            - generic [ref=e122]:
+              - generic [ref=e123]:
+                - button "All 1" [pressed] [ref=e124] [cursor=pointer]:
+                  - text: All
+                  - generic [ref=e125]: "1"
+                - button "Live Now 0" [ref=e126] [cursor=pointer]:
+                  - text: Live Now
+                  - generic [ref=e130]: "0"
+                - button "Offline 1" [ref=e131] [cursor=pointer]:
+                  - text: Offline
+                  - generic [ref=e132]: "1"
+              - generic [ref=e134]:
+                - generic [ref=e135]: 1 artists
+                - generic [ref=e136]: •
+                - generic [ref=e137]: 0 live
+          - generic [ref=e140]:
+            - generic [ref=e141]: 👥
+            - heading "No artists yet" [level=3] [ref=e142]
+            - paragraph [ref=e143]: Be the first to join the platform!
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e149] [cursor=pointer]:
+    - img [ref=e150]
+  - alert [ref=e153]

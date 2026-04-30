@@ -1,4 +1,3 @@
-import { type ParsedBroadcast, parseBroadcastPayload } from "./broadcast";
 import {
   SOCIAL_KEYS,
   type SocialKey,
@@ -26,23 +25,13 @@ export type ProfileInput = {
 export type ArtistProfile = {
   address: string;
   subdomain: { name: string; node: string } | null;
-  /** Resolved (IPFS → HTTPS) avatar URL; "" if none. */
   avatar: string;
   description: string;
   email: string;
-  /** Personal website. */
   url: string;
-  /** Resolved header/banner image URL; "" if none. */
   header: string;
   socials: ProfileSocials;
-  broadcast: ParsedBroadcast;
-  /** Raw records — only used by the profile edit form for diff/dirty tracking. */
   textRecords: TextRecord[];
-  // Back-compat fields (flattened from `broadcast`).
-  isStreaming: boolean;
-  streamUrl?: string;
-  streamPlatform?: "youtube" | "twitch";
-  taggedArtists: string[];
 };
 
 function normalizeTextRecords(
@@ -74,16 +63,8 @@ function buildSocials(records: TextRecord[]): ProfileSocials {
   return socials;
 }
 
-/**
- * Build the canonical profile object from raw subgraph data.
- * Single source of truth for shape + broadcast parsing — used by both
- * server-side queries and client-side hooks.
- */
 export function buildProfile(input: ProfileInput): ArtistProfile {
   const textRecords = normalizeTextRecords(input.rawTextRecords);
-  const broadcastValue = getTextRecord(textRecords, "app.osopit.broadcast");
-  const broadcast = parseBroadcastPayload(broadcastValue);
-
   return {
     address: input.ownerAddress,
     subdomain: input.subdomain,
@@ -93,11 +74,6 @@ export function buildProfile(input: ProfileInput): ArtistProfile {
     url: getTextRecord(textRecords, "url"),
     header: ipfsToHttp(getTextRecord(textRecords, "header")),
     socials: buildSocials(textRecords),
-    broadcast,
     textRecords,
-    isStreaming: broadcast.isLive,
-    streamUrl: broadcast.url ?? undefined,
-    streamPlatform: broadcast.platform ?? undefined,
-    taggedArtists: broadcast.taggedArtists,
   };
 }

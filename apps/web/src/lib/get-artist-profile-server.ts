@@ -1,4 +1,8 @@
 import { resolve } from "@/gqty";
+import {
+  listActiveBroadcasts,
+  type ResolvedBroadcast,
+} from "./broadcast-service";
 import { QUERY } from "./constants";
 import { type ArtistProfile, buildProfile } from "./profile";
 import {
@@ -9,6 +13,10 @@ import {
 } from "./utils";
 
 export type { ArtistProfile } from "./profile";
+
+export type ArtistProfileWithLive = ArtistProfile & {
+  liveBroadcast: ResolvedBroadcast | null;
+};
 
 type RawTextRecords =
   | Array<{ key?: string | null; value?: string | null }>
@@ -33,11 +41,9 @@ function fetchProfileByAddress(
   if (!user) {
     return null;
   }
-
   const subdomain = user.subdomain;
   const name = subdomain?.name ?? undefined;
   const node = subdomain?.node ?? undefined;
-
   return buildProfile({
     ownerAddress: user.address ?? "",
     subdomain: name && node ? { name, node } : null,
@@ -62,10 +68,8 @@ function fetchProfileBySubdomain(
   if (!subdomain) {
     return null;
   }
-
   const name = subdomain.name ?? undefined;
   const node = subdomain.node ?? undefined;
-
   return buildProfile({
     ownerAddress: subdomain.owner?.address ?? "",
     subdomain: name && node ? { name, node } : null,
@@ -73,29 +77,40 @@ function fetchProfileBySubdomain(
   });
 }
 
+async function getLiveBroadcast(
+  wallet: string
+): Promise<ResolvedBroadcast | null> {
+  if (!wallet) {
+    return null;
+  }
+  try {
+    const rows = await listActiveBroadcasts({ wallet });
+    return rows[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getArtistProfileServer(
   identifier: string,
   options: { textRecordLimit?: number } = {}
-): Promise<ArtistProfile> {
+): Promise<ArtistProfileWithLive> {
   const textRecordLimit =
     options.textRecordLimit ?? QUERY.SUBGRAPH_DEFAULT_LIMIT;
   const normalized = normalizeIdentifier(identifier);
   const isAddress = isEthereumAddress(normalized);
 
-  try {
-    const result = await resolve(({ query }) =>
-      isAddress
-        ? fetchProfileByAddress(query, normalized, textRecordLimit)
-        : fetchProfileBySubdomain(query, normalized, textRecordLimit)
-    );
+  const profile = await resolve(({ query }) =>
+    isAddress
+      ? fetchProfileByAddress(query, normalized, textRecordLimit)
+      : fetchProfileBySubdomain(query, normalized, textRecordLimit)
+  );
 
-    if (!result) {
-      throw new Error("Profile not found");
-    }
-
-    return result;
-  } catch (error) {
-    console.error(JSON.stringify(error, null, 2));
-    throw error;
+  if (!profile) {
+    throw new Error("Profile not found");
   }
+
+  const liveBroadcast = await getLiveBroadcast(profile.address);
+
+  return { ...profile, liveBroadcast };
 }

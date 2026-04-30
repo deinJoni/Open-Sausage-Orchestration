@@ -1,39 +1,29 @@
 "use client";
 
+import { useAccount } from "wagmi";
 import { LiveBroadcastCard } from "@/app/me/_components/live-broadcast-card";
 import { StartBroadcastForm } from "@/app/me/_components/start-broadcast-form";
-import { useOwnedProfile } from "@/hooks/use-owned-profile";
+import { useActiveBroadcast } from "@/hooks/use-active-broadcast";
 
-/**
- * Main broadcast control component
- * Orchestrates streaming state and UI
- *
- * Shows StartBroadcastForm when offline
- * Shows LiveBroadcastCard when streaming
- */
 export function BroadcastControl() {
-  const ownedProfile = useOwnedProfile();
+  const account = useAccount();
+  const active = useActiveBroadcast(account.address);
 
-  // Loading state
-  if (ownedProfile.isLoading) {
+  if (active.isLoading) {
     return null;
   }
 
-  // No profile found
-  if (!(ownedProfile.hasProfile && ownedProfile.data)) {
-    return null;
+  if (active.data) {
+    return (
+      <div>
+        <LiveBroadcastCard broadcast={active.data} />
+      </div>
+    );
   }
-
-  const activeBroadcast = ownedProfile.data.user?.activeBroadcast;
-  const isLive = activeBroadcast?.isLive;
 
   return (
     <div>
-      {isLive ? (
-        <LiveBroadcastCard profile={ownedProfile.data} />
-      ) : (
-        <StartBroadcastForm />
-      )}
+      <StartBroadcastForm />
     </div>
   );
 }

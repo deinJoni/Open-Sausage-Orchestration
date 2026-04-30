@@ -1,0 +1,70 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img [ref=e4]
+    - button "Open Tanstack query devtools" [ref=e52] [cursor=pointer]:
+      - img [ref=e53]
+  - generic [ref=e101]:
+    - banner [ref=e102]:
+      - generic [ref=e103]:
+        - link "Osopit" [ref=e105] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e106]: Osopit
+        - link "Artist" [ref=e108] [cursor=pointer]:
+          - /url: /me
+    - main [ref=e109]:
+      - generic [ref=e110]:
+        - generic [ref=e111]:
+          - generic [ref=e112]:
+            - img "shaka" [ref=e115]
+            - generic [ref=e116]:
+              - heading "shaka" [level=1] [ref=e119]
+              - link "Send Gift" [ref=e121] [cursor=pointer]:
+                - /url: /shaka/gift
+                - button "Send Gift" [ref=e122]:
+                  - img
+                  - text: Send Gift
+          - generic [ref=e123]:
+            - button "Quick Tip" [ref=e124]:
+              - img [ref=e125]
+              - generic [ref=e131]: Quick Tip
+              - generic [ref=e132]:
+                - img [ref=e133]
+                - img [ref=e136]
+            - generic [ref=e138]:
+              - img "QR Code" [ref=e142]
+              - generic [ref=e150]:
+                - generic [ref=e151]:
+                  - paragraph [ref=e152]: Send a tip to shaka
+                  - paragraph [ref=e153]: Scan with your phone camera
+                - generic [ref=e154]:
+                  - generic [ref=e155]: localhost:3001/shaka/gift
+                  - button [ref=e156] [cursor=pointer]:
+                    - img
+        - generic [ref=e157]:
+          - heading "🔗 Connect & Listen" [level=3] [ref=e159]:
+            - generic [ref=e160]: 🔗
+            - text: Connect & Listen
+          - generic [ref=e161]:
+            - link "twitter https://x.com/Shakaleikaumaka →" [ref=e162] [cursor=pointer]:
+              - /url: https://x.com/Shakaleikaumaka
+              - img [ref=e165]
+              - generic [ref=e167]:
+                - generic [ref=e168]: twitter
+                - generic [ref=e169]: https://x.com/Shakaleikaumaka
+              - generic [ref=e170]: →
+            - link "youtube https://www.youtube.com/channel/UCdRfVBxtp25IQxofjO-ujHw →" [ref=e171] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCdRfVBxtp25IQxofjO-ujHw
+              - img [ref=e174]
+              - generic [ref=e177]:
+                - generic [ref=e178]: youtube
+                - generic [ref=e179]: https://www.youtube.com/channel/UCdRfVBxtp25IQxofjO-ujHw
+              - generic [ref=e180]: →
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e186] [cursor=pointer]:
+    - generic [ref=e189]:
+      - text: Compiling
+      - generic [ref=e190]:
+        - generic [ref=e191]: .
+        - generic [ref=e192]: .
+        - generic [ref=e193]: .
+  - alert [ref=e194]

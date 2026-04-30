@@ -1,8 +1,12 @@
 "use client";
 
 import { parseAsStringLiteral, useQueryState } from "nuqs";
+import { useMemo } from "react";
 import { ArtistCard } from "@/app/_components/artist-card";
-import { LivestreamCarousel } from "@/app/_components/livestream-carousel";
+import {
+  LivestreamCarousel,
+  type LivestreamCarouselItem,
+} from "@/app/_components/livestream-carousel";
 import {
   FILTER_OPTIONS,
   StickyFilterBar,
@@ -10,7 +14,8 @@ import {
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAllArtists } from "@/hooks/use-all-artists";
+import { useActiveBroadcasts } from "@/hooks/use-active-broadcast";
+import { type Artist, useAllArtists } from "@/hooks/use-all-artists";
 import { ARTISTS_GRID_SIZE } from "@/lib/constants";
 
 const LoadingSkeleton = () => (
@@ -30,8 +35,24 @@ const LoadingSkeleton = () => (
 
 const filterParser = parseAsStringLiteral(FILTER_OPTIONS);
 
+function findArtistByWallet(
+  artists: Artist[] | undefined,
+  wallet: string
+): Artist | undefined {
+  if (!artists) {
+    return;
+  }
+  const lower = wallet.toLowerCase();
+  return artists.find((a) => a.id?.toLowerCase() === lower);
+}
+
 export function HomeClient() {
-  const { data: allArtists, isLoading } = useAllArtists();
+  const allArtistsQuery = useAllArtists();
+  const allArtists = allArtistsQuery.data;
+  const isLoading = allArtistsQuery.isLoading;
+
+  const activeBroadcastsQuery = useActiveBroadcasts();
+  const activeBroadcasts = activeBroadcastsQuery.data ?? [];
 
   const [filter, setFilter] = useQueryState(
     "filter",
@@ -40,13 +61,28 @@ export function HomeClient() {
 
   const [searchQuery, setSearchQuery] = useQueryState("q", {
     defaultValue: "",
-    throttleMs: 300, // Built-in debouncing!
+    throttleMs: 300,
   });
 
-  const liveArtists =
-    allArtists?.filter((a) => a.activeBroadcast?.isLive) || [];
+  const liveWallets = useMemo(() => {
+    const set = new Set<string>();
+    for (const b of activeBroadcasts) {
+      set.add(b.userId.toLowerCase());
+    }
+    return set;
+  }, [activeBroadcasts]);
+
+  const carouselItems: LivestreamCarouselItem[] = useMemo(
+    () =>
+      activeBroadcasts.map((broadcast) => ({
+        broadcast,
+        artist: findArtistByWallet(allArtists, broadcast.userId),
+      })),
+    [activeBroadcasts, allArtists]
+  );
+
   const totalArtists = allArtists?.length || 0;
-  const liveCount = liveArtists.length;
+  const liveCount = liveWallets.size;
   const offlineCount = totalArtists - liveCount;
 
   const filteredArtists =
@@ -54,12 +90,13 @@ export function HomeClient() {
       const matchesSearch = artist.subdomain?.name
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase());
-
+      const isLive = artist.id
+        ? liveWallets.has(artist.id.toLowerCase())
+        : false;
       const matchesFilter =
         filter === "all" ||
-        (filter === "live" && artist.activeBroadcast?.isLive) ||
-        (filter === "offline" && !artist.activeBroadcast?.isLive);
-
+        (filter === "live" && isLive) ||
+        (filter === "offline" && !isLive);
       return matchesSearch && matchesFilter;
     }) || [];
 
@@ -122,7 +159,7 @@ export function HomeClient() {
 
       <Container>
         <div className="flex h-full flex-1 flex-col gap-6">
-          {liveArtists.length > 0 && (
+          {carouselItems.length > 0 && (
             <div className="w-full">
               <div className="mb-3 flex items-center gap-2 px-4 lg:px-0">
                 <span className="flex size-3">
@@ -134,7 +171,7 @@ export function HomeClient() {
                 </span>
               </div>
               <div className="max-h-[700px] min-h-[400px]">
-                <LivestreamCarousel broadcasts={liveArtists} />
+                <LivestreamCarousel items={carouselItems} />
               </div>
             </div>
           )}
@@ -154,12 +191,18 @@ export function HomeClient() {
               {filteredArtists.length === 0 && renderEmptyState()}
               {filteredArtists.length > 0 && (
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-                  {filteredArtists.map((artist) => (
-                    <ArtistCard
-                      artist={artist}
-                      key={artist.subdomain?.name ?? ""}
-                    />
-                  ))}
+                  {filteredArtists.map((artist) => {
+                    const isLive = artist.id
+                      ? liveWallets.has(artist.id.toLowerCase())
+                      : false;
+                    return (
+                      <ArtistCard
+                        artist={artist}
+                        isLive={isLive}
+                        key={artist.subdomain?.name ?? ""}
+                      />
+                    );
+                  })}
                 </div>
               )}
             </div>

@@ -1,92 +1,72 @@
 "use client";
 
-import { ExternalLink, Youtube } from "lucide-react";
+import { ExternalLink, Radio, Youtube } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import type { OwnedProfile } from "@/hooks/use-owned-profile";
+import type { ResolvedBroadcast } from "@/hooks/use-active-broadcast";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
 import { TIME } from "@/lib/constants";
 
 type LiveStatusBannerProps = {
-  profile: OwnedProfile;
+  broadcast: ResolvedBroadcast;
   onViewDetails?: () => void;
 };
 
-/**
- * Format duration from timestamp to "Xh Ym" format
- */
-function formatDuration(startedAt: bigint): string {
-  const startMs = Number(startedAt) * TIME.MS_PER_SECOND;
-  const now = Date.now();
-  const diffMs = now - startMs;
-
+function formatDuration(startedAtIso: string): string {
+  const startMs = new Date(startedAtIso).getTime();
+  const diffMs = Date.now() - startMs;
   const hours = Math.floor(diffMs / TIME.MS_PER_HOUR);
   const minutes = Math.floor((diffMs % TIME.MS_PER_HOUR) / TIME.MS_PER_MINUTE);
-
   if (hours > 0) {
     return `${hours}h ${minutes}m`;
   }
   return `${minutes}m`;
 }
 
-/**
- * Detect platform from URL
- */
-function getPlatform(url: string): { name: string; icon: React.ReactNode } {
-  const lowerUrl = url.toLowerCase();
-
-  if (lowerUrl.includes("youtube.com") || lowerUrl.includes("youtu.be")) {
+function getProviderLabel(broadcast: ResolvedBroadcast): {
+  name: string;
+  icon: React.ReactNode;
+} {
+  if (broadcast.provider === "livepeer") {
+    return { name: "Livepeer", icon: <Radio className="h-4 w-4" /> };
+  }
+  const url = broadcast.streamId.toLowerCase();
+  if (url.includes("youtube") || url.includes("youtu.be")) {
     return { name: "YouTube", icon: <Youtube className="h-4 w-4" /> };
   }
-
-  if (lowerUrl.includes("twitch.tv")) {
+  if (url.includes("twitch.tv")) {
     return { name: "Twitch", icon: <span className="text-lg">📺</span> };
   }
-
-  return { name: "Stream", icon: <ExternalLink className="h-4 w-4" /> };
+  return { name: "External", icon: <ExternalLink className="h-4 w-4" /> };
 }
 
-/**
- * Compact live status banner shown at top of /me page when user is streaming
- * Provides quick access to stream controls without scrolling
- */
 export function LiveStatusBanner({
-  profile,
+  broadcast,
   onViewDetails,
 }: LiveStatusBannerProps) {
   const [duration, setDuration] = useState("0m");
   const updateBroadcast = useUpdateBroadcast();
 
-  const activeBroadcast = profile.user?.activeBroadcast;
-
-  // Update duration every minute
   useEffect(() => {
-    if (!activeBroadcast?.startedAt) {
+    if (!broadcast.startedAt) {
       return;
     }
-
-    const updateTimer = () => {
-      setDuration(formatDuration(activeBroadcast.startedAt));
-    };
-
-    updateTimer(); // Initial update
-    const interval = setInterval(updateTimer, TIME.MS_PER_MINUTE);
-
+    const tick = () => setDuration(formatDuration(broadcast.startedAt ?? ""));
+    tick();
+    const interval = setInterval(tick, TIME.MS_PER_MINUTE);
     return () => clearInterval(interval);
-  }, [activeBroadcast?.startedAt]);
+  }, [broadcast.startedAt]);
 
-  if (!(activeBroadcast?.broadcastUrl && activeBroadcast.isLive)) {
+  if (!broadcast.isLive) {
     return null;
   }
 
-  const platform = getPlatform(activeBroadcast.broadcastUrl);
+  const provider = getProviderLabel(broadcast);
+  const externalLink =
+    broadcast.provider === "livepeer" ? null : broadcast.streamId;
 
-  const handleEndStream = () => {
-    updateBroadcast.mutate({
-      isLive: false,
-      broadcastUrl: "",
-      guestWalletAddresses: [],
-    });
+  const handleEnd = () => {
+    updateBroadcast.end(broadcast.id);
   };
 
   return (
@@ -95,7 +75,6 @@ export function LiveStatusBanner({
       className="relative overflow-hidden rounded-lg border border-live/30 bg-live/10 backdrop-blur"
     >
       <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Left: Live indicator + Platform + Duration */}
         <div className="flex flex-wrap items-center gap-3">
           <span className="flex h-6 items-center gap-2 rounded-full bg-live px-3 py-1 font-semibold text-live-foreground text-xs">
             <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
@@ -103,27 +82,27 @@ export function LiveStatusBanner({
           </span>
 
           <div className="flex items-center gap-2 text-foreground text-sm">
-            {platform.icon}
-            <span className="font-medium">{platform.name}</span>
+            {provider.icon}
+            <span className="font-medium">{provider.name}</span>
             <span className="text-muted-foreground">•</span>
             <span className="text-muted-foreground">{duration}</span>
           </div>
 
-          {/* Stream URL - show truncated version on mobile */}
-          <a
-            className="group flex items-center gap-1.5 text-brand text-xs hover:text-brand sm:text-sm"
-            href={activeBroadcast.broadcastUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <span className="max-w-[200px] truncate sm:max-w-xs">
-              {activeBroadcast.broadcastUrl}
-            </span>
-            <ExternalLink className="h-3 w-3 flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
-          </a>
+          {externalLink && (
+            <a
+              className="group flex items-center gap-1.5 text-brand text-xs hover:text-brand sm:text-sm"
+              href={externalLink}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <span className="max-w-[200px] truncate sm:max-w-xs">
+                {externalLink}
+              </span>
+              <ExternalLink className="h-3 w-3 flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
+            </a>
+          )}
         </div>
 
-        {/* Right: Actions */}
         <div className="flex gap-2">
           {onViewDetails && (
             <Button
@@ -138,12 +117,12 @@ export function LiveStatusBanner({
           <Button
             aria-label="End live stream"
             className="border-live/50 hover:bg-live/20"
-            disabled={updateBroadcast.isPending}
-            onClick={handleEndStream}
+            disabled={updateBroadcast.isEnding}
+            onClick={handleEnd}
             size="sm"
             variant="outline"
           >
-            {updateBroadcast.isPending ? "Ending..." : "End Stream"}
+            {updateBroadcast.isEnding ? "Ending..." : "End Stream"}
           </Button>
         </div>
       </div>

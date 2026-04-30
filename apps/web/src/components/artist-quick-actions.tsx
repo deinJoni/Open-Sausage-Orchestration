@@ -3,6 +3,7 @@
 import { Gift } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useActiveBroadcast } from "@/hooks/use-active-broadcast";
 import { useArtistProfile } from "@/hooks/use-artist-profile";
 import { ArtistAvatar } from "./artist-avatar";
 import { Button } from "./ui/button";
@@ -23,6 +24,7 @@ type ArtistQuickActionsProps = {
 
 function ArtistPreviewContent({ ensName }: { ensName: string }) {
   const { data: artist, isLoading } = useArtistProfile(ensName);
+  const liveBroadcast = useActiveBroadcast(artist?.address);
 
   if (isLoading) {
     return (
@@ -60,7 +62,7 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h4 className="font-semibold text-foreground">{name}</h4>
-            {artist.isStreaming && (
+            {liveBroadcast.isLive && (
               <span className="rounded-full bg-live/20 px-2 py-0.5 text-live text-xs">
                 LIVE
               </span>

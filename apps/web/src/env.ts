@@ -6,6 +6,11 @@ export const env = createEnv({
     MERCHANT_ADDRESS: z.string().min(1),
     MERCHANT_PRIVATE_KEY: z.string().min(1),
     GRAPH_JWT: z.string().min(1),
+    DATABASE_URL: z.string().url(),
+    SESSION_SECRET: z.string().min(32),
+    LIVEPEER_API_KEY: z.string().min(1),
+    LIVEPEER_WEBHOOK_SECRET: z.string().min(1),
+    CRON_SECRET: z.string().min(16),
   },
   client: {
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1),
