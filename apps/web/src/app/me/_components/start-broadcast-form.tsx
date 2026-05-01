@@ -1,11 +1,17 @@
 "use client";
 
-import { Copy, Loader2 } from "lucide-react";
+import { ChevronDown, Copy, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ArtistPicker } from "@/components/artist-picker";
+import { BrowserBroadcaster } from "@/components/browser-broadcaster";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUpdateBroadcast } from "@/hooks/use-update-broadcast";
@@ -26,7 +32,8 @@ const PROVIDER_OPTIONS: Array<{
     id: "livepeer",
     label: "Livepeer (host with us)",
     needsUrl: false,
-    description: "We give you an RTMP/WHIP ingest. Stream from OBS.",
+    description:
+      "Broadcast from your browser with one click. OBS / RTMP also available.",
   },
   {
     id: "iframe",
@@ -75,29 +82,51 @@ function CopyableField({
   );
 }
 
-function IngestPanel({ ingest }: { ingest: IngestCredentials }) {
+function IngestCredentialFields({ ingest }: { ingest: IngestCredentials }) {
+  if (ingest.type === "whip") {
+    return <CopyableField label="WHIP (WebRTC) URL" value={ingest.whipUrl} />;
+  }
+  return (
+    <>
+      <CopyableField label="RTMP URL" value={ingest.rtmpUrl} />
+      <CopyableField label="Stream key" masked value={ingest.streamKey} />
+      {ingest.whipUrl && (
+        <CopyableField label="WHIP (WebRTC) URL" value={ingest.whipUrl} />
+      )}
+    </>
+  );
+}
+
+function BroadcastReadyPanel({ ingest }: { ingest: IngestCredentials }) {
   return (
     <div className="space-y-4">
       <p className="text-foreground text-sm">
-        Your Livepeer stream is ready. Point OBS (or any RTMP client) at the
-        ingest below. Viewers see you go live the moment Livepeer receives the
-        first frame.
+        Your Livepeer stream is ready. Click <strong>Go live</strong> below to
+        broadcast from this browser, or expand the advanced section to pull
+        ingest credentials for OBS.
       </p>
-      {ingest.type === "rtmp" && (
-        <>
-          <CopyableField label="RTMP URL" value={ingest.rtmpUrl} />
-          <CopyableField label="Stream key" masked value={ingest.streamKey} />
-          {ingest.whipUrl && (
-            <CopyableField label="WHIP (WebRTC) URL" value={ingest.whipUrl} />
-          )}
-        </>
-      )}
-      {ingest.type === "whip" && (
-        <CopyableField label="WHIP (WebRTC) URL" value={ingest.whipUrl} />
-      )}
+
+      <BrowserBroadcaster ingest={ingest} />
+
+      <Collapsible className="space-y-3">
+        <CollapsibleTrigger asChild>
+          <Button
+            className="w-full justify-between"
+            type="button"
+            variant="outline"
+          >
+            <span>Use OBS or external encoder</span>
+            <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
+          </Button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-3 rounded-md border border-border bg-background/40 p-4">
+          <IngestCredentialFields ingest={ingest} />
+        </CollapsibleContent>
+      </Collapsible>
+
       <p className="text-muted-foreground text-xs">
-        Once Livepeer detects an incoming stream, your profile flips to LIVE
-        automatically.
+        Your profile flips to LIVE automatically the moment Livepeer receives
+        the first frame.
       </p>
     </div>
   );
@@ -264,7 +293,7 @@ export function StartBroadcastForm({
         🎥 Start Streaming
       </h2>
       {ingest ? (
-        <IngestPanel ingest={ingest} />
+        <BroadcastReadyPanel ingest={ingest} />
       ) : (
         <FormBody
           isPending={updateBroadcast.isPending}

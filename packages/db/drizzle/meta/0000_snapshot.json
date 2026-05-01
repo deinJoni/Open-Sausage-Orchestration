@@ -71,16 +71,12 @@
         "users_ens_name_unique": {
           "name": "users_ens_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "ens_name"
-          ]
+          "columns": ["ens_name"]
         },
         "users_ens_node_unique": {
           "name": "users_ens_node_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "ens_node"
-          ]
+          "columns": ["ens_node"]
         }
       },
       "policies": {},
@@ -140,12 +136,8 @@
           "name": "sessions_wallet_address_users_wallet_address_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "wallet_address"
-          ],
-          "columnsTo": [
-            "wallet_address"
-          ],
+          "columnsFrom": ["wallet_address"],
+          "columnsTo": ["wallet_address"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -192,12 +184,8 @@
           "name": "broadcast_guests_broadcast_id_broadcasts_id_fk",
           "tableFrom": "broadcast_guests",
           "tableTo": "broadcasts",
-          "columnsFrom": [
-            "broadcast_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["broadcast_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -205,10 +193,7 @@
       "compositePrimaryKeys": {
         "broadcast_guests_broadcast_id_guest_wallet_pk": {
           "name": "broadcast_guests_broadcast_id_guest_wallet_pk",
-          "columns": [
-            "broadcast_id",
-            "guest_wallet"
-          ]
+          "columns": ["broadcast_id", "guest_wallet"]
         }
       },
       "uniqueConstraints": {},
@@ -358,12 +343,8 @@
           "name": "broadcasts_user_id_users_wallet_address_fk",
           "tableFrom": "broadcasts",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "wallet_address"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["wallet_address"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -441,12 +422,8 @@
           "name": "assets_uploaded_by_users_wallet_address_fk",
           "tableFrom": "assets",
           "tableTo": "users",
-          "columnsFrom": [
-            "uploaded_by"
-          ],
-          "columnsTo": [
-            "wallet_address"
-          ],
+          "columnsFrom": ["uploaded_by"],
+          "columnsTo": ["wallet_address"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -456,10 +433,7 @@
         "assets_provider_ref_unq": {
           "name": "assets_provider_ref_unq",
           "nullsNotDistinct": false,
-          "columns": [
-            "provider",
-            "ref"
-          ]
+          "columns": ["provider", "ref"]
         }
       },
       "policies": {},
@@ -544,12 +518,8 @@
           "name": "art_pieces_user_id_users_wallet_address_fk",
           "tableFrom": "art_pieces",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "wallet_address"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["wallet_address"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -557,12 +527,8 @@
           "name": "art_pieces_asset_id_assets_id_fk",
           "tableFrom": "art_pieces",
           "tableTo": "assets",
-          "columnsFrom": [
-            "asset_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["asset_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -618,10 +584,7 @@
       "compositePrimaryKeys": {
         "follows_follower_wallet_followee_wallet_pk": {
           "name": "follows_follower_wallet_followee_wallet_pk",
-          "columns": [
-            "follower_wallet",
-            "followee_wallet"
-          ]
+          "columns": ["follower_wallet", "followee_wallet"]
         }
       },
       "uniqueConstraints": {},
@@ -701,12 +664,8 @@
           "name": "notifications_user_id_users_wallet_address_fk",
           "tableFrom": "notifications",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "wallet_address"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["wallet_address"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -748,12 +707,8 @@
           "name": "profile_drafts_user_id_users_wallet_address_fk",
           "tableFrom": "profile_drafts",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "wallet_address"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["wallet_address"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

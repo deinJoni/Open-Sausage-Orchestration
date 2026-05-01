@@ -2,7 +2,7 @@
 
 import { ExternalLink, Radio } from "lucide-react";
 import Link from "next/link";
-import { HlsPlayer } from "@/components/hls-player";
+import { LivepeerPlayer } from "@/components/livepeer-player";
 import { StreamEmbed } from "@/components/stream-embed";
 import {
   Carousel,
@@ -48,7 +48,13 @@ function CarouselTile({ item }: CarouselTileProps) {
         href={`/${artistName}/live`}
       >
         <div className="relative flex-1">
-          <HlsPlayer src={playback.src} title={`${artistName} livestream`} />
+          <LivepeerPlayer
+            broadcastId={broadcast.id}
+            className="relative h-full w-full overflow-hidden bg-background"
+            controls={false}
+            muted
+            title={`${artistName} livestream`}
+          />
         </div>
         <div className="flex items-center gap-2 border-border border-t bg-background/80 px-3 py-2 text-muted-foreground text-xs">
           <Radio className="h-3 w-3" />

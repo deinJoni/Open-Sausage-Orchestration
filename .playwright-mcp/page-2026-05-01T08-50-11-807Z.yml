@@ -1,0 +1,74 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Osopit" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e6]: Os
+          - generic [ref=e7]: Osopit
+        - link "Artist" [ref=e9] [cursor=pointer]:
+          - /url: /me
+          - text: Artist
+          - generic [ref=e10]: →
+    - main [ref=e11]:
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - generic [ref=e17]: TE
+          - heading "Tip test2" [level=1] [ref=e18]
+          - paragraph [ref=e19]: test2.deinjoni.eth
+        - generic [ref=e20]:
+          - generic [ref=e21]: Select Amount
+          - generic [ref=e22]:
+            - button "0.001 ETH ..." [ref=e23]:
+              - generic [ref=e24]: 0.001 ETH
+              - generic [ref=e25]: ...
+            - button "0.002 ETH ..." [ref=e26]:
+              - generic [ref=e27]: 0.002 ETH
+              - generic [ref=e28]: ...
+            - button "0.005 ETH ..." [ref=e29]:
+              - generic [ref=e30]: 0.005 ETH
+              - generic [ref=e31]: ...
+            - button "0.01 ETH ..." [ref=e32]:
+              - generic [ref=e33]: 0.01 ETH
+              - generic [ref=e34]: ...
+            - button "0.02 ETH ..." [ref=e35]:
+              - generic [ref=e36]: 0.02 ETH
+              - generic [ref=e37]: ...
+            - button "0.05 ETH ..." [ref=e38]:
+              - generic [ref=e39]: 0.05 ETH
+              - generic [ref=e40]: ...
+            - button "0.1 ETH ..." [ref=e41]:
+              - generic [ref=e42]: 0.1 ETH
+              - generic [ref=e43]: ...
+            - button "0.5 ETH ..." [ref=e44]:
+              - generic [ref=e45]: 0.5 ETH
+              - generic [ref=e46]: ...
+          - generic [ref=e47]:
+            - generic [ref=e48]: Custom Amount (ETH)
+            - spinbutton "Custom Amount (ETH)" [ref=e49]
+          - generic [ref=e50]:
+            - paragraph [ref=e51]: You're sending
+            - paragraph [ref=e52]: 0.01 ETH
+        - generic [ref=e54]:
+          - button "Connect Injected" [ref=e56] [cursor=pointer]
+          - paragraph [ref=e57]: Connect your wallet to send a tip
+        - paragraph [ref=e58]: Tips sent directly to artist
+        - generic [ref=e59]:
+          - generic [ref=e60]:
+            - img [ref=e61]
+            - generic [ref=e67]: Wallet QR Code
+            - img [ref=e68]
+          - generic [ref=e71]:
+            - img "QR Code" [ref=e74]
+            - generic [ref=e82]:
+              - generic [ref=e83]:
+                - paragraph [ref=e84]: Direct wallet transfer
+                - paragraph [ref=e85]: Scan with your crypto wallet to send ETH on Base
+              - paragraph [ref=e87]: test2.deinjoni.eth
+              - generic [ref=e88]:
+                - generic [ref=e89]: 0x3938...d564
+                - button "Copy wallet address" [ref=e90] [cursor=pointer]:
+                  - img
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e96] [cursor=pointer]:
+    - img [ref=e97]

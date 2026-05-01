@@ -60,9 +60,7 @@ export const broadcastGuests = pgTable(
       .default(sql`now()`),
     leftAt: timestamp("left_at", { withTimezone: true, mode: "date" }),
   },
-  (table) => [
-    primaryKey({ columns: [table.broadcastId, table.guestWallet] }),
-  ]
+  (table) => [primaryKey({ columns: [table.broadcastId, table.guestWallet] })]
 );
 
 export type Broadcast = typeof broadcasts.$inferSelect;

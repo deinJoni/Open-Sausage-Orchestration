@@ -1,0 +1,49 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Osopit" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e6]: Os
+          - generic [ref=e7]: Osopit
+        - link "Artist" [ref=e9] [cursor=pointer]:
+          - /url: /me
+          - text: Artist
+          - generic [ref=e10]: →
+    - main [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - img [ref=e18]
+            - generic [ref=e21]:
+              - heading "test2" [level=1] [ref=e24]
+              - link "Send Gift" [ref=e26] [cursor=pointer]:
+                - /url: /test2/gift
+                - button "Send Gift" [ref=e27]:
+                  - img
+                  - text: Send Gift
+          - generic [ref=e28]:
+            - button "Quick Tip" [ref=e29]:
+              - img [ref=e30]
+              - generic [ref=e36]: Quick Tip
+              - generic [ref=e37]:
+                - img [ref=e38]
+                - img [ref=e41]
+            - generic [ref=e43]:
+              - img "QR Code" [ref=e46]
+              - generic [ref=e54]:
+                - generic [ref=e55]:
+                  - paragraph [ref=e56]: Send a tip to test2
+                  - paragraph [ref=e57]: Scan with your phone camera
+                - generic [ref=e58]:
+                  - generic [ref=e59]: localhost:3001/test2/gift
+                  - button "Copy URL" [ref=e60] [cursor=pointer]:
+                    - img
+        - generic [ref=e62]:
+          - paragraph [ref=e63]: Profile
+          - heading "Connect & Listen" [level=3] [ref=e64]:
+            - img [ref=e65]
+            - text: Connect & Listen
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e74] [cursor=pointer]:
+    - img [ref=e75]

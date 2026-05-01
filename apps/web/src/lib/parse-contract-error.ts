@@ -12,6 +12,72 @@ const ERROR_SELECTORS = {
 } as const;
 
 /**
+ * Ordered list of (needles → user-facing message) pairs. The first match wins.
+ *
+ * Adding a new contract revert reason:
+ *   1. Append a new entry to ERROR_MESSAGES in `constants.ts`.
+ *   2. Add an entry here listing the 4-byte selector and the Solidity error
+ *      name (and any keyword the SDK surfaces) as needles.
+ */
+const ERROR_MATCHERS: readonly {
+  needles: readonly string[];
+  message: string;
+}[] = [
+  {
+    needles: [ERROR_SELECTORS.INVITE_ALREADY_USED, "InviteAlreadyUsed"],
+    message: ERROR_MESSAGES.INVITE_ALREADY_USED,
+  },
+  {
+    needles: [
+      ERROR_SELECTORS.SIGNATURE_EXPIRED,
+      "SignatureExpired",
+      "signature_expired",
+    ],
+    message: ERROR_MESSAGES.SIGNATURE_EXPIRED,
+  },
+  {
+    needles: [ERROR_SELECTORS.INVALID_INVITER, "InvalidInviter"],
+    message: ERROR_MESSAGES.INVALID_INVITER,
+  },
+  {
+    needles: [ERROR_SELECTORS.UNAUTHORIZED, "Unauthorized"],
+    message: ERROR_MESSAGES.UNAUTHORIZED,
+  },
+  {
+    needles: [
+      ERROR_SELECTORS.NOT_AVAILABLE,
+      "NotAvailable",
+      "AlreadyHasSubdomain",
+    ],
+    message: ERROR_MESSAGES.NAME_TAKEN,
+  },
+
+  // Relayer-specific errors (Layer 2 gasless flow)
+  {
+    needles: ["rate_limited", "already_registered_recently"],
+    message: ERROR_MESSAGES.RELAYER_RATE_LIMITED,
+  },
+  {
+    needles: ["invalid_setname_signature"],
+    message: ERROR_MESSAGES.RELAYER_INVALID_SIGNATURE,
+  },
+
+  // Wallet / network errors
+  {
+    needles: ["User rejected", "user rejected"],
+    message: ERROR_MESSAGES.TRANSACTION_CANCELLED,
+  },
+  {
+    needles: ["insufficient funds"],
+    message: ERROR_MESSAGES.INSUFFICIENT_FUNDS,
+  },
+  {
+    needles: ["network changed", "chain mismatch"],
+    message: ERROR_MESSAGES.NETWORK_CHANGED,
+  },
+];
+
+/**
  * Parse contract errors into user-friendly messages
  *
  * @param error - Error from contract interaction
@@ -20,51 +86,10 @@ const ERROR_SELECTORS = {
 export function parseContractError(error: unknown): string {
   const errorMessage = String(error);
 
-  if (
-    errorMessage.includes(ERROR_SELECTORS.INVITE_ALREADY_USED) ||
-    errorMessage.includes("InviteAlreadyUsed")
-  ) {
-    return ERROR_MESSAGES.INVITE_ALREADY_USED;
-  }
-  if (
-    errorMessage.includes(ERROR_SELECTORS.SIGNATURE_EXPIRED) ||
-    errorMessage.includes("SignatureExpired")
-  ) {
-    return ERROR_MESSAGES.SIGNATURE_EXPIRED;
-  }
-  if (
-    errorMessage.includes(ERROR_SELECTORS.INVALID_INVITER) ||
-    errorMessage.includes("InvalidInviter")
-  ) {
-    return ERROR_MESSAGES.INVALID_INVITER;
-  }
-  if (
-    errorMessage.includes(ERROR_SELECTORS.UNAUTHORIZED) ||
-    errorMessage.includes("Unauthorized")
-  ) {
-    return ERROR_MESSAGES.UNAUTHORIZED;
-  }
-  if (
-    errorMessage.includes(ERROR_SELECTORS.NOT_AVAILABLE) ||
-    errorMessage.includes("NotAvailable")
-  ) {
-    return ERROR_MESSAGES.NAME_TAKEN;
-  }
-
-  if (
-    errorMessage.includes("User rejected") ||
-    errorMessage.includes("user rejected")
-  ) {
-    return ERROR_MESSAGES.TRANSACTION_CANCELLED;
-  }
-  if (errorMessage.includes("insufficient funds")) {
-    return ERROR_MESSAGES.INSUFFICIENT_FUNDS;
-  }
-  if (
-    errorMessage.includes("network changed") ||
-    errorMessage.includes("chain mismatch")
-  ) {
-    return ERROR_MESSAGES.NETWORK_CHANGED;
+  for (const matcher of ERROR_MATCHERS) {
+    if (matcher.needles.some((needle) => errorMessage.includes(needle))) {
+      return matcher.message;
+    }
   }
 
   return ERROR_MESSAGES.GENERIC_ERROR;

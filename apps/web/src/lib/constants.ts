@@ -145,11 +145,21 @@ export const ERROR_MESSAGES = {
   NAME_TAKEN:
     "This name is already taken or you already have a subdomain registered (only one per wallet is allowed)",
   UNAUTHORIZED: "You are not authorized to perform this action",
+  ALREADY_HAS_SUBDOMAIN:
+    "This wallet already owns a subdomain (only one per wallet is allowed)",
 
   // Transaction errors
   TRANSACTION_CANCELLED: "Transaction was cancelled",
   INSUFFICIENT_FUNDS: "Insufficient funds for transaction",
   NETWORK_CHANGED: "Network changed during transaction. Please try again",
+
+  // Relayer (gasless onboarding) errors
+  RELAYER_RATE_LIMITED:
+    "Too many claim attempts. Please wait a minute and try again",
+  RELAYER_INVALID_SIGNATURE:
+    "Signature mismatch — please refresh and try again",
+  RELAYER_SIGNATURE_EXPIRED:
+    "Your signature expired before the relayer could submit. Please try again",
 
   // Generic fallback
   GENERIC_ERROR: "An error occurred. Please try again",

@@ -23,10 +23,7 @@ export const tips = pgTable(
   },
   (table) => [
     index("tips_to_created_idx").on(table.toWallet, table.createdAt.desc()),
-    index("tips_from_created_idx").on(
-      table.fromWallet,
-      table.createdAt.desc()
-    ),
+    index("tips_from_created_idx").on(table.fromWallet, table.createdAt.desc()),
   ]
 );
 

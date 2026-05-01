@@ -27,7 +27,9 @@ export const artPieces = pgTable(
       .notNull()
       .default(sql`now()`),
   },
-  (table) => [index("art_pieces_user_position_idx").on(table.userId, table.position)]
+  (table) => [
+    index("art_pieces_user_position_idx").on(table.userId, table.position),
+  ]
 );
 
 export type ArtPiece = typeof artPieces.$inferSelect;
