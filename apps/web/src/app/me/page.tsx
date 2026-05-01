@@ -50,9 +50,7 @@ export default function MePage() {
       {ownedProfile.data && (
         <div className="space-y-6 pt-0">
           <div>
-            <h4 className="mb-4 font-medium text-muted-foreground text-sm uppercase tracking-wide">
-              Profile
-            </h4>
+            <h4 className="mu-eyebrow mb-4 text-muted-foreground">Profile</h4>
             <ProfileEditForm
               key={ownedProfile.data.ensName}
               profile={ownedProfile.data}

@@ -5,28 +5,35 @@ import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-md outline-none transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap font-medium outline-none transition-[opacity,background,color,transform,box-shadow] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 aria-invalid:ring-2 aria-invalid:ring-destructive/30 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+          "hover:-translate-y-px rounded-full bg-primary text-primary-foreground hover:bg-foreground active:scale-[0.98]",
         destructive:
-          "bg-destructive shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40",
+          "rounded-full bg-destructive text-primary-foreground hover:opacity-90",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "rounded-full border border-foreground bg-transparent text-foreground hover:bg-foreground hover:text-primary-foreground",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
-        live: "border-2 border-live/50 bg-live text-live-foreground shadow-lg shadow-live/30",
+          "rounded-none px-0 font-semibold text-[11px] text-foreground uppercase tracking-[0.06em] hover:opacity-70",
+        link: "rounded-none px-0 font-semibold text-[11px] text-brand uppercase tracking-[0.06em] hover:opacity-70",
+        live: "rounded-full bg-live text-live-foreground shadow-sm",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5",
-        lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
-        icon: "size-9",
+        default: "h-9 px-5 py-2 text-[13px]",
+        sm: "h-8 px-3 text-[11px]",
+        lg: "h-11 px-7 text-sm",
+        icon: "size-9 rounded-full",
       },
     },
+    compoundVariants: [
+      {
+        variant: ["link", "ghost"],
+        size: ["default", "sm", "lg"],
+        className: "h-auto",
+      },
+    ],
     defaultVariants: {
       variant: "default",
       size: "default",

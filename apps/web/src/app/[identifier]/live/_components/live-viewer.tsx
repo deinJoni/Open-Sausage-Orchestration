@@ -3,7 +3,7 @@
 import { ArrowLeft, ExternalLink, Gift } from "lucide-react";
 import Link from "next/link";
 import { ArtistAvatar } from "@/components/artist-avatar";
-import { HlsPlayer } from "@/components/hls-player";
+import { LivepeerPlayer } from "@/components/livepeer-player";
 import { StreamEmbed } from "@/components/stream-embed";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -47,9 +47,11 @@ export function LiveViewer({
     return (
       <FullscreenContainer>
         <div className="flex-1 bg-background">
-          <HlsPlayer
-            className="h-full w-full bg-background"
-            src={playback.src}
+          <LivepeerPlayer
+            broadcastId={liveBroadcast.id}
+            className="relative h-full w-full overflow-hidden bg-background"
+            controls
+            muted={false}
             title={`${displayName} live`}
           />
         </div>
@@ -82,23 +84,21 @@ type ChromeBarProps = {
 
 function ChromeBar({ displayName, avatar }: ChromeBarProps) {
   return (
-    <div className="flex items-center justify-between gap-3 border-border border-t bg-background/80 px-4 py-3 backdrop-blur">
+    <div className="flex items-center justify-between gap-3 border-border border-t bg-background/85 px-4 py-3 backdrop-blur-md">
       <Link
-        className="flex items-center gap-3 transition-opacity hover:opacity-80"
+        className="flex items-center gap-3 transition-opacity hover:opacity-70"
         href={`/${displayName}`}
       >
-        <ArtistAvatar
-          avatarUrl={avatar}
-          className="border border-border"
-          name={displayName}
-          size="sm"
-        />
-        <span className="font-medium text-foreground text-sm">
+        <ArtistAvatar avatarUrl={avatar} name={displayName} size="sm" />
+        <span className="font-display text-foreground text-lg italic">
           {displayName}
         </span>
-        <span className="flex items-center gap-1.5 rounded-full bg-live px-2 py-0.5 font-semibold text-live-foreground text-xs">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-          LIVE
+        <span className="mu-eyebrow inline-flex items-center gap-1.5 rounded-full bg-live px-2.5 py-1 text-live-foreground">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-live-foreground opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-live-foreground" />
+          </span>
+          Live
         </span>
       </Link>
       <div className="flex items-center gap-2">
@@ -126,18 +126,12 @@ type OfflineCardProps = {
 function OfflineCard({ displayName, avatar }: OfflineCardProps) {
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-md flex-col items-center justify-center px-4">
-      <Card className="w-full border-border bg-background/80 p-8 text-center backdrop-blur">
+      <Card className="w-full text-center">
         <div className="mb-6 flex justify-center">
-          <ArtistAvatar
-            avatarUrl={avatar}
-            className="border-2 border-border"
-            name={displayName}
-            size="lg"
-          />
+          <ArtistAvatar avatarUrl={avatar} name={displayName} size="lg" />
         </div>
-        <h1 className="mb-2 font-bold text-2xl text-foreground">
-          {displayName} is not live right now
-        </h1>
+        <p className="mu-eyebrow mb-2 text-muted-foreground">Offline</p>
+        <h1 className="mb-2 text-4xl">{displayName} is not live right now</h1>
         <p className="mb-6 text-muted-foreground text-sm">
           Check back soon, or visit their profile.
         </p>
@@ -175,22 +169,25 @@ function ExternalCard({ displayName, avatar, href }: ExternalCardProps) {
   }
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-4rem)] max-w-md flex-col items-center justify-center px-4">
-      <Card className="w-full border-border bg-background/80 p-8 text-center backdrop-blur">
+      <Card className="w-full text-center">
         <div className="mb-6 flex justify-center">
           <ArtistAvatar
             avatarUrl={avatar}
-            className="border-2 border-live"
+            className="ring-2 ring-live"
             name={displayName}
             size="lg"
           />
         </div>
-        <div className="mb-2 flex items-center justify-center gap-2">
-          <span className="flex items-center gap-1.5 rounded-full bg-live px-2 py-0.5 font-semibold text-live-foreground text-xs">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-            LIVE
+        <div className="mb-3 flex items-center justify-center gap-2">
+          <span className="mu-eyebrow inline-flex items-center gap-1.5 rounded-full bg-live px-2.5 py-1 text-live-foreground">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-live-foreground opacity-75" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-live-foreground" />
+            </span>
+            Live
           </span>
         </div>
-        <h1 className="mb-2 font-bold text-2xl text-foreground">
+        <h1 className="mb-2 text-4xl">
           {displayName} is streaming on an external platform
         </h1>
         <p className="mb-6 text-muted-foreground text-sm">{host}</p>

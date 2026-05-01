@@ -66,16 +66,19 @@ export function ProfileSetupStep({
 
   return (
     <div className="space-y-6">
-      <div className="border-2 border-success bg-card px-4 py-5 shadow-sm">
-        <p className="mb-1 font-bold text-sm text-success uppercase tracking-wide">
-          Your Domain: {ensName}.{getEnsConfig().domain}
+      <div className="rounded-md bg-secondary px-5 py-5">
+        <p className="mu-eyebrow mb-2 text-success">Your Domain</p>
+        <p className="font-mono text-foreground text-lg">
+          {ensName}.{getEnsConfig().domain}
         </p>
       </div>
 
       <div>
-        <Label htmlFor="bio">Bio</Label>
+        <Label className="mu-eyebrow text-muted-foreground" htmlFor="bio">
+          Bio
+        </Label>
         <textarea
-          className="mt-2 w-full rounded-lg border border-border bg-background px-3 py-3 text-foreground text-md placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="mt-2 w-full rounded-md border border-border bg-input px-3 py-3 text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           id="bio"
           maxLength={160}
           onChange={(e) => onBioChange(e.target.value)}
@@ -89,10 +92,12 @@ export function ProfileSetupStep({
       </div>
 
       <div>
-        <Label>Profile Picture</Label>
+        <Label className="mu-eyebrow text-muted-foreground">
+          Profile Picture
+        </Label>
         <div className="mt-4 flex flex-col items-center gap-4">
           {avatar && (
-            <div className="h-32 w-32 overflow-hidden rounded-full border-2 border-border">
+            <div className="h-32 w-32 overflow-hidden rounded-full">
               <Image
                 alt="Avatar preview"
                 className="h-full w-full object-cover"
@@ -134,7 +139,9 @@ export function ProfileSetupStep({
       </div>
 
       <div>
-        <Label>Social Links (Optional)</Label>
+        <Label className="mu-eyebrow text-muted-foreground">
+          Social Links (Optional)
+        </Label>
         <p className="mb-4 text-muted-foreground text-sm">
           Connect your platforms
         </p>
@@ -157,10 +164,10 @@ export function ProfileSetupStep({
 
             return (
               <div
-                className="flex items-center gap-3 border-2 border-border bg-card px-4 py-3 shadow-sm"
+                className="flex items-center gap-3 rounded-md bg-secondary px-4 py-2"
                 key={social.platform}
               >
-                <Icon className="size-5 flex-shrink-0" strokeWidth={2.5} />
+                <Icon className="size-5 flex-shrink-0" strokeWidth={1.5} />
                 <Input
                   className="border-none bg-transparent focus-visible:ring-0"
                   onChange={(e) => {

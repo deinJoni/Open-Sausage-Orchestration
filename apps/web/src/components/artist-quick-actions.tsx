@@ -53,31 +53,28 @@ function ArtistPreviewContent({ ensName }: { ensName: string }) {
   return (
     <>
       <div className="mb-4 flex items-center gap-3">
-        <ArtistAvatar
-          avatarUrl={artist.avatar}
-          className="border-2 border-border"
-          name={name}
-          size="md"
-        />
+        <ArtistAvatar avatarUrl={artist.avatar} name={name} size="md" />
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-foreground">{name}</h4>
+            <h4 className="font-display text-2xl text-foreground italic">
+              {name}
+            </h4>
             {liveBroadcast.isLive && (
-              <span className="rounded-full bg-live/20 px-2 py-0.5 text-live text-xs">
-                LIVE
+              <span className="mu-eyebrow inline-flex items-center gap-1 rounded-full bg-live px-2 py-0.5 text-live-foreground">
+                Live
               </span>
             )}
           </div>
         </div>
       </div>
 
-      <p className="mb-4 line-clamp-3 text-md text-muted-foreground">
+      <p className="mb-4 line-clamp-3 text-muted-foreground text-sm">
         {artist.description || "Description"}
       </p>
 
-      <div className="flex gap-2">
+      <div className="flex items-center gap-3">
         <Button asChild className="flex-1" size="sm" variant="outline">
-          <Link href={`/${name}`}>View Profile</Link>
+          <Link href={`/${name}`}>View profile</Link>
         </Button>
         <Link href={`/${name}/gift`}>
           <Button size="sm">
@@ -112,9 +109,9 @@ export function ArtistQuickActions({
     return (
       <Drawer>
         <DrawerTrigger asChild>{children}</DrawerTrigger>
-        <DrawerContent className="border-border bg-background/80">
+        <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle className="text-foreground">
+            <DrawerTitle className="font-display text-2xl italic">
               Artist Profile
             </DrawerTitle>
           </DrawerHeader>
@@ -130,7 +127,7 @@ export function ArtistQuickActions({
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent className="border-border bg-background/80 p-4">
+      <PopoverContent className="p-4">
         <ArtistPreviewContent ensName={ensName} />
       </PopoverContent>
     </Popover>

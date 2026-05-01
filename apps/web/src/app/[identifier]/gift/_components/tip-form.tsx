@@ -307,34 +307,35 @@ export function TipForm({
       )}
 
       {/* Footer */}
-      <p className="mt-4 text-center text-muted-foreground text-xs uppercase tracking-wide">
+      <p className="mu-eyebrow mt-4 text-center text-muted-foreground">
         Tips sent directly to artist
       </p>
 
       {/* QR Code Section - At bottom of form */}
-      <div className="mt-6 overflow-hidden border-2 border-border bg-card">
+      <div className="mt-6 overflow-hidden rounded-md bg-secondary">
         {/* Header */}
-        <div className="flex items-center gap-2 border-border border-b-2 bg-muted px-4 py-3">
-          <QrCode className="h-4 w-4" strokeWidth={2.5} />
-          <span className="font-bold text-foreground text-sm uppercase tracking-wide">
-            Wallet QR Code
-          </span>
-          <Sparkles className="ml-auto h-3 w-3" strokeWidth={2.5} />
+        <div className="flex items-center gap-2 px-5 py-3">
+          <QrCode className="h-4 w-4" strokeWidth={1.5} />
+          <span className="mu-eyebrow text-foreground">Wallet QR Code</span>
+          <Sparkles
+            className="ml-auto h-3 w-3 text-muted-foreground"
+            strokeWidth={1.5}
+          />
         </div>
 
         {/* QR Code Content */}
         <div className="flex flex-col items-center gap-4 p-6 sm:flex-row sm:gap-6">
           {/* QR Code */}
           <div className="relative flex-shrink-0">
-            <div className="relative border-2 border-border bg-white p-3 shadow-md">
-              <Cuer color="black" size={120} value={qrValue} />
+            <div className="relative rounded-md bg-background p-4 shadow-sm">
+              <Cuer color="#081a16" size={120} value={qrValue} />
             </div>
           </div>
 
           {/* Info */}
           <div className="flex-1 space-y-3 text-center sm:text-left">
             <div>
-              <p className="font-medium text-foreground text-sm">
+              <p className="font-display text-xl italic">
                 Direct wallet transfer
               </p>
               <p className="mt-1 text-muted-foreground text-xs">
@@ -343,22 +344,21 @@ export function TipForm({
             </div>
 
             {/* ENS Name */}
-            <div className="rounded-lg border border-border/50 bg-background/50 px-3 py-2">
-              <p className="font-medium text-brand text-xs uppercase tracking-wide">
-                {ensName}
-              </p>
+            <div className="rounded-md bg-background px-3 py-2">
+              <p className="mu-eyebrow text-brand">{ensName}</p>
             </div>
 
             {/* Wallet Address with copy */}
-            <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-background/50 px-3 py-2">
+            <div className="flex items-center gap-2 rounded-md bg-background px-3 py-2">
               <span className="flex-1 truncate font-mono text-muted-foreground text-xs">
                 {formatAddress(artistAddress, 6, 4)}
               </span>
               <Button
+                aria-label="Copy wallet address"
                 className="h-6 w-6 shrink-0"
                 onClick={handleCopyAddress}
                 size="icon"
-                variant="ghost"
+                variant="outline"
               >
                 {copiedAddress ? (
                   <Check className="h-3 w-3 text-success" />

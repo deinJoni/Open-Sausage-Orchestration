@@ -19,7 +19,7 @@ export function ArtistBottomBar() {
       <div className="border-border border-t bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4">
           <Link
-            className="text-muted-foreground text-xs uppercase tracking-wide transition-colors hover:text-foreground"
+            className="mu-eyebrow text-muted-foreground transition-opacity hover:opacity-70"
             href="/me"
           >
             Artist?
@@ -35,7 +35,7 @@ export function ArtistBottomBar() {
       <div className="border-border border-t bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4">
           <Link
-            className="text-muted-foreground text-xs uppercase tracking-wide transition-colors hover:text-foreground"
+            className="mu-eyebrow text-muted-foreground transition-opacity hover:opacity-70"
             href="/me"
           >
             Artist? Join
@@ -46,13 +46,13 @@ export function ArtistBottomBar() {
   }
 
   return (
-    <div className="border-border border-t bg-background/80 backdrop-blur-sm">
+    <div className="border-border border-t bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4">
         <Link
-          className="flex items-center gap-2 text-xs transition-colors hover:text-brand"
+          className="flex items-center gap-2 text-xs transition-opacity hover:opacity-70"
           href="/me"
         >
-          <Gem className="size-3.5 text-brand" />
+          <Gem className="size-3.5 text-brand" strokeWidth={1.5} />
           <span className="font-medium text-foreground">
             {balance.isLoading ? "..." : balance.formatted}
           </span>

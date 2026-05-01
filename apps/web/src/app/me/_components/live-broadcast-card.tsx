@@ -65,15 +65,20 @@ export function LiveBroadcastCard({ broadcast }: LiveBroadcastCardProps) {
 
   return (
     <TooltipProvider>
-      <Card className="relative overflow-hidden border-live/30 bg-background/80 p-6 backdrop-blur before:absolute before:inset-0 before:bg-live/10">
+      <Card className="relative overflow-hidden ring-1 ring-live/30">
         <div className="relative z-10 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="flex h-6 items-center gap-2 rounded-full bg-live px-3 py-1 font-semibold text-live-foreground text-xs">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
-                LIVE
+              <span className="mu-eyebrow inline-flex items-center gap-1.5 rounded-full bg-live px-2.5 py-1 text-live-foreground">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-live-foreground opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-live-foreground" />
+                </span>
+                Live
               </span>
-              <span className="text-md text-muted-foreground">{duration}</span>
+              <span className="font-display text-2xl text-foreground italic">
+                {duration}
+              </span>
             </div>
           </div>
 
@@ -104,7 +109,7 @@ export function LiveBroadcastCard({ broadcast }: LiveBroadcastCardProps) {
           )}
 
           <Button
-            className="w-full border-border hover:border-live/50 hover:bg-live/10"
+            className="w-full"
             disabled={updateBroadcast.isEnding}
             onClick={handleEnd}
             variant="outline"

@@ -133,8 +133,8 @@ export default async function ArtistProfilePage({ params }: PageProps) {
     <Container>
       {/* Stream embed (only if streaming via embeddable iframe provider) */}
       {artist.liveBroadcast?.playback?.type === "iframe" && (
-        <div className="mb-8 space-y-2">
-          <div className="overflow-hidden border-2 border-border bg-card p-0 shadow-md">
+        <div className="mb-10 space-y-3">
+          <div className="overflow-hidden rounded-md bg-card">
             <StreamEmbed
               artistName={displayName}
               streamUrl={artist.liveBroadcast.streamId}
@@ -143,94 +143,83 @@ export default async function ArtistProfilePage({ params }: PageProps) {
           </div>
           <div className="flex justify-end">
             <Link
-              className="inline-flex items-center gap-1.5 font-bold text-brand text-sm uppercase tracking-wide hover:underline"
+              className="inline-flex items-center gap-1.5 font-semibold text-[11px] text-brand uppercase tracking-[0.06em] transition-opacity hover:opacity-70"
               href={`/${displayName}/live`}
             >
               Watch fullscreen
-              <ArrowRight className="size-4" />
+              <ArrowRight className="size-3.5" />
             </Link>
           </div>
         </div>
       )}
 
       {/* Profile section (server-rendered) */}
-      <div className="mb-8 overflow-hidden border-2 border-border bg-card shadow-lg">
+      <div className="mb-10 overflow-hidden rounded-md bg-card">
         {/* Main Profile Content */}
-        <div className="flex flex-col gap-6 px-6 py-8 sm:px-8 sm:py-10 md:flex-row md:items-start">
+        <div className="flex flex-col gap-8 px-6 py-8 sm:px-10 sm:py-12 md:flex-row md:items-start">
           {/* Avatar */}
           <div className="flex-shrink-0">
             <div className="relative">
               {artist.liveBroadcast?.isLive && (
-                <div className="-inset-1 absolute animate-pulse rounded-full bg-live opacity-60" />
+                <div className="-inset-1 absolute animate-pulse rounded-full bg-live opacity-50" />
               )}
               {avatar ? (
                 <Image
                   alt={displayName}
-                  className={`relative h-32 w-32 rounded-full border-2 ${
-                    artist.liveBroadcast?.isLive
-                      ? "border-live"
-                      : "border-border"
-                  }`}
+                  className="relative h-32 w-32 rounded-full"
                   height={128}
                   src={avatar}
                   width={128}
                 />
               ) : (
-                <div
-                  className={`relative flex h-32 w-32 items-center justify-center rounded-full border-2 bg-muted ${
-                    artist.liveBroadcast?.isLive
-                      ? "border-live"
-                      : "border-border"
-                  }`}
-                >
-                  <User className="size-12" strokeWidth={2.5} />
+                <div className="relative flex h-32 w-32 items-center justify-center rounded-full bg-secondary">
+                  <User className="size-12" strokeWidth={1.5} />
                 </div>
               )}
               {artist.liveBroadcast?.isLive && (
                 <div className="-bottom-1 -right-1 absolute flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-live">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-white" />
+                  <div className="h-2 w-2 animate-pulse rounded-full bg-live-foreground" />
                 </div>
               )}
             </div>
           </div>
 
           {/* Name, bio, and actions */}
-          <div className="flex-1 space-y-5">
+          <div className="flex-1 space-y-6">
             <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <h1 className="text-4xl text-foreground sm:text-6xl">
+              <div className="flex flex-wrap items-baseline gap-3">
+                <h1 className="text-5xl text-foreground sm:text-7xl">
                   {displayName}
                 </h1>
                 {artist.liveBroadcast?.isLive && (
                   <Link
                     aria-label="Watch fullscreen"
-                    className="mt-2 inline-flex items-center gap-1 border-2 border-border bg-live px-2 py-0.5 font-bold text-white text-xs uppercase tracking-wide"
+                    className="mu-eyebrow inline-flex items-center gap-1.5 rounded-full bg-live px-2.5 py-1 text-live-foreground"
                     href={`/${displayName}/live`}
                   >
                     <span className="relative flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-live-foreground opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-live-foreground" />
                     </span>
-                    LIVE
+                    Live
                   </Link>
                 )}
               </div>
               {description && (
-                <p className="max-w-2xl text-base text-foreground/80 leading-relaxed sm:text-lg">
+                <p className="max-w-2xl text-base text-muted-foreground leading-relaxed sm:text-lg">
                   {description}
                 </p>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-5">
               <Link href={`/${displayName}/gift`}>
-                <Button className="gap-2 shadow-md" size="lg" variant="default">
+                <Button className="gap-2" size="lg" variant="default">
                   <Gift className="h-4 w-4" />
                   Send Gift
                 </Button>
               </Link>
 
-              {/* Additional stats/info could go here */}
               {artist.liveBroadcast?.isLive && (
                 <span className="text-muted-foreground text-sm">
                   Streaming now via {artist.liveBroadcast.provider}
@@ -248,14 +237,15 @@ export default async function ArtistProfilePage({ params }: PageProps) {
       </div>
 
       {/* Social links (server-rendered) */}
-      <div className="overflow-hidden border-2 border-border bg-card shadow-lg">
-        <div className="border-border border-b-2 bg-muted px-6 py-4">
-          <h3 className="flex items-center gap-3 text-foreground text-xl">
-            <Link2 className="size-5" strokeWidth={2.5} />
-            Connect & Listen
+      <div className="overflow-hidden rounded-md bg-card">
+        <div className="border-border border-b bg-secondary px-6 py-5 sm:px-10">
+          <p className="mu-eyebrow mb-1 text-muted-foreground">Profile</p>
+          <h3 className="flex items-center gap-3 text-3xl text-foreground">
+            <Link2 className="size-5" strokeWidth={1.5} />
+            Connect &amp; Listen
           </h3>
         </div>
-        <div className="grid grid-cols-1 gap-3 p-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 p-6 sm:grid-cols-2 sm:p-8 lg:grid-cols-3">
           {artist.textRecords
             .filter((record) => SocialKey.safeParse(record.key).success)
             .map((record) => {
@@ -265,20 +255,20 @@ export default async function ArtistProfilePage({ params }: PageProps) {
 
               return (
                 <a
-                  className="group relative flex items-center gap-3 overflow-hidden border-2 border-border bg-card px-4 py-3 transition-colors duration-100 hover:bg-brand hover:text-brand-foreground"
+                  className="group relative flex items-center gap-3 overflow-hidden rounded-md border border-border/60 bg-background px-4 py-3 transition-[color,background] duration-150 hover:bg-foreground hover:text-primary-foreground"
                   href={record.value}
                   key={`${record.key}-${record.value}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
                   <div className="relative flex flex-shrink-0 items-center justify-center">
-                    <Icon className="h-5 w-5" strokeWidth={2.5} />
+                    <Icon className="h-5 w-5" strokeWidth={1.5} />
                   </div>
                   <div className="relative flex min-w-0 flex-1 flex-col gap-0.5 overflow-hidden">
-                    <div className="truncate font-bold text-sm uppercase tracking-wide">
+                    <div className="mu-eyebrow truncate text-foreground group-hover:text-primary-foreground">
                       {platformName}
                     </div>
-                    <div className="truncate text-muted-foreground text-xs group-hover:text-brand-foreground/80">
+                    <div className="truncate text-muted-foreground text-xs group-hover:text-primary-foreground/70">
                       {record.value}
                     </div>
                   </div>

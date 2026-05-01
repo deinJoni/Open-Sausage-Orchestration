@@ -81,10 +81,10 @@ export function StickyFilterBar({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 border bg-muted/50 px-3 py-1.5 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+            <div className="mu-eyebrow flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-muted-foreground">
               <span>{totalArtists} artists</span>
               <span className="text-muted-foreground/50">•</span>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1.5">
                 <span className="size-1.5 rounded-full bg-live" />
                 {liveCount} live
               </span>

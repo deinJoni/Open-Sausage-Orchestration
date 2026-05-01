@@ -39,17 +39,17 @@ export function ProfileQrCode({ giftUrl, artistName }: ProfileQrCodeProps) {
   };
 
   return (
-    <div className="border-border border-t-2 bg-muted">
+    <div className="border-border border-t bg-secondary">
       {/* Header - Clickable */}
       <button
-        className="flex w-full items-center gap-2 border-border/30 border-b bg-muted/10 px-4 py-3 transition-colors hover:bg-muted/20"
+        className="flex w-full items-center gap-2 px-5 py-3 transition-opacity hover:opacity-70 sm:px-10"
         onClick={() => setIsExpanded(!isExpanded)}
         type="button"
       >
-        <QrCode className="h-4 w-4 text-brand" />
-        <span className="font-medium text-foreground text-sm">Quick Tip</span>
+        <QrCode className="h-4 w-4 text-brand" strokeWidth={1.5} />
+        <span className="mu-eyebrow text-foreground">Quick Tip</span>
         <div className="ml-auto flex items-center gap-2">
-          <Sparkles className="h-3 w-3 text-brand/60" />
+          <Sparkles className="h-3 w-3 text-brand/60" strokeWidth={1.5} />
           {isExpanded ? (
             <ChevronUp className="h-4 w-4 text-muted-foreground" />
           ) : (
@@ -64,18 +64,18 @@ export function ProfileQrCode({ giftUrl, artistName }: ProfileQrCodeProps) {
           isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="flex flex-col items-center p-6 sm:flex-row sm:gap-6">
+        <div className="flex flex-col items-center p-6 sm:flex-row sm:gap-8 sm:p-10">
           {/* QR Code */}
           <div className="relative">
-            <div className="relative border-2 border-border bg-white p-3 shadow-md">
-              <Cuer color="black" size={120} value={giftUrl} />
+            <div className="relative rounded-md bg-background p-4 shadow-sm">
+              <Cuer color="#081a16" size={120} value={giftUrl} />
             </div>
           </div>
 
           {/* Info Section */}
           <div className="mt-4 flex-1 space-y-3 text-center sm:mt-0 sm:text-left">
             <div>
-              <p className="font-medium text-foreground text-sm">
+              <p className="font-display text-2xl italic">
                 Send a tip to {artistName}
               </p>
               <p className="mt-1 text-muted-foreground text-xs">
@@ -84,15 +84,16 @@ export function ProfileQrCode({ giftUrl, artistName }: ProfileQrCodeProps) {
             </div>
 
             {/* URL with Copy */}
-            <div className="flex items-center gap-2 rounded-lg border border-border/50 bg-background/50 px-3 py-2">
+            <div className="flex items-center gap-2 rounded-md bg-background px-3 py-2">
               <span className="flex-1 truncate font-mono text-muted-foreground text-xs">
                 {displayUrl}
               </span>
               <Button
+                aria-label="Copy URL"
                 className="h-6 w-6 shrink-0"
                 onClick={handleCopy}
                 size="icon"
-                variant="ghost"
+                variant="outline"
               >
                 {copied ? (
                   <Check className="h-3 w-3 text-success" />

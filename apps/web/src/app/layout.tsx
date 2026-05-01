@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { Archivo_Black, Geist_Mono, Inter } from "next/font/google";
+import { Geist_Mono, Hanken_Grotesk, Instrument_Serif } from "next/font/google";
 import "../index.css";
 import { headers } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Header } from "@/components/header";
 import Providers from "@/components/providers";
 
-const inter = Inter({
-  variable: "--font-inter",
+const hanken = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
 });
 
-const archivoBlack = Archivo_Black({
-  variable: "--font-archivo-black",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
   weight: "400",
+  style: ["normal", "italic"],
   subsets: ["latin"],
 });
 
@@ -38,7 +39,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${archivoBlack.variable} ${geistMono.variable} antialiased`}
+        className={`${hanken.variable} ${instrumentSerif.variable} ${geistMono.variable} antialiased`}
       >
         <NuqsAdapter>
           <Providers cookies={cookies}>

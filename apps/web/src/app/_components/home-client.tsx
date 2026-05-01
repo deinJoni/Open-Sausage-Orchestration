@@ -22,11 +22,8 @@ import { ARTISTS_GRID_SIZE } from "@/lib/constants";
 const LoadingSkeleton = () => (
   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
     {[...new Array(ARTISTS_GRID_SIZE)].map((_, i) => (
-      <Card
-        className="border-border bg-background/80 p-6"
-        key={`artist-skeleton-${String(i)}`}
-      >
-        <Skeleton className="mb-4 size-16 rounded-2xl" />
+      <Card key={`artist-skeleton-${String(i)}`}>
+        <Skeleton className="mb-4 size-16 rounded-md" />
         <Skeleton className="mb-2 h-5 w-32" />
         <Skeleton className="mb-4 h-4 w-48" />
       </Card>
@@ -132,8 +129,8 @@ export function HomeClient() {
 
     return (
       <div className="flex flex-col items-center py-24 text-center">
-        <Icon className="mb-6 size-16" strokeWidth={2.5} />
-        <h3 className="mb-2 text-3xl">{config.title}</h3>
+        <Icon className="mb-6 size-12" strokeWidth={1.5} />
+        <h3 className="mb-2 text-4xl">{config.title}</h3>
         <p className="text-lg text-muted-foreground">{config.message}</p>
       </div>
     );
@@ -143,8 +140,8 @@ export function HomeClient() {
     return (
       <div className="min-h-[calc(100vh-42px)] bg-background">
         <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="mb-6 h-[60vh] animate-pulse rounded-lg bg-muted" />
-          <div className="mb-6 h-20 animate-pulse rounded-lg bg-muted" />
+          <div className="mb-6 h-[60vh] animate-pulse rounded-md bg-muted" />
+          <div className="mb-6 h-20 animate-pulse rounded-md bg-muted" />
           <LoadingSkeleton />
         </div>
       </div>
@@ -154,24 +151,22 @@ export function HomeClient() {
   return (
     <div className="min-h-[calc(100vh-42px)] bg-background">
       <a
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-brand focus:px-4 focus:py-2 focus:text-brand-foreground focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-full focus:bg-brand focus:px-4 focus:py-2 focus:text-brand-foreground focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
         href="#artist-grid"
       >
         Skip to artists
       </a>
 
       <Container>
-        <div className="flex h-full flex-1 flex-col gap-6">
+        <div className="flex h-full flex-1 flex-col gap-8">
           {carouselItems.length > 0 && (
             <div className="w-full">
-              <div className="mb-3 flex items-center gap-2 px-4 lg:px-0">
-                <span className="flex size-3">
-                  <span className="absolute inline-flex size-3 animate-ping rounded-full bg-live opacity-75" />
-                  <span className="relative inline-flex size-3 rounded-full bg-live" />
+              <div className="mb-4 flex items-center gap-2 px-4 lg:px-0">
+                <span className="relative flex size-2.5">
+                  <span className="absolute inline-flex size-2.5 animate-ping rounded-full bg-live opacity-75" />
+                  <span className="relative inline-flex size-2.5 rounded-full bg-live" />
                 </span>
-                <span className="font-bold text-foreground text-lg uppercase tracking-wide">
-                  Live Now
-                </span>
+                <span className="mu-eyebrow text-foreground">Live Now</span>
               </div>
               <div className="max-h-[700px] min-h-[400px]">
                 <LivestreamCarousel items={carouselItems} />

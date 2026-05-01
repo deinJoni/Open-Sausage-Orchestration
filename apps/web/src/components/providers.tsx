@@ -16,10 +16,9 @@ export default function Providers({
     <Web3Provider cookies={cookies}>
       <ThemeProvider
         attribute="data-theme"
-        defaultTheme="default"
-        disableTransitionOnChange
+        defaultTheme="light"
         enableSystem={false}
-        themes={["default"]}
+        themes={["light"]}
       >
         <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster position="top-right" />

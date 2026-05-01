@@ -22,8 +22,8 @@ export const ArtistCard = ({ artist, isLive = false }: ArtistCardProps) => {
   });
 
   const cardClassName = [
-    "group relative flex h-full flex-col overflow-hidden border-2 bg-card px-6 pb-6 pt-6 text-left shadow-md transition-transform duration-100 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-lg",
-    isLive ? "border-live ring-2 ring-live/20" : "border-border",
+    "group relative flex h-full flex-col overflow-hidden rounded-md bg-card px-6 pb-6 pt-6 text-left transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-md",
+    isLive ? "ring-1 ring-live/30" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -37,35 +37,27 @@ export const ArtistCard = ({ artist, isLive = false }: ArtistCardProps) => {
             href={isLive ? `/${name ?? ""}/live` : `/${name ?? ""}`}
           >
             <div className="flex items-center justify-between gap-4">
-              <div
-                className={
-                  "inline-flex size-16 items-center justify-center text-2xl"
-                }
-              >
+              <div className="inline-flex size-16 items-center justify-center text-2xl">
                 <ArtistAvatar
                   avatarUrl={profile.avatar}
-                  className={`size-16 rounded-2xl border-2 ${
-                    isLive ? "border-live" : "border-border"
-                  }`}
+                  className="size-16 rounded-md"
                   name={name ?? ""}
                   size="lg"
                 />
               </div>
               <span
-                className={`rounded-full px-3 py-1.5 font-semibold text-xs uppercase tracking-wider ${
+                className={`mu-eyebrow rounded-full px-2.5 py-1 ${
                   isLive
                     ? "bg-live text-live-foreground"
-                    : "bg-muted text-muted-foreground"
+                    : "bg-secondary text-muted-foreground"
                 }`}
               >
-                {isLive ? "LIVE" : "OFFLINE"}
+                {isLive ? "Live" : "Offline"}
               </span>
             </div>
             <div>
-              <h3 className="font-bold text-foreground text-xl">
-                {name ?? ""}
-              </h3>
-              <p className="mt-2 line-clamp-2 text-muted-foreground text-sm leading-relaxed">
+              <h3 className="text-3xl text-foreground">{name ?? ""}</h3>
+              <p className="mt-3 line-clamp-2 text-muted-foreground text-sm leading-relaxed">
                 {profile.description || "No description"}
               </p>
             </div>

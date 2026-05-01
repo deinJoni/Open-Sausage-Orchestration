@@ -65,7 +65,7 @@ export function BalanceHero({
 
   if (isLoading) {
     return (
-      <Card className="bg-background/80 p-8 text-center">
+      <Card className="text-center">
         <div className="mx-auto max-w-md space-y-4">
           <Skeleton className="mx-auto h-6 w-32" />
           <Skeleton className="mx-auto h-16 w-48" />
@@ -76,30 +76,29 @@ export function BalanceHero({
   }
 
   return (
-    <Card className="bg-background/80 p-8 text-center">
-      <div className="mx-auto max-w-md space-y-4">
+    <Card className="text-center">
+      <div className="mx-auto max-w-md space-y-5">
         <div className="flex items-center justify-center gap-2">
-          <h2 className="font-medium text-muted-foreground text-sm uppercase tracking-wide">
-            Your Balance
-          </h2>
+          <h2 className="mu-eyebrow text-muted-foreground">Your Balance</h2>
           <Button
+            aria-label="Refresh balance"
             className="size-6"
             onClick={onRefresh}
             size="icon"
             variant="ghost"
           >
-            <RefreshCw className="size-3" />
+            <RefreshCw className="size-3" strokeWidth={1.5} />
           </Button>
         </div>
 
-        {/* USD Balance - Primary */}
+        {/* USD Balance - large italic-serif numeral */}
         <div className="space-y-1">
           {balanceUSD ? (
-            <p className="font-bold text-5xl text-foreground md:text-6xl">
+            <p className="mu-numeral text-7xl text-foreground md:text-8xl">
               {balanceUSD}
             </p>
           ) : (
-            <p className="font-bold text-5xl text-muted-foreground md:text-6xl">
+            <p className="mu-numeral text-7xl text-muted-foreground md:text-8xl">
               —
             </p>
           )}
@@ -109,29 +108,30 @@ export function BalanceHero({
         {/* ENS Name with QR button */}
         <div className="flex items-center justify-center gap-2">
           <button
-            className="group inline-flex items-center gap-2 rounded-full bg-background/50 px-4 py-2 transition-colors hover:bg-background/70"
+            className="group inline-flex items-center gap-2 rounded-full bg-background px-4 py-2 transition-opacity hover:opacity-70"
             onClick={handleCopyENS}
             type="button"
           >
-            <span className="font-medium text-brand text-sm">{ensName}</span>
+            <span className="font-mono text-brand text-sm">{ensName}</span>
             {copiedENS ? (
               <Check className="size-3 text-success" />
             ) : (
-              <Copy className="size-3 text-brand/50 opacity-0 transition-opacity group-hover:opacity-100" />
+              <Copy className="size-3 text-brand/60 opacity-0 transition-opacity group-hover:opacity-100" />
             )}
           </button>
           <button
-            className="rounded-full bg-background/50 p-2 transition-colors hover:bg-background/70"
+            aria-label="Show QR code"
+            className="rounded-full bg-background p-2 transition-opacity hover:opacity-70"
             onClick={() => setShowQR(true)}
             type="button"
           >
-            <QrCode className="size-3.5 text-brand" />
+            <QrCode className="size-3.5 text-brand" strokeWidth={1.5} />
           </button>
         </div>
 
         {/* Wallet Address - Small text, clickable to copy */}
         <button
-          className="group flex items-center justify-center gap-1.5 text-muted-foreground text-xs transition-colors hover:text-foreground"
+          className="group flex items-center justify-center gap-1.5 text-muted-foreground text-xs transition-opacity hover:opacity-70"
           onClick={handleCopyAddress}
           type="button"
         >
@@ -152,19 +152,20 @@ export function BalanceHero({
             <DrawerDescription>Scan to send on Base network</DrawerDescription>
           </DrawerHeader>
           <div className="mx-auto w-full max-w-sm space-y-4 p-6 pb-8">
-            <div className="flex justify-center rounded-lg bg-white p-6">
-              <Cuer color="black" size={200} value={qrValue} />
+            <div className="flex justify-center rounded-md bg-background p-6">
+              <Cuer color="#081a16" size={200} value={qrValue} />
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2 rounded-lg border bg-muted p-3">
-                <p className="flex-1 text-center font-medium text-brand text-xs uppercase tracking-wide">
+              <div className="flex items-center justify-between gap-2 rounded-md bg-secondary p-3">
+                <p className="mu-eyebrow flex-1 text-center text-brand">
                   {ensName}
                 </p>
                 <Button
+                  aria-label="Copy ENS"
                   className="size-8 shrink-0"
                   onClick={handleCopyENS}
                   size="icon"
-                  variant="ghost"
+                  variant="outline"
                 >
                   {copiedENS ? (
                     <Check className="size-3.5 text-success" />
@@ -173,15 +174,16 @@ export function BalanceHero({
                   )}
                 </Button>
               </div>
-              <div className="flex items-center justify-between gap-2 rounded-lg border bg-muted p-3">
+              <div className="flex items-center justify-between gap-2 rounded-md bg-secondary p-3">
                 <p className="flex-1 text-center font-mono text-muted-foreground text-xs">
                   {formatAddress(walletAddress, 10, 10)}
                 </p>
                 <Button
+                  aria-label="Copy wallet address"
                   className="size-8 shrink-0"
                   onClick={handleCopyAddress}
                   size="icon"
-                  variant="ghost"
+                  variant="outline"
                 >
                   {copiedAddress ? (
                     <Check className="size-3.5 text-success" />

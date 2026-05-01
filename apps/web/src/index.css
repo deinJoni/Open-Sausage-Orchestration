@@ -13,45 +13,58 @@ body {
 
 :root {
   color-scheme: light;
-  --radius: 0;
 
-  --background: oklch(0.96 0.02 90);
-  --foreground: oklch(0.15 0 0);
+  /* Radii — flat geometric, pill reserved for the rare solid CTA */
+  --radius: 8px;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0 0);
+  /* Backgrounds — warm cream → deeper beige → ink */
+  --background: #fbfbf1;
+  --foreground: #081a16;
 
-  --primary: oklch(0 0 0);
-  --primary-foreground: oklch(0.96 0.02 90);
-  --secondary: oklch(0.92 0.02 90);
-  --secondary-foreground: oklch(0.15 0 0);
-  --muted: oklch(0.92 0.02 90);
-  --muted-foreground: oklch(0.4 0 0);
-  --accent: oklch(0.92 0.02 90);
-  --accent-foreground: oklch(0.15 0 0);
+  --card: #ede9e4;
+  --card-foreground: #081a16;
+  --popover: #fbfbf1;
+  --popover-foreground: #081a16;
 
-  --destructive: oklch(0.55 0.25 25);
-  --border: oklch(0 0 0);
-  --input: oklch(0.96 0.02 90);
-  --ring: oklch(0 0 0);
+  --primary: #081a16;
+  --primary-foreground: #fffffc;
+  --secondary: #e1d8cc;
+  --secondary-foreground: #081a16;
+  --muted: #ede9e4;
+  --muted-foreground: #3a4844;
+  --accent: #e1d8cc;
+  --accent-foreground: #081a16;
 
-  --brand: oklch(0.62 0.25 25);
-  --brand-foreground: oklch(0.96 0.02 90);
-  --brand-secondary: oklch(0.62 0.25 25);
+  --destructive: #ad7439;
+  --border: #c7c7c7;
+  --input: #fbfbf1;
+  --ring: #ad7439;
 
-  --live: oklch(0.62 0.25 25);
-  --live-foreground: oklch(0.96 0.02 90);
-  --success: oklch(0.55 0.2 145);
-  --warning: oklch(0.75 0.2 75);
+  --brand: #ad7439;
+  --brand-foreground: #fffffc;
+  --brand-secondary: #b0b29d;
+
+  --live: #ad7439;
+  --live-foreground: #fffffc;
+  --success: #3a4844;
+  --warning: #ad7439;
+
+  /* muShanghai-specific tokens (no shadcn analogue) */
+  --ink: #081a16;
+  --ink-foreground: #fffffc;
+  --sage: #b0b29d;
+  --terracotta: #ad7439;
+  --bg-tertiary: #e1d8cc;
+  --fg-2: #3a4844;
+  --fg-3: #6a7470;
 }
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -81,55 +94,82 @@ body {
   --color-success: var(--success);
   --color-warning: var(--warning);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-sage: var(--sage);
+  --color-terracotta: var(--terracotta);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+
+  --font-sans:
+    var(--font-hanken), -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-display:
-    var(--font-archivo-black), var(--font-inter), ui-sans-serif, system-ui,
-    sans-serif;
+    var(--font-instrument-serif), "Songti SC", "STSong", "Noto Serif SC",
+    Georgia, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  --shadow-xs: 2px 2px 0 0 var(--border);
-  --shadow-sm: 2px 2px 0 0 var(--border);
-  --shadow-md: 4px 4px 0 0 var(--border);
-  --shadow-lg: 6px 6px 0 0 var(--border);
-  --shadow-xl: 8px 8px 0 0 var(--border);
+  --shadow-xs: 0 1px 2px rgba(8, 26, 22, 0.06);
+  --shadow-sm: 0 1px 2px rgba(8, 26, 22, 0.06);
+  --shadow-md: 0 8px 24px rgba(8, 26, 22, 0.08);
+  --shadow-lg: 0 8px 24px rgba(8, 26, 22, 0.08);
+  --shadow-xl: 0 12px 40px rgba(8, 26, 22, 0.1);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.4;
+    letter-spacing: -0.03em;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1,
-  h2,
-  h3 {
+  h2 {
     font-family: var(--font-display);
-    text-transform: uppercase;
-    letter-spacing: -0.01em;
-    line-height: 0.92;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
   }
 
-  :where(.border) {
-    border-width: 2px;
-  }
-
-  [class*="backdrop-blur"] {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  [data-state="open"],
-  [data-state="closed"] {
-    animation-duration: 0ms !important;
+  h3,
+  h4,
+  h5 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
   }
 
   *:focus-visible {
-    outline: 3px solid var(--ring);
+    outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
+}
+
+/* Eyebrow — the brand's small UPPERCASE label pattern (Hanken 600, tracked) */
+.mu-eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Italic-serif numerals — used for step numbers, balances, tip amounts */
+.mu-numeral {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.04em;
 }
 
 /* Toast positioning */
@@ -149,8 +189,8 @@ body {
   --normal-border: var(--border);
   --normal-text: var(--popover-foreground);
   background: var(--popover) !important;
-  border: 2px solid var(--border) !important;
+  border: 1px solid var(--border) !important;
   color: var(--popover-foreground) !important;
-  box-shadow: 4px 4px 0 0 var(--border) !important;
-  border-radius: 0 !important;
+  box-shadow: var(--shadow-md) !important;
+  border-radius: var(--radius) !important;
 }
