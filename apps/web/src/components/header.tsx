@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 export function Header() {
+  const admin = useIsAdmin();
+  const showAdmin = admin.isInviter;
+
   return (
     <header className="sticky top-0 z-50 w-full border-black border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -21,6 +25,14 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
+          {showAdmin && (
+            <Link
+              className="rounded-md border border-border px-4 py-2 font-medium text-foreground transition-all hover:scale-105"
+              href="/admin"
+            >
+              Admin
+            </Link>
+          )}
           <Link
             className="rounded-md bg-brand px-4 py-2 font-medium text-brand-foreground transition-all hover:scale-105"
             href="/me"

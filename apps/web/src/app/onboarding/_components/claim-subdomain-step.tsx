@@ -1,5 +1,4 @@
 import { ArrowRight, Check } from "lucide-react";
-import { PortoConnectButton } from "@/components/porto-connect-button";
 import { Button } from "@/components/ui/button";
 import { ADDRESS_PREFIX_LENGTH, ADDRESS_SUFFIX_LENGTH } from "@/lib/constants";
 import { getEnsConfig } from "@/lib/ens-config";
@@ -15,7 +14,6 @@ type InviteData = {
 type ClaimSubdomainStepProps = {
   ensName: string;
   inviteData: InviteData;
-  isPorto: boolean;
   isRegistered: boolean;
   isPending: boolean;
   onClaim: () => void;
@@ -25,7 +23,6 @@ type ClaimSubdomainStepProps = {
 export function ClaimSubdomainStep({
   ensName,
   inviteData,
-  isPorto,
   isRegistered,
   isPending,
   onClaim,
@@ -46,16 +43,10 @@ export function ClaimSubdomainStep({
         </p>
       </div>
 
-      {!isPorto && (
-        <div className="space-y-4 text-center">
-          <PortoConnectButton className="mx-auto" size="lg" />
-        </div>
-      )}
-
-      {isPorto && !isRegistered && !isPending && (
+      {!(isRegistered || isPending) && (
         <div className="space-y-4 text-center">
           <p className="text-muted-foreground">
-            Ready to claim your domain! This won't require any popups.
+            You'll be asked to confirm in your wallet.
           </p>
           <Button className="w-full" onClick={onClaim} size="lg">
             Claim {ensName}.{getEnsConfig().domain}
@@ -63,7 +54,7 @@ export function ClaimSubdomainStep({
         </div>
       )}
 
-      {isPorto && isPending && (
+      {isPending && (
         <div className="space-y-4 text-center">
           <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-brand" />
           <p className="font-medium text-foreground">Claiming domain...</p>
@@ -73,7 +64,7 @@ export function ClaimSubdomainStep({
         </div>
       )}
 
-      {isPorto && isRegistered && (
+      {isRegistered && (
         <div className="space-y-4">
           <div className="border-2 border-success bg-card px-4 py-5 text-center shadow-md">
             <p className="mb-1 flex items-center justify-center gap-2 font-bold text-sm text-success uppercase tracking-wide">

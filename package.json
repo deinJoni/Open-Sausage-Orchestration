@@ -33,7 +33,11 @@
     "db:start": "turbo -F @osopit/db db:start",
     "db:watch": "turbo -F @osopit/db db:watch",
     "db:stop": "turbo -F @osopit/db db:stop",
-    "db:down": "turbo -F @osopit/db db:down"
+    "db:down": "turbo -F @osopit/db db:down",
+    "setup": "bun install && bun --filter @osopit/contracts setup",
+    "contracts:build": "bun --filter @osopit/contracts build",
+    "contracts:test": "bun --filter @osopit/contracts test",
+    "contracts:deploy:registrar": "bun --filter @osopit/contracts deploy:registrar"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.4",

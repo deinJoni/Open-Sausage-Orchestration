@@ -1,12 +1,12 @@
 "use client";
 
-import { AppKitButton } from "@reown/appkit/react";
 import { Cuer } from "cuer";
 import { Check, Copy, ExternalLink, QrCode, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAccount } from "wagmi";
 import { ArtistAvatar } from "@/components/artist-avatar";
+import { ConnectButton } from "@/components/connect-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -297,7 +297,9 @@ export function TipForm({
         </Button>
       ) : (
         <div className="space-y-3">
-          <AppKitButton size="md" />
+          <div className="flex justify-center">
+            <ConnectButton size="default" />
+          </div>
           <p className="text-center text-muted-foreground text-xs">
             Connect your wallet to send a tip
           </p>

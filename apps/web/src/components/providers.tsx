@@ -1,9 +1,9 @@
 "use client";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { AppKitProvider } from "./appkit-provider";
 import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "./ui/sonner";
+import { Web3Provider } from "./web3-provider";
 
 export default function Providers({
   children,
@@ -13,7 +13,7 @@ export default function Providers({
   cookies: string | null;
 }) {
   return (
-    <AppKitProvider cookies={cookies}>
+    <Web3Provider cookies={cookies}>
       <ThemeProvider
         attribute="data-theme"
         defaultTheme="default"
@@ -24,6 +24,6 @@ export default function Providers({
         <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster position="top-right" />
       </ThemeProvider>
-    </AppKitProvider>
+    </Web3Provider>
   );
 }

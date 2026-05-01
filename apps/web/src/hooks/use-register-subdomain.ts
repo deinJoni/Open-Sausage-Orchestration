@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useAccount, useCapabilities, useSendCalls } from "wagmi";
+import { useAccount, useSendCalls, useSwitchChain } from "wagmi";
+import { base } from "wagmi/chains";
 import { L2RegistrarABI } from "@/lib/abi/l2-registrar";
 import { ReverseRegistrarABI } from "@/lib/abi/reverse-registrar";
 import {
@@ -41,33 +42,29 @@ type RegisterSubdomainInput = {
  * });
  */
 export function useRegisterSubdomain() {
-  const { address, chainId } = useAccount();
-  const { sendCallsAsync } = useSendCalls();
-  const { data: capabilities } = useCapabilities();
+  const account = useAccount();
+  const sendCalls = useSendCalls();
+  const switchChain = useSwitchChain();
 
   const mutation = useMutation({
     mutationFn: async (input: RegisterSubdomainInput) => {
-      if (!address) {
+      if (!account.address) {
         toast.error("Please connect your wallet first");
         throw new Error("Wallet not connected");
       }
 
-      if (!chainId) {
-        toast.error("Please connect to a network");
-        throw new Error("No chain ID");
-      }
-
       try {
+        if (account.chainId !== base.id) {
+          toast.info("Switching wallet to Base...");
+          await switchChain.switchChainAsync({ chainId: base.id });
+        }
+
         toast.info("Registering subdomain and setting primary name...");
 
-        // Check if atomic batch is supported
-        const atomicBatchSupported =
-          capabilities?.[chainId]?.atomicBatch?.supported;
-
-        // Construct the full ENS name
         const fullName = `${input.label}.${getEnsConfig().domain}`;
 
-        const result = await sendCallsAsync({
+        const result = await sendCalls.sendCallsAsync({
+          chainId: base.id,
           calls: [
             {
               abi: L2RegistrarABI,
@@ -88,13 +85,6 @@ export function useRegisterSubdomain() {
               args: [fullName],
             },
           ],
-          ...(atomicBatchSupported && {
-            capabilities: {
-              atomicBatch: {
-                supported: true,
-              },
-            },
-          }),
         });
 
         toast.success("Registration complete! Primary name set.");

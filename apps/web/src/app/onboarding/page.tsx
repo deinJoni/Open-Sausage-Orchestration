@@ -9,6 +9,7 @@ import { ClaimSubdomainStep } from "@/app/onboarding/_components/claim-subdomain
 import { LoadingState } from "@/app/onboarding/_components/loading-state";
 import { NoInvite } from "@/app/onboarding/_components/no-invite";
 import { ProfileSetupStep } from "@/app/onboarding/_components/profile-setup-step";
+import { ConnectButton } from "@/components/connect-button";
 import { Card } from "@/components/ui/card";
 import { useCreateProfile } from "@/hooks/use-create-profile";
 import { useHasProfileSetup } from "@/hooks/use-has-profile-setup";
@@ -36,8 +37,7 @@ export default function OnboardingPage() {
     ? (JSON.parse(atob(inviteCode)) as InviteData)
     : null;
 
-  const { address, connector } = useAccount();
-  const isPorto = connector?.name === "Porto";
+  const { address, isConnected } = useAccount();
 
   const { data: balance, isLoading: isCheckingOwnership } = useReadContract({
     address: L2_REGISTRY_ADDRESS,
@@ -126,6 +126,25 @@ export default function OnboardingPage() {
     return <NoInvite onGoHome={() => router.push("/")} />;
   }
 
+  // Wallet not connected
+  if (!isConnected) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-4">
+        <Card className="w-full border-border bg-background/80 p-8 text-center backdrop-blur">
+          <h1 className="mb-4 font-bold text-2xl text-foreground">
+            Connect Your Wallet
+          </h1>
+          <p className="mb-6 text-muted-foreground">
+            Connect your wallet to claim your subdomain and finish onboarding.
+          </p>
+          <div className="flex justify-center">
+            <ConnectButton size="default" />
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto w-full max-w-3xl py-12">
       <header className="mb-10 space-y-3 text-center">
@@ -133,7 +152,6 @@ export default function OnboardingPage() {
           Create Your Artist Profile
         </h1>
         <div className="flex items-center justify-center gap-2 text-muted-foreground text-xs">
-          <span className="rounded-full bg-brand/10 px-3 py-1">Gas-free</span>
           <span className="rounded-full bg-brand/10 px-3 py-1">
             Decentralized
           </span>
@@ -171,7 +189,6 @@ export default function OnboardingPage() {
             ensName={ensName}
             inviteData={inviteData}
             isPending={registerSubdomain.isPending}
-            isPorto={isPorto}
             isRegistered={isRegistered}
             onClaim={handleClaimSubdomain}
             onNext={() => setStep(2)}

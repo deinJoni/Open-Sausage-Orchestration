@@ -1,0 +1,11 @@
+{
+  "chain": "base",
+  "chainId": 8453,
+  "ensName": "catmisha.eth",
+  "registry": "0xa609955257eacbbd566a1fa654e6c5f4b1fdc9e2",
+  "registrar": "0x63e7b8F8A8d42b043fe58Be1243d7cBcb1Ca5514",
+  "reverseRegistrar": "0x0000000000D8e504002cC26E3Ec46D81971C1664",
+  "startBlock": 37817657,
+  "subgraphSlug": "open-sausage-orchestration-alpha",
+  "notes": "Seeded from apps/web/src/lib/ens-environments.ts. Dev/testing environment."
+}

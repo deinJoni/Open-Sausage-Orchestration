@@ -1,0 +1,15 @@
+{
+  "chain": "base",
+  "chainId": 8453,
+  "ensName": "deinjoni.eth",
+  "registry": "0x58e196c108a1bc7d27c46f1ed7fa24401a56eecf",
+  "registrar": "0x68f1F95f8896Fd793Af7C91F9D63BCF0912a1FDf",
+  "reverseRegistrar": "0x0000000000D8e504002cC26E3Ec46D81971C1664",
+  "startBlock": 45373904,
+  "subgraphSlug": "",
+  "registrarDeploymentTx": "0x2b3e16ba1c61f98a6dbb9db73502d984c9f6472448b927d1298c8037e296d186",
+  "registryOwner": "0xf56a91B1D48C9AF2b813b794731B48bF440fA8cC",
+  "registrarOwner": "0x59515259BD4B0Ce9E9Eb102A70E45B89e4b7c38c",
+  "inviter": "0xf56a91B1D48C9AF2b813b794731B48bF440fA8cC",
+  "notes": "Fresh deployment via packages/contracts. L2Registry deployed via durin.dev by 0xf56a…A8cC. L2Registrar deployed by fresh deployer wallet 0x5951…c38c, addInviter and (later) registrar.transferOwnership(...) callable from that key."
+}

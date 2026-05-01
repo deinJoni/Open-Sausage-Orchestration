@@ -69,7 +69,7 @@ export function LiveViewer({
 
 function FullscreenContainer({ children }: { children: React.ReactNode }) {
   return (
-    <div className="-mt-16 flex min-h-[100dvh] w-full flex-col bg-background pt-16">
+    <div className="-mt-16 flex h-[100dvh] w-full flex-col overflow-hidden bg-background pt-16">
       {children}
     </div>
   );

@@ -7,7 +7,11 @@
 
 import z from "zod";
 
-export const ENS_ENVIRONMENT_NAMES = ["catmisha", "osopit"] as const;
+export const ENS_ENVIRONMENT_NAMES = [
+  "catmisha",
+  "osopit",
+  "deinjoni",
+] as const;
 export const EnsEnvironmentName = z.enum(ENS_ENVIRONMENT_NAMES);
 export type EnsEnvironmentName = z.infer<typeof EnsEnvironmentName>;
 
@@ -55,6 +59,17 @@ export const ENS_ENVIRONMENTS: Record<EnsEnvironmentName, EnsEnvironment> = {
     startBlock: 38_102_036,
     registrarDeploymentTx:
       "0xfd04464ee6597588b2ca297c46cfca53267cd9f6a9b5574bf9a363cd1ca5d116",
+    subgraphUrl:
+      "https://api.studio.thegraph.com/query/47591/open-sausage-orchestration-alpha/version/latest",
+  },
+  deinjoni: {
+    domain: "deinjoni.eth",
+    registryAddress: "0x58e196c108a1bc7d27c46f1ed7fa24401a56eecf",
+    registrarAddress: "0x68f1F95f8896Fd793Af7C91F9D63BCF0912a1FDf",
+    reverseRegistrarAddress: "0x0000000000D8e504002cC26E3Ec46D81971C1664",
+    startBlock: 45_373_904,
+    registrarDeploymentTx:
+      "0x2b3e16ba1c61f98a6dbb9db73502d984c9f6472448b927d1298c8037e296d186",
     subgraphUrl:
       "https://api.studio.thegraph.com/query/47591/open-sausage-orchestration-alpha/version/latest",
   },

@@ -9,7 +9,8 @@
       "!**/dist",
       "!**/.turbo",
       "!apps/web/src/gqty",
-      "!packages/osopit-subgraph"
+      "!packages/osopit-subgraph",
+      "!packages/contracts"
     ]
   }
 }

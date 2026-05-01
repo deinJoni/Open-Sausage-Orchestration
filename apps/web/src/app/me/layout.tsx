@@ -4,7 +4,7 @@ import { Coins, Link2, Mic, VenetianMask } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useAccount } from "wagmi";
-import { PortoConnectButton } from "@/components/porto-connect-button";
+import { ConnectButton } from "@/components/connect-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useOwnedProfile } from "@/hooks/use-owned-profile";
@@ -62,10 +62,10 @@ function DisconnectedGate() {
             <strong>Already have an account?</strong>
           </p>
           <p className="text-center text-muted-foreground text-xs">
-            Connect your Porto smart wallet to access your dashboard
+            Connect your wallet to access your dashboard
           </p>
           <div className="flex justify-center">
-            <PortoConnectButton />
+            <ConnectButton />
           </div>
         </div>
       </Card>
@@ -126,7 +126,7 @@ function NoProfileGate() {
               Browse Artists
             </Button>
           </Link>
-          <PortoConnectButton />
+          <ConnectButton />
         </div>
       </Card>
     </div>

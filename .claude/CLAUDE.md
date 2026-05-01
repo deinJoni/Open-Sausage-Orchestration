@@ -23,15 +23,20 @@ Turborepo monorepo with Bun as runtime:
 ```
 osopit/
 ├── apps/
-│   └── web/              # Next.js 16 app (React 19.2)
-│       ├── src/
-│       │   ├── app/      # App Router pages
-│       │   ├── components/ # React components + shadcn/ui
-│       │   ├── hooks/    # Custom React hooks
-│       │   ├── lib/      # Utilities, contracts, constants
-│       │   ├── gqty/     # Generated GraphQL client (auto-generated, don't edit)
-│       │   └── env.ts    # Environment variable validation
+│   ├── web/              # Next.js 16 app (React 19.2) — main product
+│   │   ├── src/
+│   │   │   ├── app/      # App Router pages + api/ route handlers
+│   │   │   ├── components/ # React components + shadcn/ui
+│   │   │   ├── hooks/    # Custom React hooks
+│   │   │   ├── lib/      # Utilities, contracts, auth, streams
+│   │   │   ├── gqty/     # Generated GraphQL client (auto-generated, don't edit)
+│   │   │   └── env.ts    # Environment variable validation (T3 Env)
+│   └── documentation/    # Fumadocs MDX docs site (Next.js)
 ├── packages/
+│   ├── db/               # @osopit/db — Drizzle ORM + Neon serverless Postgres
+│   │   ├── src/schema/   # Tables: users, broadcasts, tips, follows, notifications,
+│   │   │                 # art-pieces, assets, profile-drafts, sessions
+│   │   └── drizzle.config.ts
 │   └── osopit-subgraph/  # The Graph protocol subgraph
 │       ├── schema.graphql        # GraphQL schema
 │       ├── subgraph.yaml         # Active manifest (symlink/copy of one of the below)
@@ -45,7 +50,7 @@ osopit/
 - `page.tsx` — landing
 - `[identifier]/` — public artist profile by ENS subdomain
 - `me/` — logged-in user dashboard (balance, send money, transactions)
-- `onboarding/` — Porto.sh smart wallet + ENS subdomain setup
+- `onboarding/` — wallet connect + ENS subdomain setup
 - `invite/` — invite redemption flow
 - `api/` — server route handlers
 
@@ -74,9 +79,24 @@ bun fix:unsafe           # Auto-fix all issues including unsafe ones
 bun check                # Run both lint and typecheck
 ```
 
-### Database
+### Database (`packages/db`)
 
-The root `package.json` exposes `bun db:*` scripts that target a `@osopit/db` workspace, but **no such package exists yet** — those commands will fail. Treat them as reserved for a future db package.
+`@osopit/db` is a Drizzle ORM workspace targeting Neon serverless Postgres. Connection via `DATABASE_URL`. The root `package.json` proxies `bun db:*` to this workspace via Turbo:
+
+```bash
+bun db:generate    # Generate SQL migration files from schema diff
+bun db:push        # Push schema directly to DB (dev shortcut, no migration files)
+bun db:migrate     # Apply generated migrations
+bun db:studio      # Drizzle Studio web UI
+```
+
+Schema lives in `packages/db/src/schema/` (one file per entity). Import via the workspace exports:
+
+- `@osopit/db` — re-exports schema and helpers
+- `@osopit/db/client` — DB client
+- `@osopit/db/schema` — schema only
+
+The on-chain ENS subgraph and the off-chain Postgres DB are intentionally separate stores: the subgraph is the source of truth for ENS-anchored identity (subdomains, text records, on-chain broadcast pings), while Postgres holds off-chain state (tips, follows, notifications, draft profiles, Livepeer stream metadata, sessions).
 
 ### Subgraph Development
 
@@ -114,16 +134,14 @@ bun emit-test-event      # Emit a TextChanged event for local testing
 - TailwindCSS 4 for styling
 - shadcn/ui components
 - React Query for server state
-- Wagmi + Viem for Web3 interactions
-- Porto.sh for smart wallet onboarding
-- Reown AppKit (WalletConnect) for wallet connections
+- Wagmi + Viem for Web3 interactions (single `injected()` connector)
 - GQty for GraphQL client (type-safe)
 
 **Key Features:**
 - **Progressive Web App (PWA)** - Installable, offline-capable
 - **ENS Subdomains** - Users register subdomains under osopit.eth or catmisha.eth on Base
 - **Live Broadcasting** - Users can start/stop broadcasts and track them
-- **Smart Wallet Onboarding** - Porto.sh integration for gasless onboarding
+- **Wallet Onboarding** - Standard injected wallet (MetaMask, Rabby, etc.) via wagmi
 - **Artist Profiles** - ENS text records store profile data (avatar, bio, social links, art pieces)
 - **Profile Editing** - Update text records on ENS resolver
 - **Tipping** - Send tips to artists
@@ -143,15 +161,23 @@ The app supports two ENS environments, controlled by `NEXT_PUBLIC_ENS_ENVIRONMEN
 - Subgraph: `open-sausage-orchestration-alpha`
 
 **Environment Variables:**
-Required in `apps/web/.env`:
+Validated via `@t3-oss/env-nextjs` in `apps/web/src/env.ts`. Required in `apps/web/.env`:
 ```bash
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=  # Reown/WalletConnect project ID
-PINATA_JWT=                             # Pinata IPFS API key (for image uploads)
-MERCHANT_ADDRESS=                       # Smart wallet merchant address
-MERCHANT_PRIVATE_KEY=                   # Smart wallet merchant private key
+# Server
 GRAPH_JWT=                              # The Graph API key
+DATABASE_URL=                           # Neon Postgres connection string
+SESSION_SECRET=                         # iron-session cookie secret (≥32 chars)
+LIVEPEER_API_KEY=                       # Livepeer Studio API key
+LIVEPEER_WEBHOOK_SECRET=                # Verifies Livepeer webhook signatures
+CRON_SECRET=                            # Bearer token for /api/cron/* (≥16 chars)
+PINATA_JWT=                             # Pinata IPFS API key (read via process.env in /api/upload-ipfs)
+
+# Client
 NEXT_PUBLIC_ENS_ENVIRONMENT=osopit      # "osopit" or "catmisha" (defaults to "osopit")
+NEXT_PUBLIC_APP_ENV=local               # "local" or "prod" (defaults to "local")
 ```
+
+`PINATA_JWT` is the only env var read directly via `process.env` rather than the validated `env` object — every other access should go through `import { env } from "@/env"`.
 
 **Switching ENS Environments:**
 
@@ -187,6 +213,21 @@ Examples:
 - Type-safe GraphQL queries with full TypeScript support
 - The subgraph URL is dynamically selected in `src/gqty/index.ts` based on `NEXT_PUBLIC_ENS_ENVIRONMENT`
 - To regenerate schema: update endpoint in `gqty.config.cjs`, then run codegen
+
+**Authentication (SIWE + iron-session):**
+- Sign-In With Ethereum flow under `src/app/api/auth/`: `nonce` → `verify` (validates SIWE message) → `session` (returns user) → `logout`
+- Sessions stored in encrypted cookies via `iron-session` (`SESSION_SECRET`); helpers in `src/lib/auth/session.ts`
+- Server components/route handlers should fetch the session via the helpers, not by parsing cookies directly
+
+**Live Streaming (Livepeer + adapters):**
+- `src/lib/streams/` is an adapter abstraction over stream providers. The active adapters are `livepeer` (managed RTMP via Livepeer Studio), `iframe` (embed), and `external` (link out)
+- `src/lib/streams/registry.ts` resolves the right adapter for a broadcast; `webhooks.ts` validates Livepeer webhook signatures
+- Webhook receiver: `src/app/api/webhooks/stream/route.ts` — verifies via `LIVEPEER_WEBHOOK_SECRET` and updates broadcast state in Postgres
+- Broadcast lifecycle is split: ENS text record `app.osopit.broadcast` is the on-chain "live now" ping (indexed by the subgraph), while Postgres holds stream URLs, viewer counts, and Livepeer asset metadata
+
+**Cron Jobs:**
+- `src/app/api/cron/end-stale-broadcasts/route.ts` reaps broadcasts that never received an `idle` webhook
+- All `/api/cron/*` routes require `Authorization: Bearer ${CRON_SECRET}` — wire this up in your scheduler (Vercel Cron, etc.)
 
 ### Subgraph (`packages/osopit-subgraph`)
 

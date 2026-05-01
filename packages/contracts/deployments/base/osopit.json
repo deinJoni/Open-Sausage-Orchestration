@@ -1,0 +1,11 @@
+{
+  "chain": "base",
+  "chainId": 8453,
+  "ensName": "osopit.eth",
+  "registry": "0x8c77dd23735dbe20c3cae29250bdd3bf80e6f9b1",
+  "registrar": "0xb2576cD3Cfcc023e4A48c79BaF23A8787dc372ff",
+  "reverseRegistrar": "0x0000000000D8e504002cC26E3Ec46D81971C1664",
+  "startBlock": 38102036,
+  "subgraphSlug": "open-sausage-orchestration-alpha",
+  "notes": "Seeded from apps/web/src/lib/ens-environments.ts. Deployed pre-monorepo, before contracts source was vendored here."
+}

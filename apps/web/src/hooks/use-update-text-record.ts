@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { encodeFunctionData } from "viem";
-import { useAccount, useCapabilities, useChainId, useSendCalls } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import { L2RegistryABI } from "@/lib/abi/l2-registry";
 import type { AllValidKeys } from "@/lib/constants";
 import { L2_REGISTRY_ADDRESS } from "@/lib/contracts";
@@ -41,10 +41,8 @@ type TextRecordsInput = {
  * });
  */
 export function useUpdateTextRecords() {
-  const { address } = useAccount();
-  const { sendCallsAsync } = useSendCalls();
-  const { data: capabilities } = useCapabilities();
-  const chainId = useChainId();
+  const account = useAccount();
+  const writeContract = useWriteContract();
 
   const mutation = useMutation({
     onSuccess: () => {
@@ -54,20 +52,15 @@ export function useUpdateTextRecords() {
       toast.error(error.message);
     },
     mutationFn: async (input: TextRecordsInput) => {
-      if (!address) {
+      if (!account.address) {
         toast.error("Please connect your wallet first");
         throw new Error("Wallet not connected");
       }
 
       toast.info("Updating profile data...");
 
-      // Extract label from ensName (e.g., "alice" from "alice.osopit.eth")
       const label = input.ensName.split(".")[0];
-
-      // Calculate nodeHash using ENS namehash
       const nodeHash = calculateNodeHash(label);
-
-      // iterate over all keys
 
       const multiCallData = input.textRecords.map(({ key, value }) =>
         encodeFunctionData({
@@ -77,32 +70,17 @@ export function useUpdateTextRecords() {
         })
       );
 
-      // Execute multicall
       if (multiCallData.length === 0) {
         throw new Error("No text records to update");
       }
 
-      const atomicBatchSupported =
-        capabilities?.[chainId]?.atomic?.status === "supported";
-
-      const result = await sendCallsAsync({
-        calls: [
-          {
-            to: L2_REGISTRY_ADDRESS,
-            abi: L2RegistryABI,
-            functionName: "multicall",
-            args: [multiCallData],
-          },
-        ],
-        ...(atomicBatchSupported && {
-          capabilities: {
-            atomicBatch: {
-              supported: true,
-            },
-          },
-        }),
+      const hash = await writeContract.writeContractAsync({
+        address: L2_REGISTRY_ADDRESS,
+        abi: L2RegistryABI,
+        functionName: "multicall",
+        args: [multiCallData],
       });
-      return result;
+      return hash;
     },
   });
 
